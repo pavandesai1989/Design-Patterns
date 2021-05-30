@@ -1,0 +1,106 @@
+#include<iostream>
+
+using namespace std;
+
+
+//reciver object.Here it is a word document.Create it.As we have to pass this when we create command object!!
+
+class WordDocument
+{
+public:
+	void Open()
+	{
+		cout<<"document opened"<<endl;
+	}
+	void Save()
+	{
+		cout<<"document saved"<<endl;
+	}
+};
+
+//commnd interface
+class Command
+{
+public:
+	virtual void execute() = 0;
+};
+
+//command objects
+class OpenCommand:public Command
+{
+private:
+	WordDocument* pDoc;
+public:
+	OpenCommand(WordDocument* Doc)
+	{
+		pDoc = Doc;
+	}
+
+public:
+	 void execute()
+	 {
+		 pDoc->Open();
+	 }
+};
+
+class SaveCommand:public Command
+{
+private:
+	WordDocument* pDoc;
+
+public:
+	SaveCommand(WordDocument* Doc)
+	{
+		pDoc = Doc;
+	}
+
+public:
+	 void execute()
+	 {
+		 pDoc->Save();
+	 }
+};
+
+//invoker object!
+class MenuOptions
+{
+private:
+ Command * _OpenCmd;
+ Command * _SaveCmd;
+ 
+public:
+	MenuOptions(Command* Open,Command* Save)
+	{
+		_OpenCmd = Open;
+		_SaveCmd = Save;
+	}
+
+	void ClickOpen()
+	{
+		_OpenCmd->execute();
+	}
+
+	void ClickSave()
+	{
+		_SaveCmd->execute();
+	}
+};
+
+int main()
+{
+	//create reciver object and pass it to command while creating command!
+	WordDocument *pWordDoc = new WordDocument();
+
+	//create commond object!
+	Command *pOpen = new OpenCommand(pWordDoc);
+
+	Command *pSave = new SaveCommand(pWordDoc);
+
+	//invoker creation.Pass commands to this invoker!
+	MenuOptions * pMenu = new MenuOptions(pOpen,pSave);
+
+	pMenu->ClickOpen();
+	pMenu->ClickSave();
+
+	return 0;
+}

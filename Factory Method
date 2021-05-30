@@ -1,0 +1,83 @@
+/*
+The Factory Method pattern is a design pattern used to define a runtime interface for creating an object. It’s called a factory because it creates various types of objects
+without necessarily knowing what kind of object it creates or how to create it.
+*/
+
+#include<iostream>
+
+using namespace std;
+
+enum VehicleType
+{
+	VT_TwoWheeler,
+	VT_ThreeWheeler,
+	VT_FourWheeler
+};
+
+
+class Vehicle
+{
+public:
+	virtual void PrintVehicle() = 0;
+};
+
+class TwoWheeler:public Vehicle
+{
+public:
+	void PrintVehicle()
+	{
+		cout<<"I am Two wheeler"<<endl;
+	}
+};
+
+class ThreeWheeler:public Vehicle
+{
+public:
+	void PrintVehicle()
+	{
+		cout<<"I am Three wheeler"<<endl;
+	}
+};
+
+class Fourwheeler:public Vehicle
+{
+public:
+	void PrintVehicle()
+	{
+		cout<<"I am Four wheeler"<<endl;
+	}
+};
+
+class Factory
+{
+public:
+	Factory()
+	{
+		cout<<"I am factory "<<endl;
+	}
+
+public:
+	static Vehicle* GetVehicle(VehicleType type)
+	{
+		if(type == VT_TwoWheeler)
+			return new TwoWheeler;
+		else if(type == VT_ThreeWheeler)
+			return new ThreeWheeler;
+		else if(type == VT_FourWheeler)
+			return new Fourwheeler;
+	}
+};
+
+
+int main()
+{
+	VehicleType type = VT_FourWheeler;
+
+	Vehicle *pVehicle = Factory::GetVehicle(type);
+
+	pVehicle->PrintVehicle();
+
+
+	return 0;
+}
+

@@ -1,0 +1,107 @@
+#include<iostream>
+
+using namespace std;
+
+
+//implementor part!!
+class ColorImplementor
+{
+public:
+	virtual void FillColor()=0;
+};
+
+class BlueColorImplementor:public ColorImplementor
+{
+public:
+	void FillColor()
+	{
+		cout<<"Filling color using the BLUE"<<endl;
+	}
+};
+
+
+class GreenColorImplementor:public ColorImplementor
+{
+public:
+	void FillColor()
+	{
+		cout<<"Filling color using the GREEN"<<endl;
+	}
+
+};
+
+//Abstarction part!!!
+class Shape
+{
+protected:
+	ColorImplementor* pColorImpl;
+
+public:
+    ColorImplementor* GetColor()
+	{
+		return pColorImpl;
+	}
+
+	void SetColor(ColorImplementor* pColor)
+	{
+		pColorImpl = pColor;
+	}
+
+public:
+	virtual void Colorit()=0;
+	virtual void Draw()=0;
+};
+
+
+class Reactangle:public Shape
+{
+public:
+	void Draw()
+	{
+		cout<<"Reactangle created"<<endl;
+	}
+
+	void Colorit()
+	{
+		pColorImpl->FillColor();
+		cout<<"color filled"<<endl;
+	}
+};
+
+class Circle:public Shape
+{
+public:
+	void Draw()
+	{
+		cout<<"Circle created"<<endl;
+	}
+
+	void Colorit()
+	{
+		pColorImpl->FillColor();
+		cout<<"color filled"<<endl;
+	}
+};
+
+
+int main()
+{
+
+	Shape* pRectShape = new Reactangle();
+	pRectShape->Draw();
+
+	Shape* pCircleShape = new Circle();
+	pCircleShape->Draw();
+
+	//fill blue color
+	pRectShape->SetColor(new BlueColorImplementor());
+	pRectShape->Colorit();
+
+	//fill color using green!!
+	pRectShape->SetColor(new GreenColorImplementor());
+	pRectShape->Colorit();
+
+
+	return 0;
+}
+ 

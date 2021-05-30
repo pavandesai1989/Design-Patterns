@@ -1,0 +1,131 @@
+/*
+Builder pattern aims to “Separate the construction of a complex object from its representation so that the same construction process can create different representations.” 
+It is used to construct a complex object step by step and the final step will return the object. The process of constructing an object should be generic so that it can be used to
+create different representations of the same object. 
+*/
+
+#include<iostream>
+#include<string>
+using namespace std;
+
+
+//main object
+class Plane
+{
+private:
+	string _Plane;
+	string _Body;
+	string _Engine;
+
+public:
+	Plane(string PlaneType):_Plane(PlaneType){}
+	void SetBody(string body)
+	{
+     _Body = body;
+	}
+	void SetEngine(string engine)
+	{
+		_Engine = engine;
+	}
+	string GetBody()
+	{
+		return _Body;
+	}
+	string GetEngine()
+	{
+		return _Engine;
+	}
+
+	void Show()
+	{
+		cout<<"Plane is "<<_Plane<<" Body is "<<_Body<<"Engine is "<<_Engine<<endl;
+	}
+
+};
+
+
+//builder interface
+class PlaneBuilder
+{
+protected:
+	Plane* _Plane;
+
+public:
+	virtual void GetPartsDone() = 0;
+	virtual void BuildBody() = 0;
+	virtual void BuildEngine() = 0;
+	virtual Plane* GetPlane() {return _Plane;}
+};
+
+
+class JetBuilder:public PlaneBuilder
+{
+public:
+	void GetPartsDone()
+	{
+		_Plane = new Plane("Jet Plane");
+	}
+
+	void BuildBody()
+	{
+		_Plane->SetBody("Jet Body");
+	}
+
+	void BuildEngine()
+	{
+		_Plane->SetEngine("Jet Engine");
+	}
+};
+
+class PropellerBuilder:public PlaneBuilder
+{
+public:
+	void GetPartsDone()
+	{
+		_Plane = new Plane("Propeller Plane");
+	}
+
+	void BuildBody()
+	{
+		_Plane->SetBody("Propeller Body");
+	}
+
+	void BuildEngine()
+	{
+		_Plane->SetEngine("Propeller Engine");
+	}
+};
+
+
+
+class Director
+{
+	PlaneBuilder* builder;
+
+public:
+	Plane* CreatePlane(PlaneBuilder *builder)
+	{
+		builder->GetPartsDone();
+		builder->BuildBody();
+		builder->BuildEngine();
+
+		return builder->GetPlane();
+	}
+
+};
+
+
+
+int main()
+{
+	Director  odirector;
+	JetBuilder ojetbuilder;
+	PropellerBuilder opropellerbulider;
+
+	Plane* ptr = odirector.CreatePlane(&ojetbuilder);
+	ptr->Show();
+
+	Plane* ptr2 = odirector.CreatePlane(&opropellerbulider);
+	ptr2->Show();
+
+	return 0;

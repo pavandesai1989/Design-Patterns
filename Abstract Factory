@@ -1,0 +1,121 @@
+/*
+Abstract factory pattern has creational purpose and provides an interface for creating families of related or dependent objects without specifying their concrete classes. 
+Pattern applies to object and deal with object relationships, which are more dynamic. In contrast to Factory Method, Abstract Factory pattern produces family of types that 
+are related, i.e. it has more than one method of types it produces.
+When to use
+•	a system should be independent of how its products are created, composed, and represented
+•	a system should be configured with one of multiple families of products
+•	a family of related product objects is designed to be used together
+•	you want to provide a class library of products, and you want to reveal just their interfaces, not their implementations
+
+*/
+
+#include<iostream>
+
+using namespace std;
+
+class ProductA
+{
+public:
+	virtual ~ProductA(){}
+	virtual const char* GetName() = 0;
+};
+
+class ProductAx:public ProductA
+{
+public:
+	virtual ~ProductAx(){}
+	virtual const char* GetName()
+	{
+		return "A-X";
+	}
+};
+
+class ProductAy:public ProductA
+{
+public:
+	virtual ~ProductAy(){}
+	virtual const char* GetName()
+	{
+		return "A-Y";
+	}
+};
+
+class ProductB
+{
+public:
+	virtual ~ProductB(){}
+	virtual const char* GetName() = 0;
+};
+
+class ProductBx:public ProductB
+{
+public:
+	virtual ~ProductBx(){}
+	virtual const char* GetName()
+	{
+		return "B-X";
+	}
+};
+
+class ProductBy:public ProductB
+{
+public:
+	virtual ~ProductBy(){}
+	virtual const char* GetName()
+	{
+		return "B-Y";
+	}
+};
+
+class AbstarctFactory
+{
+public:
+	virtual ProductA* CreateProductA() = 0;
+	virtual ProductB* CreateProductB() = 0;
+};
+
+class ConcreteFactoryX:public AbstarctFactory
+{
+public:
+	ProductA* CreateProductA()
+	{
+		return new ProductAx();
+	}
+
+	ProductB* CreateProductB()
+	{
+		return new ProductBx();
+	}
+};
+
+class ConcreteFactoryY:public AbstarctFactory
+{
+public:
+	ProductA* CreateProductA()
+	{
+		return new ProductAy();
+	}
+
+	ProductB* CreateProductB()
+	{
+		return new ProductBy();
+	}
+};
+
+
+int main()
+{
+	ConcreteFactoryX *pProductX = new ConcreteFactoryX();
+
+	pProductX->CreateProductA();
+	ProductA *pProA = pProductX->CreateProductA();
+	cout<<pProA->GetName()<<endl;
+
+	ProductB *pProB = pProductX->CreateProductB();
+	cout<<pProB->GetName();
+
+	return 0;
+} 
+
+

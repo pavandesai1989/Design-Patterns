@@ -1,0 +1,106 @@
+/*
+A very simple real life scenario:
+is our college internet, which restricts few site access. The proxy first checks the host you are connecting to, 
+if it is not part of restricted site list, then it connects to the real internet. This example is based on Protection proxies.
+*/
+
+//implementation
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+/*
+PROXY desingn pattern
+*/
+
+//interface for Folder
+class Folder
+{
+public:
+	virtual void ReadWriteOperation() = 0;
+};
+
+class User
+{
+private:
+	string _Name;
+	string _Desig;
+public:
+	User(string Name,string Desig)
+	{
+		_Name = Name;
+		_Desig = Desig;
+	}
+	const string GetName()
+	{
+		return _Name;
+	}
+
+	void SetName(const string Name)
+	{
+		_Name = Name;
+	}
+
+	const string GetDesign()
+	{
+		return _Desig;
+	}
+
+	void SetDesign(const string Desig)
+	{
+		_Desig = Desig;
+	}
+};
+
+class OriginalFolder:public Folder
+{
+public:
+	void ReadWriteOperation()
+	{
+			cout<<"Read and Write allowed"<<endl;
+	}
+};
+
+//proxy server 
+class ProxyFolder:public Folder
+{
+public:
+	Folder * _Folder;
+	User * _User;
+
+public:
+	ProxyFolder(User*U)
+	{
+		_User = U;
+	}
+
+	void ReadWriteOperation()
+	{
+		if(_User->GetDesign() == "Manager")
+		{
+			_Folder = new OriginalFolder();
+			_Folder->ReadWriteOperation();
+		}
+		else
+			cout<<"Read and Write not allowed for the "<<_User->GetDesign()<<" " <<endl;
+	}
+};
+
+
+int main()
+{
+	//create user 
+	User* pDev = new User("Pavan","Developer");
+	User* pManager = new User("Rahul","Manager");
+
+	//create proxy folder and pass the User
+	ProxyFolder *pFolderDev = new ProxyFolder(pDev);
+	pFolderDev->ReadWriteOperation();
+
+	ProxyFolder *pFolderManager = new ProxyFolder(pManager);
+	pFolderManager->ReadWriteOperation();
+
+	return 0;
+} 
+

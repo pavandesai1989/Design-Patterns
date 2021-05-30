@@ -1,0 +1,94 @@
+/*
+Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality. 
+*/
+
+#include<iostream>
+using namespace std;
+
+class Beverage
+{
+public:
+	virtual int cost() = 0;
+	virtual void GetDesc() = 0;
+	virtual ~Beverage(){};
+};
+
+class Expresso : public Beverage
+{
+public:
+	int cost()
+	{
+		return 100;
+	}
+
+	void GetDesc()
+	{
+		cout<<"Expresso being prepared"<<endl;
+	}
+};
+
+class AddOnDecorator:public Beverage
+{
+protected:
+	Beverage* pBev;
+
+public:
+	AddOnDecorator(Beverage *object):pBev(object)
+	{
+	}
+};
+
+class AddOnCaramel:public AddOnDecorator
+{
+public:
+	AddOnCaramel(Beverage *ptr):AddOnDecorator(ptr)
+	{
+	}
+
+	int cost()
+	{
+		return this->pBev->cost() + 50;
+	}
+
+	void GetDesc()
+	{
+		cout<<"caramel add on added"<<endl;
+	}
+};
+
+class AddOnSoy:public AddOnDecorator
+{
+public:
+	AddOnSoy(Beverage *ptr):AddOnDecorator(ptr)
+	{
+	}
+
+	int cost()
+	{
+		return this->pBev->cost() + 25;
+	}
+
+	void GetDesc()
+	{
+		cout<<"Soy add on added"<<endl;
+	}
+};
+
+int main()
+{
+	Beverage* pBev = new Expresso();
+	cout<<pBev->cost()<<endl;
+
+	Beverage* pCaramel = new AddOnCaramel(pBev);
+	cout<<pCaramel->cost()<<endl;
+	pCaramel->GetDesc();
+	cout<<endl;
+
+	Beverage* pSoy = new AddOnSoy(pCaramel);
+	cout<<pSoy->cost()<<endl;
+	pSoy->GetDesc();
+	cout<<endl;
+
+
+	return 0;
+} 

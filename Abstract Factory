@@ -10,6 +10,121 @@ When to use
 
 */
 
+******* DO BELOW******
+
+#include <iostream>
+using namespace std;
+
+class button
+{
+    public:
+       virtual void paint() = 0;
+};
+
+class winbutton:public button
+{
+    public:
+        void paint()
+        {
+            cout<<"creating win button "<<endl;
+        }
+};
+
+class macbutton:public button
+{
+    public:
+        void paint()
+        {
+            cout<<"creating mac button "<<endl;
+        }
+};
+
+class scrollbar
+{
+    public: 
+       virtual void paint() = 0;
+};
+
+class winscrollbar:public scrollbar
+{
+    public:
+        void paint()
+        {
+            cout<<"creating win scrollbar "<<endl;
+        }
+};
+
+class macscrollbar:public scrollbar
+{
+    public:
+        void paint()
+        {
+            cout<<"creating mac scrollbar "<<endl;
+        }
+};
+
+//factory
+class GUIFactory
+{
+   public:
+      virtual button* createbutton() = 0;
+      virtual scrollbar* createscrollbar() = 0;
+};
+
+class winGUIFactory:public GUIFactory
+{
+    public:
+        button* createbutton()
+        {
+            return new winbutton();
+        }
+
+        scrollbar* createscrollbar()
+        {
+            return new winscrollbar();
+        }
+
+};
+
+class macGUIFactory:public GUIFactory
+{
+    public:
+        button* createbutton()
+        {
+            return new macbutton();
+        }
+
+        scrollbar* createscrollbar()
+        {
+            return new macscrollbar();
+        }
+
+};
+
+
+
+
+int main() 
+{
+    GUIFactory* GF = new winGUIFactory();
+    button* b = GF->createbutton();
+    b->paint();
+    scrollbar* sb = GF->createscrollbar();
+    sb->paint();
+
+    GUIFactory* GF2 = new macGUIFactory();
+    button* b2 = GF2->createbutton();
+    b2->paint();
+    scrollbar* sb2 = GF2->createscrollbar();
+    sb2->paint();
+
+
+}
+
+
+
+*******EXAMPLE 2*****
+
 #include<iostream>
 
 using namespace std;

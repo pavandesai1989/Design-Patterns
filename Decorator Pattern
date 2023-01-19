@@ -1,3 +1,112 @@
+
+/*
+Implement decorator design pattern
+*/
+#include <iostream>
+#include<string>
+
+using namespace std;
+
+//interface 
+class pizza
+{
+    public:
+       virtual string type() = 0;
+       virtual int getprice() = 0;
+};
+
+class basepizza:public pizza
+{
+    public:
+        string type()
+        {
+            return "creating base pizza";
+        }
+        int getprice()
+        {
+            return 100;
+        }
+
+};
+
+//decorator 
+class pizzadecorator:public pizza
+{
+    protected:
+       pizza* ptrpizza;
+
+    public: 
+       pizzadecorator(pizza* ob):ptrpizza(ob)
+       {
+
+       }
+       string type()
+       {
+           return "decorator";
+       }
+       int getprice()
+       {
+           return 50;
+       }
+
+};
+
+class topping:public pizzadecorator
+{
+    public: 
+       topping(pizza* ob):pizzadecorator(ob)
+       {
+
+       }
+       string type()
+       {
+           return ( ptrpizza->type() ) + " and adding topping";
+       }
+       int getprice()
+       {
+            return ptrpizza->getprice() + 150;
+       }
+};
+
+class cheeztopping:public pizzadecorator
+{
+    public: 
+       cheeztopping(pizza* ob):pizzadecorator(ob)
+       {
+
+       }
+       string type()
+       {
+           return ptrpizza->type() + " and adding cheez topping";
+       }
+       int getprice()
+       {
+            return ptrpizza->getprice() + 250 ;
+       }
+};
+
+
+using namespace std;
+int main() 
+{
+    pizza* toppingob = new topping (new cheeztopping(new basepizza()));
+    cout<<toppingob->type()<<endl;
+    cout<<"price is "<< toppingob->getprice();
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+**************************************
 /*
 Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality. 
 */

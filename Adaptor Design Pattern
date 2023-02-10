@@ -7,6 +7,92 @@ To use an adapter:
 
 
 */
+
+**********************BEST*****
+#include<iostream>
+#include<string>
+using namespace std;
+
+class XMLData
+{
+   private:
+      string xmldata;
+
+   public:
+      XMLData(string xmldata)
+      {
+          this->xmldata = xmldata;
+      }  
+      string getxmldata()
+      {
+          return xmldata;
+      } 
+
+};
+
+class DataTool
+{
+    private:
+       string jsondata;
+
+    public:
+       DataTool(){};
+       DataTool(string jsondata)
+       {
+           this->jsondata = jsondata;
+       }   
+
+       virtual void Analysedata()
+       {
+           cout<<"Analysing the "<<jsondata<<endl;
+       }
+};
+
+class adapter:public DataTool
+{
+    private:
+       XMLData* pxmldata;
+
+    public:
+       adapter();
+       adapter(XMLData* p)
+       {
+           pxmldata = p;
+       }   
+       void Analysedata()
+       {
+           cout<<"converting the xmml data "<<pxmldata->getxmldata()<<"to json data"<<endl;
+           cout<<"in analysedata adapter"<<endl;
+       }
+
+};
+
+
+class client
+{
+    public:
+       void processdata(DataTool* p)
+       {
+           p->Analysedata();
+       }
+
+};
+
+
+int main()
+{
+
+    XMLData* pxmldata = new XMLData("sample xml data");
+    DataTool* padt = new adapter(pxmldata);
+
+   client* pc = new client;
+   pc->processdata(padt);
+
+
+    return 0;
+}
+
+***********
 #include<iostream>
 
 using namespace std;

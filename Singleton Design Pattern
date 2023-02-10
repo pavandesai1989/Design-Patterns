@@ -1,4 +1,76 @@
+****** BEST****
+#include<iostream>
+#include<thread>
+#include<vector>
+#include<mutex>
+using namespace std;
 
+
+class singleton
+{
+  private:
+      singleton()
+      {
+          cout<<"created"<<endl;
+      }
+      ~singleton()
+      {
+          cout<<"destroyed"<<endl;
+      }
+
+      static singleton*  m_instance;
+      static mutex m_mtx;
+
+  public:
+      static singleton* createinstance()
+      {
+          if(m_instance ==nullptr) //double checking the lock 
+          {
+              lock_guard<mutex>  lock(m_mtx);
+              if(m_instance ==nullptr)
+                m_instance = new singleton;
+          }
+            return m_instance;    
+      }  
+
+      static void destroy()
+      {
+          lock_guard<mutex>  lock(m_mtx);
+          if(m_instance)
+          {
+               delete m_instance;
+               m_instance = nullptr;
+          }
+      }
+
+
+
+};
+
+singleton* singleton::m_instance = nullptr;
+mutex singleton::m_mtx;
+
+
+int main()
+{
+    vector<thread> threads;
+
+    for(int i=0;i<10;i++)
+    {
+          threads.emplace_back( thread ([](){singleton::createinstance();
+                                              singleton::destroy();}) );
+    }
+
+    for(auto& t: threads)
+    {
+        if(t.joinable())
+             t.join();
+    }
+
+
+    return 0;
+}
+******************
 #include <iostream>
 
 using namespace std;

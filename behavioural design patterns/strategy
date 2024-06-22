@@ -1,80 +1,112 @@
-#include <iostream>
-#include <memory>
-#include <string>
-
-// Abstract base class for the payment strategy
-class PaymentStrategy {
-public:
-    virtual ~PaymentStrategy() = default;
-    virtual void pay(double amount) const = 0;
-};
-
-// Concrete strategy for credit card payment
-class CreditCardPayment : public PaymentStrategy {
-private:
-    std::string cardNumber;
-public:
-    CreditCardPayment(const std::string& cardNumber) : cardNumber(cardNumber) {}
-
-    void pay(double amount) const override {
-        std::cout << "Processing credit card payment of $" << amount << " using card number " << cardNumber << "\n";
-    }
-};
-
-// Concrete strategy for PayPal payment
-class PayPalPayment : public PaymentStrategy {
-private:
-    std::string email;
-public:
-    PayPalPayment(const std::string& email) : email(email) {}
-
-    void pay(double amount) const override {
-        std::cout << "Processing PayPal payment of $" << amount << " using email " << email << "\n";
-    }
-};
-
-// Concrete strategy for Bitcoin payment
-class BitcoinPayment : public PaymentStrategy {
-private:
-    std::string walletAddress;
-public:
-    BitcoinPayment(const std::string& walletAddress) : walletAddress(walletAddress) {}
-
-    void pay(double amount) const override {
-        std::cout << "Processing Bitcoin payment of $" << amount << " using wallet address " << walletAddress << "\n";
-    }
-};
-
-// Payment processor class
 class PaymentProcessor {
-private:
-    std::unique_ptr<PaymentStrategy> strategy;
-public:
-    void setStrategy(std::unique_ptr<PaymentStrategy> newStrategy) {
-        strategy = std::move(newStrategy);
-    }
-
-    void processPayment(double amount) const {
-        if (strategy) {
-            strategy->pay(amount);
-        } else {
-            std::cout << "Payment strategy not set\n";
+    private:
+        void creditCardPaymentProcessor(int amount){
+            cout << "Processing the amount $" << amount << " though Credit Card." << endl;
         }
-    }
+
+        void UPIPaymentProcessor(int amount){
+            cout << "Processing the amount $" << amount << " though UPI." << endl;
+        }
+
+    public:
+        void processPayment(int amount, string paymentMethod){
+            if (paymentMethod == "CREDIT_CARD") {
+                creditCardPaymentProcessor(amount);
+            } else if (paymentMethod == "UPI") {
+                UPIPaymentProcessor(amount);
+            } else {
+                cout << "Not a valid payment method." << endl;
+            }
+        }
 };
 
-// Client code
 int main() {
-    PaymentProcessor processor;
-
-    processor.setStrategy(std::make_unique<CreditCardPayment>("1234-5678-9012-3456"));
-    processor.processPayment(100.0);
-
-    processor.setStrategy(std::make_unique<PayPalPayment>("user@example.com"));
-    processor.processPayment(200.0);
-
-    processor.setStrategy(std::make_unique<BitcoinPayment>("1BoatSLRHtKNngkdXEeobR76b53LETtpyT"));
-    processor.processPayment(300.0);
+    PaymentProcessor pObj;
+    pObj.processPayment(100, "CREDIT_CARD");
 
     return 0;
 }
+
+To introduce another payment method, you need to make a change in the ‘processPayment’ method, adding another payment check. This would also require adding another method in ‘private’. For eg:
+void netBankingPaymentProcessor(int amount){
+  cout << "Processing the amount $" << amount << " though net banking." << endl;
+}
+
+Can you identify the problem in the above solution?
+
+We need to modify our code with every new addition to the payment method.
+
+Now remember the SOLID Principles:
+
+It should handle a single responsibility. In the above code, it is handling multiple payment responsibilities.
+It should be Open/Closed, which means open for extension and closed for modification. In the above code, we are modifying existing methods to incorporate a new payment method.
+
+Let’s apply the strategy design pattern to the above example:
+
+
+
+// Strategy Interface
+class PaymentStrategy {
+    public:
+        virtual void processPayment(int amount) = 0;
+        virtual ~PaymentStrategy() {}
+};
+
+// Concrete class
+class CreditCardPaymentProcessor: public PaymentStrategy {
+    public:
+        void processPayment(int amount) override{
+            cout << "Processing the amount $" << amount << " though Credit Card." << endl;
+        }
+};
+
+// Concrete class
+class UPIPaymentProcessor: public PaymentStrategy {
+     public:
+        void processPayment(int amount) override{
+            cout << "Processing the amount $" << amount << " though UPI." << endl;
+        }
+};
+
+class PaymentProcessor {
+    private:
+        PaymentStrategy *strategy;
+
+    public:
+        void setPaymentStrategy(PaymentStrategy* strategy){
+            this->strategy = strategy;
+        }
+
+        void processPayment(int amount){
+            if(strategy){
+                strategy->processPayment(amount);
+            }
+        }
+};
+
+int main() {
+    PaymentProcessor processor;
+    
+    CreditCardPaymentProcessor payment;
+    processor.setPaymentStrategy(&payment);
+
+    processor.processPayment(100);
+
+    return 0;
+}
+
+
+In the above example, we separated out the ‘paymentStrategy’ abstract class and created subclasses based on the different payment methods available.
+
+The above code is easy to maintain and is extensible without changing the existing code.
+
+This is where the strategy design pattern comes into play. When users are given multiple options to choose from, we create an interface.
+
+Real-life examples of the strategy design pattern:
+Drawing tools: Allowing users to switch between different graphic tools eg: pencil, eraser, colors, etc.
+Authentications and authorizations: username/password based, OAuth, Token based, etc.
+Language translations
+In game development: players have their own behaviors. Eg: defensive, etc.
+File compression
+In the navigation system, users can choose different paths. Eg: fastest route, shortest route, no toll roads, etc
+In a Parking lot: eg: near to the entrance, near to exit, near to escalator, etc.

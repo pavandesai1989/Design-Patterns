@@ -1,0 +1,61 @@
+
+1. Eager initialization 
+
+class EagerSingleton {
+private:
+    // Private constructor to prevent instantiation
+    EagerSingleton() {}
+
+    // Copy constructor and assignment operator are deleted to prevent copying
+    EagerSingleton(const EagerSingleton&) = delete;
+    EagerSingleton& operator=(const EagerSingleton&) = delete;
+
+    // Static instance of the class
+    static EagerSingleton instance;
+
+public:
+    // Public method to provide access to the instance
+    static EagerSingleton& getInstance() {
+        return instance;
+    }
+};
+
+// Initialize the static instance
+EagerSingleton EagerSingleton::instance;
+
+
+2. Lazy Initiazation
+#include <mutex>
+
+class LazySingleton {
+private:
+    // Private constructor to prevent instantiation
+    LazySingleton() {}
+
+    // Copy constructor and assignment operator are deleted to prevent copying
+    LazySingleton(const LazySingleton&) = delete;
+    LazySingleton& operator=(const LazySingleton&) = delete;
+
+    // Static pointer to the singleton instance
+    static LazySingleton* instance;
+
+    // Mutex for thread-safe initialization
+    static std::mutex mtx;
+
+public:
+    // Public method to provide access to the instance
+    static LazySingleton* getInstance() {
+        // Double-checked locking
+        if (instance == nullptr) {
+            std::lock_guard<std::mutex> lock(mtx);
+            if (instance == nullptr) {
+                instance = new LazySingleton();
+            }
+        }
+        return instance;
+    }
+};
+
+// Initialize static members
+LazySingleton* LazySingleton::instance = nullptr;
+std::mutex LazySingleton::mtx;

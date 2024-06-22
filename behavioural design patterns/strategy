@@ -1,0 +1,80 @@
+#include <iostream>
+#include <memory>
+#include <string>
+
+// Abstract base class for the payment strategy
+class PaymentStrategy {
+public:
+    virtual ~PaymentStrategy() = default;
+    virtual void pay(double amount) const = 0;
+};
+
+// Concrete strategy for credit card payment
+class CreditCardPayment : public PaymentStrategy {
+private:
+    std::string cardNumber;
+public:
+    CreditCardPayment(const std::string& cardNumber) : cardNumber(cardNumber) {}
+
+    void pay(double amount) const override {
+        std::cout << "Processing credit card payment of $" << amount << " using card number " << cardNumber << "\n";
+    }
+};
+
+// Concrete strategy for PayPal payment
+class PayPalPayment : public PaymentStrategy {
+private:
+    std::string email;
+public:
+    PayPalPayment(const std::string& email) : email(email) {}
+
+    void pay(double amount) const override {
+        std::cout << "Processing PayPal payment of $" << amount << " using email " << email << "\n";
+    }
+};
+
+// Concrete strategy for Bitcoin payment
+class BitcoinPayment : public PaymentStrategy {
+private:
+    std::string walletAddress;
+public:
+    BitcoinPayment(const std::string& walletAddress) : walletAddress(walletAddress) {}
+
+    void pay(double amount) const override {
+        std::cout << "Processing Bitcoin payment of $" << amount << " using wallet address " << walletAddress << "\n";
+    }
+};
+
+// Payment processor class
+class PaymentProcessor {
+private:
+    std::unique_ptr<PaymentStrategy> strategy;
+public:
+    void setStrategy(std::unique_ptr<PaymentStrategy> newStrategy) {
+        strategy = std::move(newStrategy);
+    }
+
+    void processPayment(double amount) const {
+        if (strategy) {
+            strategy->pay(amount);
+        } else {
+            std::cout << "Payment strategy not set\n";
+        }
+    }
+};
+
+// Client code
+int main() {
+    PaymentProcessor processor;
+
+    processor.setStrategy(std::make_unique<CreditCardPayment>("1234-5678-9012-3456"));
+    processor.processPayment(100.0);
+
+    processor.setStrategy(std::make_unique<PayPalPayment>("user@example.com"));
+    processor.processPayment(200.0);
+
+    processor.setStrategy(std::make_unique<BitcoinPayment>("1BoatSLRHtKNngkdXEeobR76b53LETtpyT"));
+    processor.processPayment(300.0);
+
+    return 0;
+}

@@ -1,112 +1,148 @@
-class PaymentProcessor {
-    private:
-        void creditCardPaymentProcessor(int amount){
-            cout << "Processing the amount $" << amount << " though Credit Card." << endl;
-        }
+Payment Processing System Without Strategy Pattern
 
-        void UPIPaymentProcessor(int amount){
-            cout << "Processing the amount $" << amount << " though UPI." << endl;
-        }
+Imagine we have a system that processes payments using various methods such as credit cards, PayPal, and bank transfers. Without using the Strategy design pattern, you might implement all payment logic within a single class using conditional statements. This approach can lead to code that's difficult to maintain, extend, and test.
 
-    public:
-        void processPayment(int amount, string paymentMethod){
-            if (paymentMethod == "CREDIT_CARD") {
-                creditCardPaymentProcessor(amount);
-            } else if (paymentMethod == "UPI") {
-                UPIPaymentProcessor(amount);
-            } else {
-                cout << "Not a valid payment method." << endl;
-            }
-        }
-};
-
-int main() {
-    PaymentProcessor pObj;
-    pObj.processPayment(100, "CREDIT_CARD");
-
-    return 0;
-}
-
-To introduce another payment method, you need to make a change in the ‘processPayment’ method, adding another payment check. This would also require adding another method in ‘private’. For eg:
-void netBankingPaymentProcessor(int amount){
-  cout << "Processing the amount $" << amount << " though net banking." << endl;
-}
-
-Can you identify the problem in the above solution?
-
-We need to modify our code with every new addition to the payment method.
-
-Now remember the SOLID Principles:
-
-It should handle a single responsibility. In the above code, it is handling multiple payment responsibilities.
-It should be Open/Closed, which means open for extension and closed for modification. In the above code, we are modifying existing methods to incorporate a new payment method.
-
-Let’s apply the strategy design pattern to the above example:
-
-
-
-// Strategy Interface
-class PaymentStrategy {
-    public:
-        virtual void processPayment(int amount) = 0;
-        virtual ~PaymentStrategy() {}
-};
-
-// Concrete class
-class CreditCardPaymentProcessor: public PaymentStrategy {
-    public:
-        void processPayment(int amount) override{
-            cout << "Processing the amount $" << amount << " though Credit Card." << endl;
-        }
-};
-
-// Concrete class
-class UPIPaymentProcessor: public PaymentStrategy {
-     public:
-        void processPayment(int amount) override{
-            cout << "Processing the amount $" << amount << " though UPI." << endl;
-        }
-};
+#include <iostream>
+#include <string>
 
 class PaymentProcessor {
-    private:
-        PaymentStrategy *strategy;
+private:
+    std::string paymentMethod;  // Current payment method
 
-    public:
-        void setPaymentStrategy(PaymentStrategy* strategy){
-            this->strategy = strategy;
-        }
+public:
+    // Constructor to set the initial payment method
+    PaymentProcessor(const std::string& method) : paymentMethod(method) {}
 
-        void processPayment(int amount){
-            if(strategy){
-                strategy->processPayment(amount);
-            }
+    // Method to change the payment method dynamically
+    void setPaymentMethod(const std::string& method) {
+        paymentMethod = method;
+    }
+
+    // Method to process payment based on the current payment method
+    void processPayment(int amount) {
+        if (paymentMethod == "credit_card") {
+            std::cout << "Processing payment of $" << amount << " using Credit Card." << std::endl;
+            // Add logic specific to credit card payment
+        } else if (paymentMethod == "paypal") {
+            std::cout << "Processing payment of $" << amount << " using PayPal." << std::endl;
+            // Add logic specific to PayPal payment
+        } else if (paymentMethod == "bank_transfer") {
+            std::cout << "Processing payment of $" << amount << " using Bank Transfer." << std::endl;
+            // Add logic specific to bank transfer payment
+        } else {
+            std::cout << "Invalid payment method selected!" << std::endl;
         }
+    }
 };
 
+// Main function to demonstrate the PaymentProcessor class without Strategy Pattern
 int main() {
-    PaymentProcessor processor;
-    
-    CreditCardPaymentProcessor payment;
-    processor.setPaymentStrategy(&payment);
-
+    // Create a PaymentProcessor object with an initial payment method
+    PaymentProcessor processor("credit_card");
     processor.processPayment(100);
 
+    // Change the payment method to PayPal
+    processor.setPaymentMethod("paypal");
+    processor.processPayment(200);
+
+    // Change the payment method to Bank Transfer
+    processor.setPaymentMethod("bank_transfer");
+    processor.processPayment(300);
+
     return 0;
 }
 
 
-In the above example, we separated out the ‘paymentStrategy’ abstract class and created subclasses based on the different payment methods available.
 
-The above code is easy to maintain and is extensible without changing the existing code.
+Disadvantages of This Approach
+Lack of Flexibility: Each time you need to add a new payment method, you must modify the processPayment method, violating the Open/Closed Principle (code should be open for extension but closed for modification).
 
-This is where the strategy design pattern comes into play. When users are given multiple options to choose from, we create an interface.
+Code Duplication: The use of if-else statements for different payment methods can lead to duplicated code and increased complexity.
 
-Real-life examples of the strategy design pattern:
-Drawing tools: Allowing users to switch between different graphic tools eg: pencil, eraser, colors, etc.
-Authentications and authorizations: username/password based, OAuth, Token based, etc.
-Language translations
-In game development: players have their own behaviors. Eg: defensive, etc.
-File compression
-In the navigation system, users can choose different paths. Eg: fastest route, shortest route, no toll roads, etc
-In a Parking lot: eg: near to the entrance, near to exit, near to escalator, etc.
+Difficult to Maintain: With multiple payment methods, the processPayment function becomes long and challenging to manage.
+
+Tightly Coupled Code: All payment logic is tightly coupled within a single class, making it difficult to reuse the logic elsewhere or change one method without potentially affecting others.
+
+
+*******Using strategy ****
+#include <iostream>
+
+// Step 1: Strategy Interface
+class PaymentStrategy {
+public:
+    virtual ~PaymentStrategy() {}
+    virtual void pay(int amount) = 0;  // Pure virtual function for payment processing
+};
+
+// Step 2: Concrete Strategy Classes
+
+// Credit Card payment strategy
+class CreditCardPayment : public PaymentStrategy {
+public:
+    void pay(int amount) override {
+        std::cout << "Processing payment of $" << amount << " using Credit Card." << std::endl;
+    }
+};
+
+// PayPal payment strategy
+class PayPalPayment : public PaymentStrategy {
+public:
+    void pay(int amount) override {
+        std::cout << "Processing payment of $" << amount << " using PayPal." << std::endl;
+    }
+};
+
+// Bank Transfer payment strategy
+class BankTransferPayment : public PaymentStrategy {
+public:
+    void pay(int amount) override {
+        std::cout << "Processing payment of $" << amount << " using Bank Transfer." << std::endl;
+    }
+};
+
+// Step 3: Context Class
+class PaymentProcessor {
+private:
+    PaymentStrategy* paymentStrategy;  // Raw pointer to manage strategy
+
+public:
+    // Constructor to set the initial payment strategy
+    PaymentProcessor(PaymentStrategy* strategy) : paymentStrategy(strategy) {}
+
+    // Destructor to clean up dynamically allocated strategy
+    ~PaymentProcessor() {
+        delete paymentStrategy;  // Delete the currently assigned strategy
+    }
+
+    // Method to set the payment strategy dynamically
+    void setPaymentStrategy(PaymentStrategy* strategy) {
+        delete paymentStrategy;  // Delete the previous strategy to prevent memory leaks
+        paymentStrategy = strategy;
+    }
+
+    // Method to process payment using the current strategy
+    void processPayment(int amount) {
+        if (paymentStrategy) {
+            paymentStrategy->pay(amount);
+        } else {
+            std::cout << "Payment strategy is not set." << std::endl;
+        }
+    }
+};
+
+// Main function to demonstrate Strategy Pattern
+int main() {
+    // Use CreditCardPayment strategy initially
+    PaymentProcessor processor(new CreditCardPayment());
+    processor.processPayment(100);
+
+    // Change to PayPalPayment strategy
+    processor.setPaymentStrategy(new PayPalPayment());
+    processor.processPayment(200);
+
+    // Change to BankTransferPayment strategy
+    processor.setPaymentStrategy(new BankTransferPayment());
+    processor.processPayment(300);
+
+    return 0;
+}

@@ -1,0 +1,109 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Product
+class Car {
+public:
+    string engine;
+    string body;
+    string seats;
+
+    void show() const {
+        cout << "Car with " << engine << " engine, " << body << " body, and " << seats << " seats.\n";
+    }
+};
+
+// Builder Interface
+class CarBuilder {
+public:
+    virtual void setEngine() = 0;
+    virtual void setBody() = 0;
+    virtual void setSeats() = 0;
+    virtual Car* getCar() = 0;
+    virtual ~CarBuilder() {}
+};
+
+// Concrete Builder 1: Sports Car Builder
+class SportsCarBuilder : public CarBuilder {
+private:
+    Car* car;
+public:
+    SportsCarBuilder() { car = new Car(); }
+    
+    void setEngine() override {
+        car->engine = "V8";
+    }
+    
+    void setBody() override {
+        car->body = "Coupe";
+    }
+
+    void setSeats() override {
+        car->seats = "2 Sports Seats";
+    }
+    
+    Car* getCar() override {
+        return car;
+    }
+};
+
+// Concrete Builder 2: Luxury Car Builder
+class LuxuryCarBuilder : public CarBuilder {
+private:
+    Car* car;
+public:
+    LuxuryCarBuilder() { car = new Car(); }
+    
+    void setEngine() override {
+        car->engine = "V6 Turbo";
+    }
+    
+    void setBody() override {
+        car->body = "Sedan";
+    }
+
+    void setSeats() override {
+        car->seats = "5 Leather Seats";
+    }
+    
+    Car* getCar() override {
+        return car;
+    }
+};
+
+// Director
+class CarDirector {
+private:
+    CarBuilder* builder;
+public:
+    CarDirector(CarBuilder* b) : builder(b) {}
+    
+    Car* buildCar() {
+        builder->setEngine();
+        builder->setBody();
+        builder->setSeats();
+        return builder->getCar();
+    }
+};
+
+// Main function to demonstrate the pattern
+int main() {
+    // Build Sports Car
+    SportsCarBuilder sportsCarBuilder;
+    CarDirector carDirector(&sportsCarBuilder);
+    Car* sportsCar = carDirector.buildCar();
+    sportsCar->show();
+
+    // Build Luxury Car
+    LuxuryCarBuilder luxuryCarBuilder;
+    carDirector = CarDirector(&luxuryCarBuilder);
+    Car* luxuryCar = carDirector.buildCar();
+    luxuryCar->show();
+
+    // Clean up memory
+    delete sportsCar;
+    delete luxuryCar;
+
+    return 0;
+}

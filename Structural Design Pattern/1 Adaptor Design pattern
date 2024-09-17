@@ -1,0 +1,201 @@
+/*
+
+To use an adapter:
+1.	The client makes a request to the adapter by calling a method on it using the target interface.
+2.	The adapter translates that request on the adaptee using the adaptee interface.
+3.	Client receive the results of the call and is unaware of adapter’s presence.
+
+
+*/
+
+**********************BEST*****
+#include<iostream>
+#include<string>
+using namespace std;
+
+class XMLData
+{
+   private:
+      string xmldata;
+
+   public:
+      XMLData(string xmldata)
+      {
+          this->xmldata = xmldata;
+      }  
+      string getxmldata()
+      {
+          return xmldata;
+      } 
+
+};
+
+class DataTool
+{
+    private:
+       string jsondata;
+
+    public:
+       DataTool(){};
+       DataTool(string jsondata)
+       {
+           this->jsondata = jsondata;
+       }   
+
+       virtual void Analysedata()
+       {
+           cout<<"Analysing the "<<jsondata<<endl;
+       }
+};
+
+class adapter:public DataTool
+{
+    private:
+       XMLData* pxmldata;
+
+    public:
+       adapter();
+       adapter(XMLData* p)
+       {
+           pxmldata = p;
+       }   
+       void Analysedata()
+       {
+           cout<<"converting the xmml data "<<pxmldata->getxmldata()<<"to json data"<<endl;
+           cout<<"in analysedata adapter"<<endl;
+       }
+
+};
+
+
+class client
+{
+    public:
+       void processdata(DataTool* p)
+       {
+           p->Analysedata();
+       }
+
+};
+
+
+int main()
+{
+
+    XMLData* pxmldata = new XMLData("sample xml data");
+    DataTool* padt = new adapter(pxmldata);
+
+   client* pc = new client;
+   pc->processdata(padt);
+
+
+    return 0;
+}
+
+***********
+#include<iostream>
+
+using namespace std;
+
+//Itarget interface
+class Target
+{
+public:
+	virtual void Request() = 0;
+};
+
+class Adaptee
+{
+public:
+	void SpecificRequest()
+	{
+		cout<<"adaptee called"<<endl;
+	}
+};
+
+//concrete class for ITarget 
+class Adaptor:public Target
+{
+private:
+	Adaptee *ptr;
+
+public:
+	Adaptor(Adaptee *p)
+	{
+		ptr = p;
+	}
+
+public:
+	void Request()
+	{
+		cout<<"Adaptor called"<<endl;
+		ptr->SpecificRequest();
+	}
+};
+
+
+int main()
+{
+	Target *ptarget = new Adaptor(new Adaptee);
+
+	ptarget->Request();
+
+	return 0;
+}
+
+#include<iostream>
+using namespace std;
+
+
+class ITarget
+{
+public:
+	virtual void Request()=0;
+};
+
+class IAdaptee
+{
+public:
+	virtual void SpecificRequest()=0;
+};
+
+class EAdaptee:public IAdaptee
+{
+public:
+	void SpecificRequest()
+	{
+		cout<<"Specific request"<<endl;
+	}
+	EAdaptee():IAdaptee()
+	{
+
+	}
+};
+
+class Adaptor:public ITarget
+{
+private:
+	IAdaptee *pAdaptee;
+
+public:
+	Adaptor(IAdaptee *pIAdaptee)
+	{
+		pAdaptee = pIAdaptee;
+	}
+
+	void Request()
+	{
+		pAdaptee->SpecificRequest();
+	}
+};
+
+
+
+int main()
+{
+	ITarget* pAdaptor = new Adaptor(new EAdaptee());
+	pAdaptor->Request();
+
+	return 0;
+}
+

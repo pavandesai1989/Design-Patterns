@@ -1,0 +1,116 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+
+// Simulate a database connection
+class DatabaseConnection {
+public:
+    // Constructor: Called when a new DatabaseConnection is created
+    DatabaseConnection() {
+        std::cout << "DatabaseConnection created." << std::endl;
+    }
+
+    // Destructor: Called when a DatabaseConnection is destroyed
+    ~DatabaseConnection() {
+        std::cout << "DatabaseConnection destroyed." << std::endl;
+    }
+
+    // Method to simulate executing a SQL query
+    void query(const std::string& sql) {
+        std::cout << "Executing query: " << sql << std::endl;
+    }
+};
+
+// Database Connection Pool class
+class ConnectionPool {
+private:
+    std::queue<DatabaseConnection*> pool;  // Queue to hold available connections
+    size_t maxSize;  // Maximum size of the pool
+    std::vector<DatabaseConnection*> allConnections;  // Vector to keep track of all created connections
+
+public:
+    // Constructor: Initializes the pool with a set number of DatabaseConnections
+    explicit ConnectionPool(size_t size) : maxSize(size) {
+        for (size_t i = 0; i < maxSize; ++i) {
+            // Create new DatabaseConnection and add to the pool
+            DatabaseConnection* conn = new DatabaseConnection();
+            pool.push(conn);
+            allConnections.push_back(conn);  // Track all created connections
+        }
+    }
+
+    // Destructor: Cleans up all connections in the pool
+    ~ConnectionPool() {
+        while (!pool.empty()) {
+            delete pool.front();  // Delete connection at the front of the queue
+            pool.pop();  // Remove connection from the queue
+        }
+    }
+
+    // Method to acquire a connection from the pool
+    DatabaseConnection* acquire() {
+        if (pool.empty()) {
+            // If pool is empty, create a new connection
+            std::cout << "No available connections in the pool. Creating a new one." << std::endl;
+            DatabaseConnection* conn = new DatabaseConnection();
+            allConnections.push_back(conn);  // Track the newly created connection
+            return conn;
+        }
+        // Retrieve and remove connection from the pool
+        DatabaseConnection* conn = pool.front();
+        pool.pop();
+        return conn;
+    }
+
+    // Method to release a connection back to the pool
+    void release(DatabaseConnection* conn) {
+        if (pool.size() < maxSize) {
+            // If pool is not full, add the connection back to the pool
+            pool.push(conn);
+        } else {
+            // If pool is full, destroy the connection
+            std::cout << "Pool is full. Destroying connection." << std::endl;
+            delete conn;
+        }
+    }
+};
+
+int main() {
+    // Create a connection pool with a maximum size of 3
+    ConnectionPool pool(3);
+
+    // Acquire and use database connections from the pool
+    {
+        // Acquire a connection and use it
+        DatabaseConnection* conn1 = pool.acquire();
+        conn1->query("SELECT * FROM users");
+
+        // Acquire another connection and use it
+        DatabaseConnection* conn2 = pool.acquire();
+        conn2->query("SELECT * FROM products");
+
+        // Acquire a third connection and use it
+        DatabaseConnection* conn3 = pool.acquire();
+        conn3->query("SELECT * FROM orders");
+
+        // Attempt to acquire another connection, which should create a new one
+        DatabaseConnection* conn4 = pool.acquire();
+        conn4->query("SELECT * FROM categories");
+
+        // Release the connections back to the pool
+        pool.release(conn1);
+        pool.release(conn2);
+        pool.release(conn3);
+        pool.release(conn4);
+    }
+
+    // Attempt to acquire connections again after releasing some
+    {
+        // Acquire a connection and use it
+        DatabaseConnection* conn5 = pool.acquire();
+        conn5->query("SELECT * FROM suppliers");
+        pool.release(conn5);  // Release it back to the pool
+    }
+
+    return 0;
+}

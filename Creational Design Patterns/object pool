@@ -138,3 +138,148 @@ release() Method:
 
 Removes a connection from the inUse vector if it exists, and either returns it to the pool if there is room, or destroys it if the pool is full.
 This approach simplifies the connection pool implementation by using std::vector, making the code easier to understand and maintain while still effectively managing the connection pool.
+
+
+*********** thread safe******
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <mutex>
+
+// Define the maximum number of connections in the pool
+#define MAX_CONNECTIONS 3
+
+// Simulate a database connection
+class DatabaseConnection {
+public:
+    DatabaseConnection() {
+        std::cout << "DatabaseConnection created." << std::endl;
+    }
+
+    ~DatabaseConnection() {
+        std::cout << "DatabaseConnection destroyed." << std::endl;
+    }
+
+    // Simulate a database operation
+    void query(const std::string& sql) {
+        std::cout << "Executing query: " << sql << std::endl;
+    }
+};
+
+// Singleton Database Connection Pool class
+class ConnectionPool {
+private:
+    std::vector<DatabaseConnection*> pool;   // Vector to hold available connections
+    std::vector<DatabaseConnection*> inUse;  // Vector to track connections currently in use
+    size_t maxSize;  // Maximum size of the pool
+    std::mutex mtx;   // Mutex for synchronizing access to the pool
+
+    // Private constructor to prevent instantiation
+    ConnectionPool() : maxSize(MAX_CONNECTIONS) {
+        for (size_t i = 0; i < maxSize; ++i) {
+            pool.push_back(new DatabaseConnection()); // Create new connections and add to the vector
+        }
+    }
+
+    // Private copy constructor and assignment operator to prevent copying
+    ConnectionPool(const ConnectionPool&) = delete;
+    ConnectionPool& operator=(const ConnectionPool&) = delete;
+
+public:
+    // Public method to get the single instance of the ConnectionPool
+    static ConnectionPool& getInstance() {
+        static ConnectionPool instance; // Guaranteed to be destroyed, instantiated on first use
+        return instance;
+    }
+
+    // Method to acquire a connection from the pool
+    DatabaseConnection* acquire() {
+        std::lock_guard<std::mutex> lock(mtx);  // Lock the mutex for thread safety
+
+        if (pool.empty()) {
+            // If no available connections, create a new one if the pool has not reached its max size
+            if (inUse.size() < maxSize) {
+                std::cout << "No available connections in the pool. Creating a new one." << std::endl;
+                return new DatabaseConnection();
+            } else {
+                std::cerr << "Pool is full, and no more connections can be created." << std::endl;
+                return nullptr; // Pool is full
+            }
+        }
+
+        // Retrieve a connection from the back of the vector
+        DatabaseConnection* conn = pool.back();
+        pool.pop_back();
+        inUse.push_back(conn); // Mark the connection as in use
+        return conn;
+    }
+
+    // Method to release a connection back to the pool
+    void release(DatabaseConnection* conn) {
+        std::lock_guard<std::mutex> lock(mtx);  // Lock the mutex for thread safety
+
+        auto it = std::find(inUse.begin(), inUse.end(), conn);
+        if (it != inUse.end()) {
+            inUse.erase(it); // Remove the connection from the in-use vector
+            if (pool.size() < maxSize) {
+                pool.push_back(conn); // Return the connection to the pool
+            } else {
+                std::cout << "Pool is full. Destroying connection." << std::endl;
+                delete conn; // Pool is full, destroy the connection
+            }
+        } else {
+            std::cerr << "Connection not managed by pool. Destroying connection." << std::endl;
+            delete conn; // Connection does not belong to the pool, destroy it
+        }
+    }
+};
+
+int main() {
+    // Access the singleton instance of the ConnectionPool
+    ConnectionPool& pool = ConnectionPool::getInstance();
+
+    // Acquire and use database connections from the pool
+    {
+        DatabaseConnection* conn1 = pool.acquire();
+        if (conn1) conn1->query("SELECT * FROM users");
+
+        DatabaseConnection* conn2 = pool.acquire();
+        if (conn2) conn2->query("SELECT * FROM products");
+
+        DatabaseConnection* conn3 = pool.acquire();
+        if (conn3) conn3->query("SELECT * FROM orders");
+
+        // Attempt to acquire another connection
+        DatabaseConnection* conn4 = pool.acquire();
+        if (conn4) conn4->query("SELECT * FROM categories");
+
+        // Release the connections back to the pool
+        pool.release(conn1);
+        pool.release(conn2);
+        pool.release(conn3);
+        pool.release(conn4);
+    }
+
+    // Attempt to acquire connections again
+    {
+        DatabaseConnection* conn5 = pool.acquire();
+        if (conn5) conn5->query("SELECT * FROM suppliers");
+        pool.release(conn5);
+    }
+
+    return 0;
+}
+
+Explanation:
+Singleton Pattern Implementation:
+
+Private Constructor: Prevents the creation of instances outside the class.
+Private Copy Constructor and Assignment Operator: Prevent copying and assignment.
+Static getInstance() Method: Provides access to the single instance of the ConnectionPool. The static instance is created once and destroyed when the program exits.
+Thread Safety:
+
+The std::mutex is used to synchronize access to the pool and inUse vectors, ensuring that only one thread can modify them at a time.
+Usage:
+
+Use ConnectionPool::getInstance() to obtain the singleton instance of the connection pool and interact with it.
+This implementation guarantees that only one instance of the connection pool is used throughout the application and ensures thread safety for concurrent access.

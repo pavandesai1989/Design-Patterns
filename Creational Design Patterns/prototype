@@ -1,0 +1,110 @@
+#include <iostream>
+#include <string>
+
+// Base class for shapes providing the prototype functionality
+class Shape {
+public:
+    virtual ~Shape() = default;
+
+    /**
+     * Pure virtual method to clone the shape object.
+     * This method must be overridden by derived classes to return a copy of the object.
+     *
+     * @return A new instance of the shape, which is a clone of the current shape.
+     */
+    virtual Shape* clone() const = 0;
+
+    /**
+     * Pure virtual method to display the shape's details.
+     */
+    virtual void display() const = 0;
+};
+
+// Concrete class representing a Circle, inherits from Shape
+class Circle : public Shape {
+private:
+    double radius;  // Radius of the circle
+
+public:
+    /**
+     * Constructor to initialize a Circle object.
+     *
+     * @param r The radius of the circle.
+     */
+    Circle(double r) : radius(r) {}
+
+    /**
+     * Implement clone method to create a copy of this Circle.
+     *
+     * @return A new instance of Circle, which is a copy of this object.
+     */
+    Shape* clone() const override {
+        return new Circle(*this);  // Clone this Circle object
+    }
+
+    /**
+     * Implement display method to show circle's details.
+     */
+    void display() const override {
+        std::cout << "Circle with radius: " << radius << std::endl;
+    }
+};
+
+// Concrete class representing a Rectangle, inherits from Shape
+class Rectangle : public Shape {
+private:
+    double width;   // Width of the rectangle
+    double height;  // Height of the rectangle
+
+public:
+    /**
+     * Constructor to initialize a Rectangle object.
+     *
+     * @param w The width of the rectangle.
+     * @param h The height of the rectangle.
+     */
+    Rectangle(double w, double h) : width(w), height(h) {}
+
+    /**
+     * Implement clone method to create a copy of this Rectangle.
+     *
+     * @return A new instance of Rectangle, which is a copy of this object.
+     */
+    Shape* clone() const override {
+        return new Rectangle(*this);  // Clone this Rectangle object
+    }
+
+    /**
+     * Implement display method to show rectangle's details.
+     */
+    void display() const override {
+        std::cout << "Rectangle with width: " << width << " and height: " << height << std::endl;
+    }
+};
+
+int main() {
+    // Create concrete instances
+    Shape* originalCircle = new Circle(5.0);
+    Shape* originalRectangle = new Rectangle(4.0, 6.0);
+
+    // Clone shapes
+    Shape* clonedCircle = originalCircle->clone();
+    Shape* clonedRectangle = originalRectangle->clone();
+
+    // Display original and cloned shapes
+    std::cout << "Original shapes:" << std::endl;
+    originalCircle->display();
+    originalRectangle->display();
+
+    std::cout << "Cloned shapes:" << std::endl;
+    clonedCircle->display();
+    clonedRectangle->display();
+
+    // Free memory to prevent memory leaks
+    delete originalCircle;
+    delete originalRectangle;
+    delete clonedCircle;
+    delete clonedRectangle;
+
+    return 0;
+}

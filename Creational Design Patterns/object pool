@@ -1,21 +1,22 @@
 #include <iostream>
-#include <queue>
 #include <vector>
+#include <algorithm>
+
+// Define the maximum number of connections in the pool
+#define MAX_CONNECTIONS 3
 
 // Simulate a database connection
 class DatabaseConnection {
 public:
-    // Constructor: Called when a new DatabaseConnection is created
     DatabaseConnection() {
         std::cout << "DatabaseConnection created." << std::endl;
     }
 
-    // Destructor: Called when a DatabaseConnection is destroyed
     ~DatabaseConnection() {
         std::cout << "DatabaseConnection destroyed." << std::endl;
     }
 
-    // Method to simulate executing a SQL query
+    // Simulate a database operation
     void query(const std::string& sql) {
         std::cout << "Executing query: " << sql << std::endl;
     }
@@ -24,78 +25,84 @@ public:
 // Database Connection Pool class
 class ConnectionPool {
 private:
-    std::queue<DatabaseConnection*> pool;  // Queue to hold available connections
+    std::vector<DatabaseConnection*> pool;   // Vector to hold available connections
+    std::vector<DatabaseConnection*> inUse;  // Vector to track connections currently in use
     size_t maxSize;  // Maximum size of the pool
-    std::vector<DatabaseConnection*> allConnections;  // Vector to keep track of all created connections
 
 public:
     // Constructor: Initializes the pool with a set number of DatabaseConnections
-    explicit ConnectionPool(size_t size) : maxSize(size) {
+    ConnectionPool() : maxSize(MAX_CONNECTIONS) {
         for (size_t i = 0; i < maxSize; ++i) {
-            // Create new DatabaseConnection and add to the pool
-            DatabaseConnection* conn = new DatabaseConnection();
-            pool.push(conn);
-            allConnections.push_back(conn);  // Track all created connections
+            pool.push_back(new DatabaseConnection()); // Create new connections and add to the vector
         }
     }
 
     // Destructor: Cleans up all connections in the pool
     ~ConnectionPool() {
-        while (!pool.empty()) {
-            delete pool.front();  // Delete connection at the front of the queue
-            pool.pop();  // Remove connection from the queue
+        for (auto conn : pool) {
+            delete conn;  // Delete each connection in the pool
+        }
+        for (auto conn : inUse) {
+            delete conn;  // Delete each connection in use
         }
     }
 
     // Method to acquire a connection from the pool
     DatabaseConnection* acquire() {
         if (pool.empty()) {
-            // If pool is empty, create a new connection
-            std::cout << "No available connections in the pool. Creating a new one." << std::endl;
-            DatabaseConnection* conn = new DatabaseConnection();
-            allConnections.push_back(conn);  // Track the newly created connection
-            return conn;
+            // If no available connections, create a new one if the pool has not reached its max size
+            if (inUse.size() < maxSize) {
+                std::cout << "No available connections in the pool. Creating a new one." << std::endl;
+                return new DatabaseConnection();
+            } else {
+                std::cerr << "Pool is full, and no more connections can be created." << std::endl;
+                return nullptr; // Pool is full
+            }
         }
-        // Retrieve and remove connection from the pool
-        DatabaseConnection* conn = pool.front();
-        pool.pop();
+
+        // Retrieve a connection from the back of the vector
+        DatabaseConnection* conn = pool.back();
+        pool.pop_back();
+        inUse.push_back(conn); // Mark the connection as in use
         return conn;
     }
 
     // Method to release a connection back to the pool
     void release(DatabaseConnection* conn) {
-        if (pool.size() < maxSize) {
-            // If pool is not full, add the connection back to the pool
-            pool.push(conn);
+        auto it = std::find(inUse.begin(), inUse.end(), conn);
+        if (it != inUse.end()) {
+            inUse.erase(it); // Remove the connection from the in-use vector
+            if (pool.size() < maxSize) {
+                pool.push_back(conn); // Return the connection to the pool
+            } else {
+                std::cout << "Pool is full. Destroying connection." << std::endl;
+                delete conn; // Pool is full, destroy the connection
+            }
         } else {
-            // If pool is full, destroy the connection
-            std::cout << "Pool is full. Destroying connection." << std::endl;
-            delete conn;
+            std::cerr << "Connection not managed by pool. Destroying connection." << std::endl;
+            delete conn; // Connection does not belong to the pool, destroy it
         }
     }
 };
 
 int main() {
-    // Create a connection pool with a maximum size of 3
-    ConnectionPool pool(3);
+    // Create a connection pool with a fixed size defined by MAX_CONNECTIONS
+    ConnectionPool pool;
 
     // Acquire and use database connections from the pool
     {
-        // Acquire a connection and use it
         DatabaseConnection* conn1 = pool.acquire();
-        conn1->query("SELECT * FROM users");
+        if (conn1) conn1->query("SELECT * FROM users");
 
-        // Acquire another connection and use it
         DatabaseConnection* conn2 = pool.acquire();
-        conn2->query("SELECT * FROM products");
+        if (conn2) conn2->query("SELECT * FROM products");
 
-        // Acquire a third connection and use it
         DatabaseConnection* conn3 = pool.acquire();
-        conn3->query("SELECT * FROM orders");
+        if (conn3) conn3->query("SELECT * FROM orders");
 
-        // Attempt to acquire another connection, which should create a new one
+        // Attempt to acquire another connection
         DatabaseConnection* conn4 = pool.acquire();
-        conn4->query("SELECT * FROM categories");
+        if (conn4) conn4->query("SELECT * FROM categories");
 
         // Release the connections back to the pool
         pool.release(conn1);
@@ -104,13 +111,30 @@ int main() {
         pool.release(conn4);
     }
 
-    // Attempt to acquire connections again after releasing some
+    // Attempt to acquire connections again
     {
-        // Acquire a connection and use it
         DatabaseConnection* conn5 = pool.acquire();
-        conn5->query("SELECT * FROM suppliers");
-        pool.release(conn5);  // Release it back to the pool
+        if (conn5) conn5->query("SELECT * FROM suppliers");
+        pool.release(conn5);
     }
 
     return 0;
 }
+
+
+
+
+
+Explanation:
+std::vector:
+
+pool: Manages available connections. std::vector is used here to allow efficient access and modification.
+inUse: Keeps track of connections currently in use.
+acquire() Method:
+
+Retrieves a connection from the back of the pool vector and adds it to the inUse vector.
+If the pool is empty, a new connection is created if the maximum pool size has not been reached.
+release() Method:
+
+Removes a connection from the inUse vector if it exists, and either returns it to the pool if there is room, or destroys it if the pool is full.
+This approach simplifies the connection pool implementation by using std::vector, making the code easier to understand and maintain while still effectively managing the connection pool.

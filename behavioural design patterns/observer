@@ -1,0 +1,110 @@
+#include <iostream>
+#include <vector>
+#include <algorithm> // For std::find
+
+using namespace std;
+
+// 1️⃣ Observer Interface
+class IObserver {
+public:
+    virtual void update(float temperature, float humidity, float pressure) = 0;
+};
+
+// 2️⃣ Subject (Observable) Interface
+class ISubject {
+public:
+    virtual void registerObserver(IObserver* observer) = 0;
+    virtual void removeObserver(IObserver* observer) = 0;
+    virtual void notifyObservers() = 0;
+};
+
+// 3️⃣ Concrete Subject (Weather Station)
+class WeatherStation : public ISubject {
+private:
+    vector<IObserver*> observers;  // Stores pointers to observers
+    float temperature;
+    float humidity;
+    float pressure;
+
+public:
+    void registerObserver(IObserver* observer) override {
+        observers.push_back(observer);
+    }
+
+    void removeObserver(IObserver* observer) override {
+    auto it = find(observers.begin(), observers.end(), observer);
+    if (it != observers.end()) {
+        observers.erase(it);
+    }
+    }
+
+    void notifyObservers() override {
+        for (IObserver* observer : observers) {
+            observer->update(temperature, humidity, pressure);
+        }
+    }
+
+    // Method to update weather data and notify observers
+    void setWeatherData(float temp, float hum, float pres) {
+        temperature = temp;
+        humidity = hum;
+        pressure = pres;
+        notifyObservers();
+    }
+};
+
+// 4️⃣ Concrete Observers (Display Devices)
+class PhoneDisplay : public IObserver {
+public:
+    void update(float temperature, float humidity, float pressure) override {
+        cout << "[📱 Phone Display] Temperature: " << temperature 
+             << "°C, Humidity: " << humidity 
+             << "%, Pressure: " << pressure << " hPa" << endl;
+    }
+};
+
+class TVDisplay : public IObserver {
+public:
+    void update(float temperature, float humidity, float pressure) override {
+        cout << "[📺 TV Display] Temperature: " << temperature 
+             << "°C, Humidity: " << humidity 
+             << "%, Pressure: " << pressure << " hPa" << endl;
+    }
+};
+
+class LEDDisplay : public IObserver {
+public:
+    void update(float temperature, float humidity, float pressure) override {
+        cout << "[💡 LED Display] Temperature: " << temperature 
+             << "°C, Humidity: " << humidity 
+             << "%, Pressure: " << pressure << " hPa" << endl;
+    }
+};
+
+// 5️⃣ Main Function
+int main() {
+    // Create Weather Station (Subject)
+    WeatherStation weatherStation;
+
+    // Create Display Devices (Observers)
+    PhoneDisplay phoneDisplay;
+    TVDisplay tvDisplay;
+    LEDDisplay ledDisplay;
+
+    // Register observers to the weather station
+    weatherStation.registerObserver(&phoneDisplay);
+    weatherStation.registerObserver(&tvDisplay);
+    weatherStation.registerObserver(&ledDisplay);
+
+    // Update weather data
+    cout << "\n🌡️ Weather Update 1:\n";
+    weatherStation.setWeatherData(30.0f, 65.0f, 1013.0f);
+
+    // Remove one observer
+    weatherStation.removeObserver(&tvDisplay);
+
+    cout << "\n🌡️ Weather Update 2:\n";
+    weatherStation.setWeatherData(25.0f, 70.0f, 1010.0f);
+
+    return 0;
+}

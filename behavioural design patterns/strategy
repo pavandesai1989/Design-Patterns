@@ -18,7 +18,7 @@ public:
         paymentMethod = method;
     }
 
-    // Method to process payment based on the current payment method
+    // Method to process payment based on the current payment method   
     void processPayment(int amount) {
         if (paymentMethod == "credit_card") {
             std::cout << "Processing payment of $" << amount << " using Credit Card." << std::endl;

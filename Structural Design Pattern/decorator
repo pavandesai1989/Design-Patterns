@@ -1,0 +1,81 @@
+#include <iostream>
+
+// Base Component (Abstract Pizza)
+class Pizza {
+public:
+    virtual ~Pizza() = default;
+    virtual std::string getDescription() const = 0;
+    virtual double getCost() const = 0;
+};
+
+// Concrete Component (Plain Pizza)
+class PlainPizza : public Pizza {
+public:
+    std::string getDescription() const override {
+        return "Plain Pizza";
+    }
+
+    double getCost() const override {
+        return 5.0; // Base price of a plain pizza
+    }
+};
+
+// Decorator Base Class
+class PizzaDecorator : public Pizza {
+protected:
+    Pizza* pizza; // Pointer to base pizza
+public:
+    PizzaDecorator(Pizza* p) : pizza(p) {}
+
+    std::string getDescription() const override {
+        return pizza->getDescription();
+    }
+
+    double getCost() const override {
+        return pizza->getCost();
+    }
+};
+
+// Concrete Decorators
+class Cheese : public PizzaDecorator {
+public:
+    Cheese(Pizza* p) : PizzaDecorator(p) {}
+
+    std::string getDescription() const override {
+        return pizza->getDescription() + ", Cheese";
+    }
+
+    double getCost() const override {
+        return pizza->getCost() + 2.0; // Extra cost for cheese
+    }
+};
+
+class Olives : public PizzaDecorator {
+public:
+    Olives(Pizza* p) : PizzaDecorator(p) {}
+
+    std::string getDescription() const override {
+        return pizza->getDescription() + ", Olives";
+    }
+
+    double getCost() const override {
+        return pizza->getCost() + 1.5; // Extra cost for olives
+    }
+};
+
+// Main function demonstrating the decorator pattern
+int main() {
+    Pizza* pizza = new PlainPizza();
+    std::cout << pizza->getDescription() << " -> $" << pizza->getCost() << std::endl;
+
+    pizza = new Cheese(pizza); // Add Cheese
+    std::cout << pizza->getDescription() << " -> $" << pizza->getCost() << std::endl;
+
+    pizza = new Olives(pizza); // Add Olives
+    std::cout << pizza->getDescription() << " -> $" << pizza->getCost() << std::endl;
+
+    // Clean up memory
+    delete pizza;
+
+    return 0;
+}

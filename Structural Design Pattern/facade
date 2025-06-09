@@ -1,0 +1,76 @@
+What is the Facade Pattern?
+Definition:
+The Facade Pattern provides a unified, simplified interface to a set of complex subsystems or classes. It acts as a "front door" to hide the complexity from the client.
+
+📦 Think of it like this:
+You walk into a hotel and talk to only the receptionist (facade), instead of speaking to the chef, housekeeping, manager, etc. separately.
+
+
+Purpose:
+To simplify usage of a complex system by hiding internal details.
+
+To reduce dependencies between the client and multiple subsystems.
+
+To provide a clear and clean entry point for using the system.
+
+
+#include <iostream>
+using namespace std;
+
+// Subsystem 1
+class PaymentGateway {
+public:
+    void processPayment() {
+        cout << "Payment processed." << endl;
+    }
+};
+
+// Subsystem 2
+class Inventory {
+public:
+    void checkStock() {
+        cout << "Inventory checked." << endl;
+    }
+};
+
+// Subsystem 3
+class InvoiceSystem {
+public:
+    void generateInvoice() {
+        cout << "Invoice generated." << endl;
+    }
+};
+
+// Subsystem 4
+class EmailService {
+public:
+    void sendConfirmationEmail() {
+        cout << "Confirmation email sent." << endl;
+    }
+};
+
+// Facade
+class OrderFacade {
+private:
+    PaymentGateway payment;
+    Inventory inventory;
+    InvoiceSystem invoice;
+    EmailService email;
+
+public:
+    void placeOrder() {
+        inventory.checkStock();
+        payment.processPayment();
+        invoice.generateInvoice();
+        email.sendConfirmationEmail();
+        cout << "Order placed successfully!" << endl;
+    }
+};
+
+// Client code
+int main() {
+    OrderFacade orderSystem;
+    orderSystem.placeOrder();  // Simple one-call operation for client
+
+    return 0;
+}

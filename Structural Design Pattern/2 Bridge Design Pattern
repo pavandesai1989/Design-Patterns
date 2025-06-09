@@ -1,107 +1,117 @@
-#include<iostream>
-
+#include <iostream>
 using namespace std;
 
-
-//implementor part!!
+// Implementor interface
 class ColorImplementor
 {
 public:
-	virtual void FillColor()=0;
+    virtual void FillColor() = 0;
+    virtual ~ColorImplementor() = default;
 };
 
-class BlueColorImplementor:public ColorImplementor
+class BlueColorImplementor : public ColorImplementor
 {
 public:
-	void FillColor()
-	{
-		cout<<"Filling color using the BLUE"<<endl;
-	}
+    void FillColor() override
+    {
+        cout << "Filling color using the BLUE" << endl;
+    }
 };
 
-
-class GreenColorImplementor:public ColorImplementor
+class GreenColorImplementor : public ColorImplementor
 {
 public:
-	void FillColor()
-	{
-		cout<<"Filling color using the GREEN"<<endl;
-	}
-
+    void FillColor() override
+    {
+        cout << "Filling color using the GREEN" << endl;
+    }
 };
 
-//Abstarction part!!!
+// Abstraction
 class Shape
 {
 protected:
-	ColorImplementor* pColorImpl;
+    ColorImplementor* pColorImpl = nullptr;
 
 public:
-    ColorImplementor* GetColor()
-	{
-		return pColorImpl;
-	}
+    virtual ~Shape()
+    {
+        delete pColorImpl;  // clean up current color
+    }
 
-	void SetColor(ColorImplementor* pColor)
-	{
-		pColorImpl = pColor;
-	}
+    void SetColor(ColorImplementor* pColor)
+    {
+        if (pColorImpl) delete pColorImpl;  // delete old color before replacing
+        pColorImpl = pColor;
+    }
 
-public:
-	virtual void Colorit()=0;
-	virtual void Draw()=0;
+    virtual void Colorit() = 0;
+    virtual void Draw() = 0;
 };
 
-
-class Reactangle:public Shape
+class Rectangle : public Shape
 {
 public:
-	void Draw()
-	{
-		cout<<"Reactangle created"<<endl;
-	}
+    void Draw() override
+    {
+        cout << "Rectangle created" << endl;
+    }
 
-	void Colorit()
-	{
-		pColorImpl->FillColor();
-		cout<<"color filled"<<endl;
-	}
+    void Colorit() override
+    {
+        if (pColorImpl)
+        {
+            pColorImpl->FillColor();
+            cout << "Color filled" << endl;
+        }
+        else
+        {
+            cout << "No color implementor set!" << endl;
+        }
+    }
 };
 
-class Circle:public Shape
+class Circle : public Shape
 {
 public:
-	void Draw()
-	{
-		cout<<"Circle created"<<endl;
-	}
+    void Draw() override
+    {
+        cout << "Circle created" << endl;
+    }
 
-	void Colorit()
-	{
-		pColorImpl->FillColor();
-		cout<<"color filled"<<endl;
-	}
+    void Colorit() override
+    {
+        if (pColorImpl)
+        {
+            pColorImpl->FillColor();
+            cout << "Color filled" << endl;
+        }
+        else
+        {
+            cout << "No color implementor set!" << endl;
+        }
+    }
 };
-
 
 int main()
 {
+    Shape* pRectShape = new Rectangle();
+    pRectShape->Draw();
 
-	Shape* pRectShape = new Reactangle();
-	pRectShape->Draw();
+    Shape* pCircleShape = new Circle();
+    pCircleShape->Draw();
 
-	Shape* pCircleShape = new Circle();
-	pCircleShape->Draw();
+    // Fill blue color
+    pRectShape->SetColor(new BlueColorImplementor());
+    pRectShape->Colorit();
 
-	//fill blue color
-	pRectShape->SetColor(new BlueColorImplementor());
-	pRectShape->Colorit();
+    // Fill green color
+    pRectShape->SetColor(new GreenColorImplementor());
+    pRectShape->Colorit();
 
-	//fill color using green!!
-	pRectShape->SetColor(new GreenColorImplementor());
-	pRectShape->Colorit();
+    // Clean up
+    delete pRectShape;
+    delete pCircleShape;
 
-
-	return 0;
+    return 0;
 }
- 

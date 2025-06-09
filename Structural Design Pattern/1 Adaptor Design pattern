@@ -1,201 +1,84 @@
-/*
+#include <iostream>
+#include <memory>
+#include <string>
 
-To use an adapter:
-1.	The client makes a request to the adapter by calling a method on it using the target interface.
-2.	The adapter translates that request on the adaptee using the adaptee interface.
-3.	Client receive the results of the call and is unaware of adapter’s presence.
-
-
-*/
-
-**********************BEST*****
-#include<iostream>
-#include<string>
 using namespace std;
 
-class XMLData
+class xmldata
 {
-   private:
-      string xmldata;
+private:
+    string xmld;
 
-   public:
-      XMLData(string xmldata)
-      {
-          this->xmldata = xmldata;
-      }  
-      string getxmldata()
-      {
-          return xmldata;
-      } 
+public:
+    xmldata(const string& str) : xmld(str) {}
 
+    string getxmldata() const
+    {
+        return xmld;
+    }
 };
 
-class DataTool
+class datatool
 {
-    private:
-       string jsondata;
+protected:
+    string jsondata;
 
-    public:
-       DataTool(){};
-       DataTool(string jsondata)
-       {
-           this->jsondata = jsondata;
-       }   
+public:
+    datatool() = default;
+    explicit datatool(const string& ip) : jsondata(ip) {}
 
-       virtual void Analysedata()
-       {
-           cout<<"Analysing the "<<jsondata<<endl;
-       }
+    virtual void analyse()
+    {
+        cout << "analysing the " << jsondata << endl;
+    }
+
+    virtual ~datatool() = default;
 };
 
-class adapter:public DataTool
+class adaptor : public datatool
 {
-    private:
-       XMLData* pxmldata;
+private:
+    unique_ptr<xmldata> pxml;  // owns xmldata now
 
-    public:
-       adapter();
-       adapter(XMLData* p)
-       {
-           pxmldata = p;
-       }   
-       void Analysedata()
-       {
-           cout<<"converting the xmml data "<<pxmldata->getxmldata()<<"to json data"<<endl;
-           cout<<"in analysedata adapter"<<endl;
-       }
+    static string convertXmlToJson(const string& xml)
+    {
+        // Dummy conversion logic
+        return "json data from (" + xml + ")";
+    }
 
+public:
+    explicit adaptor(unique_ptr<xmldata> p)
+        : datatool(convertXmlToJson(p->getxmldata())), pxml(std::move(p))
+    {
+    }
+
+    void analyse() override
+    {
+        cout << "converting the " << pxml->getxmldata() << " to json" << endl;
+        datatool::analyse();  // call base class analyse properly
+    }
 };
-
 
 class client
 {
-    public:
-       void processdata(DataTool* p)
-       {
-           p->Analysedata();
-       }
-
+public:
+    void processdata(datatool* p)
+    {
+        if (p)
+            p->analyse();
+    }
 };
-
 
 int main()
 {
+    // Create xmldata with unique_ptr ownership
+    auto pxml = make_unique<xmldata>("sample xml data");
 
-    XMLData* pxmldata = new XMLData("sample xml data");
-    DataTool* padt = new adapter(pxmldata);
+    // Transfer ownership to adaptor
+    unique_ptr<datatool> pd = make_unique<adaptor>(std::move(pxml));
 
-   client* pc = new client;
-   pc->processdata(padt);
+    client pc;
+    pc.processdata(pd.get());
 
-
-    return 0;
+    // No manual delete needed
 }
-
-***********
-#include<iostream>
-
-using namespace std;
-
-//Itarget interface
-class Target
-{
-public:
-	virtual void Request() = 0;
-};
-
-class Adaptee
-{
-public:
-	void SpecificRequest()
-	{
-		cout<<"adaptee called"<<endl;
-	}
-};
-
-//concrete class for ITarget 
-class Adaptor:public Target
-{
-private:
-	Adaptee *ptr;
-
-public:
-	Adaptor(Adaptee *p)
-	{
-		ptr = p;
-	}
-
-public:
-	void Request()
-	{
-		cout<<"Adaptor called"<<endl;
-		ptr->SpecificRequest();
-	}
-};
-
-
-int main()
-{
-	Target *ptarget = new Adaptor(new Adaptee);
-
-	ptarget->Request();
-
-	return 0;
-}
-
-#include<iostream>
-using namespace std;
-
-
-class ITarget
-{
-public:
-	virtual void Request()=0;
-};
-
-class IAdaptee
-{
-public:
-	virtual void SpecificRequest()=0;
-};
-
-class EAdaptee:public IAdaptee
-{
-public:
-	void SpecificRequest()
-	{
-		cout<<"Specific request"<<endl;
-	}
-	EAdaptee():IAdaptee()
-	{
-
-	}
-};
-
-class Adaptor:public ITarget
-{
-private:
-	IAdaptee *pAdaptee;
-
-public:
-	Adaptor(IAdaptee *pIAdaptee)
-	{
-		pAdaptee = pIAdaptee;
-	}
-
-	void Request()
-	{
-		pAdaptee->SpecificRequest();
-	}
-};
-
-
-
-int main()
-{
-	ITarget* pAdaptor = new Adaptor(new EAdaptee());
-	pAdaptor->Request();
-
-	return 0;
-}
-

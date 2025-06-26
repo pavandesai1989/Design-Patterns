@@ -1,0 +1,9 @@
+
+
+| Pattern              | Purpose                                                                         |
+| -------------------- | ------------------------------------------------------------------------------- |
+| **Singleton**        | Ensures a class has only one instance and provides a global point of access.    |
+| **Factory Method**   | Delegates the object instantiation to subclasses.                               |
+| **Abstract Factory** | Produces families of related objects without specifying their concrete classes. |
+| **Builder**          | Separates object construction from representation.                              |
+| **Prototype**        | Clones existing objects without depending on their classes.                     |

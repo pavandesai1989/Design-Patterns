@@ -1,0 +1,9 @@
+| Pattern       | Purpose                                                                   |
+| ------------- | ------------------------------------------------------------------------- |
+| **Adapter**   | Converts one interface into another expected by the client.               |
+| **Bridge**    | Separates abstraction from implementation so they can vary independently. |
+| **Composite** | Treats individual objects and compositions uniformly.                     |
+| **Decorator** | Adds responsibilities to objects dynamically.                             |
+| **Facade**    | Provides a simplified interface to a complex subsystem.                   |
+| **Flyweight** | Reduces memory usage by sharing objects.                                  |
+| **Proxy**     | Provides a placeholder or surrogate for another object.                   |

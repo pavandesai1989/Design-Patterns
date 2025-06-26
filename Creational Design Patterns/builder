@@ -1,3 +1,14 @@
+| Role                  | Class                                  | Purpose                                                 |
+| --------------------- | -------------------------------------- | ------------------------------------------------------- |
+| **Product**           | `Car`                                  | The object being built (with `engine`, `body`, `seats`) |
+| **Builder Interface** | `CarBuilder`                           | Abstract interface for building each part of the car    |
+| **Concrete Builders** | `SportsCarBuilder`, `LuxuryCarBuilder` | Provide specific implementations of how to build parts  |
+| **Director**          | `CarDirector`                          | Controls the build process using a builder              |
+| **Client**            | `main()`                               | Selects the builder and triggers car construction       |
+
+
+
+
 #include <iostream>
 #include <string>
 using namespace std;

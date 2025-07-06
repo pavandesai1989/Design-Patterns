@@ -1,84 +1,75 @@
 #include <iostream>
-#include <memory>
 #include <string>
-
 using namespace std;
 
-class xmldata
-{
-private:
+// Old incompatible class (XML format)
+class xmldata {
     string xmld;
 
 public:
     xmldata(const string& str) : xmld(str) {}
 
-    string getxmldata() const
-    {
+    string getxmldata() const {
         return xmld;
     }
 };
 
-class datatool
-{
+// Expected base interface (works with JSON)
+class datatool {
 protected:
     string jsondata;
 
 public:
     datatool() = default;
-    explicit datatool(const string& ip) : jsondata(ip) {}
+    datatool(const string& ip) : jsondata(ip) {}
 
-    virtual void analyse()
-    {
+    virtual void analyse() {
         cout << "analysing the " << jsondata << endl;
     }
 
-    virtual ~datatool() = default;
+    virtual ~datatool() {}
 };
 
-class adaptor : public datatool
-{
-private:
-    unique_ptr<xmldata> pxml;  // owns xmldata now
+// Adapter: makes xmldata compatible with datatool
+class adaptor : public datatool {
+    xmldata* pxml;  // raw pointer to xmldata
 
-    static string convertXmlToJson(const string& xml)
-    {
-        // Dummy conversion logic
+    static string convertXmlToJson(const string& xml) {
         return "json data from (" + xml + ")";
     }
 
 public:
-    explicit adaptor(unique_ptr<xmldata> p)
-        : datatool(convertXmlToJson(p->getxmldata())), pxml(std::move(p))
-    {
+    adaptor(xmldata* p) : datatool(convertXmlToJson(p->getxmldata())), pxml(p) {}
+
+    void analyse() override {
+        cout << "converting the " << pxml->getxmldata() << " to json" << endl;
+        datatool::analyse();
     }
 
-    void analyse() override
-    {
-        cout << "converting the " << pxml->getxmldata() << " to json" << endl;
-        datatool::analyse();  // call base class analyse properly
+    ~adaptor() {
+        delete pxml; // manually delete
     }
 };
 
-class client
-{
+// Client only understands datatool
+class client {
 public:
-    void processdata(datatool* p)
-    {
+    void processdata(datatool* p) {
         if (p)
             p->analyse();
     }
 };
 
-int main()
-{
-    // Create xmldata with unique_ptr ownership
-    auto pxml = make_unique<xmldata>("sample xml data");
+int main() {
+    // Create raw xmldata
+    xmldata* xml = new xmldata("sample xml data");
 
-    // Transfer ownership to adaptor
-    unique_ptr<datatool> pd = make_unique<adaptor>(std::move(pxml));
+    // Pass it to adapter, which now owns it
+    datatool* tool = new adaptor(xml);
 
-    client pc;
-    pc.processdata(pd.get());
+    client user;
+    user.processdata(tool);
 
-    // No manual delete needed
+    delete tool; // clean up
+    return 0;
 }

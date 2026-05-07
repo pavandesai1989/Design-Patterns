@@ -1,1 +1,479 @@
 
+************ S — Single Responsibility Principle (SRP)***************
+Meaning
+
+A class should have only one reason to change.
+
+One class = one responsibility.
+
+BAD CODE : 
+class Report
+{
+public:
+    void generateReport()
+    {
+        cout << "Generating report\n";
+    }
+
+    void saveToFile()
+    {
+        cout << "Saving report to file\n";
+    }
+};
+
+Problem
+
+Report has 2 responsibilities:
+
+Generate report
+Save report
+
+If file-saving changes → class changes.
+
+GOOD EXAMPLE:
+class Report
+{
+public:
+    void generateReport()
+    {
+        cout << "Generating report\n";
+    }
+};
+
+class ReportSaver
+{
+public:
+    void saveToFile(Report& report)
+    {
+        cout << "Saving report to file\n";
+    }
+};
+
+Interview Line
+
+A class should do only one thing and have only one reason to change.
+
+***********2. O — Open/Closed Principle (OCP)******
+Meaning
+
+Software should be:
+
+Open for extension
+Closed for modification
+
+Add new behavior without changing old code.
+
+BAD CODE:
+class Payment
+{
+public:
+    void pay(string type)
+    {
+        if(type == "UPI")
+            cout << "UPI payment\n";
+        else if(type == "Card")
+            cout << "Card payment\n";
+    }
+};
+
+Problem
+Adding new payment type requires modifying existing code.
+
+GOOD CODE:
+class Payment
+{
+public:
+    virtual void pay() = 0;
+};
+
+class UPIPayment : public Payment
+{
+public:
+    void pay() override
+    {
+        cout << "UPI payment\n";
+    }
+};
+
+class CardPayment : public Payment
+{
+public:
+    void pay() override
+    {
+        cout << "Card payment\n";
+    }
+};
+
+Interview Line
+
+Use abstraction/polymorphism to extend behavior without modifying existing code.
+
+**********************************L — Liskov Substitution Principle (LSP)*****************************************
+Meaning
+Derived class should be replaceable with base class without breaking behavior.
+
+👉 If Dog is a child of Animal, then wherever Animal is used, Dog should work correctly.
+
+#include <iostream>
+using namespace std;
+
+class Vehicle {
+public:
+    virtual void refuel() {
+        cout << "Refueling vehicle\n";
+    }
+};
+
+class PetrolCar : public Vehicle {
+};
+
+class ElectricCar : public Vehicle {
+public:
+    void refuel() override {
+        throw runtime_error("Electric car doesn't use fuel");
+    }
+};
+
+void fuelVehicle(Vehicle* v) {
+    v->refuel();
+}
+
+int main() {
+    PetrolCar p;
+    ElectricCar e;
+
+    fuelVehicle(&p); // OK
+    fuelVehicle(&e); // Problem
+}
+
+Why issue?
+
+Base class vehicle says:
+
+Every vehicle can refuel().
+
+But electriccar cannot truly refuel.
+It changes expected behavior.
+
+but if someone writes 
+fuelVehicle(&e); // Problem
+
+they expect normal refueling behavior from base contract.
+
+But derived class breaks that expectation.
+
+That is an LSP violatio
+
+******INTERVIEW LINE****
+Interview Explanation
+
+Parent class promised:
+
+All vehicles can refuel
+
+But child class failed to support it.
+
+So derived object cannot replace base object safely.
+
+→ LSP violated.
+
+Interview explanation (important):
+
+You can say:
+
+Base class should represent behavior common to all derived classes.
+Here refuel() is not applicable to electric cars.
+So electriccar should not inherit a contract requiring refuel().
+
+***Better design:
+
+Not every vehicle should have refuel().
+
+Separate behaviors.
+#include <iostream>
+using namespace std;
+
+class vehicle
+{
+public:
+    virtual void start()
+    {
+        cout << "start vehicle" << endl;
+    }
+};
+
+class fuelvehicle : public vehicle
+{
+public:
+    virtual void refuel()
+    {
+        cout << "refuel vehicle" << endl;
+    }
+};
+
+class petrolcar : public fuelvehicle
+{
+};
+
+class electriccar : public vehicle
+{
+};
+
+void processcar(fuelvehicle* p)
+{
+    p->refuel();
+}
+
+int main()
+{
+    petrolcar p1;
+    processcar(&p1);
+
+    electriccar e1;
+    // processcar(&e1); ❌ not allowed
+
+    return 0;
+}
+
+This is proper LSP.
+
+Because:
+
+Only fuel vehicles support refuel()
+Electric cars are not forced to implement invalid behavior
+
+This type of example is very interview-friendly because it is:
+
+simple
+realistic
+clearly shows wrong inheritance design.
+
+***********4. I — Interface Segregation Principle (ISP)
+Meaning
+Clients should not be forced to depend on interfaces they don't use.
+
+Large interfaces → split into smaller ones.
+
+BAD CODE:
+class Payment
+{
+public:
+    virtual void pay() = 0;
+    virtual void cashback() = 0;
+};
+
+Some payment methods may not support cashback.
+class Payment
+{
+public:
+    virtual void pay() = 0;
+};
+
+class Cashback
+{
+public:
+    virtual void cashback() = 0;
+};
+
+***5. D — Dependency Inversion Principle (DIP)
+Meaning
+High-level modules should not depend on low-level modules.
+
+Both should depend on abstraction.
+
+
+Message Service
+BAD CODE:
+#include <iostream>
+using namespace std;
+
+class EmailService
+{
+public:
+    void sendMessage()
+    {
+        cout << "Email sent\n";
+    }
+};
+
+class Notification
+{
+    EmailService email;
+
+public:
+    void notify()
+    {
+        email.sendMessage();
+    }
+};
+
+int main()
+{
+    Notification n;
+    n.notify();
+}
+
+Problem:
+
+Notification directly depends on EmailService
+Cannot easily switch to:
+SMS
+WhatsApp
+Push notification
+
+Violates DIP.
+
+good code:
+#include <iostream>
+using namespace std;
+
+class MessageService
+{
+public:
+    virtual void sendMessage() = 0;
+};
+
+class EmailService : public MessageService
+{
+public:
+    void sendMessage() override
+    {
+        cout << "Email sent\n";
+    }
+};
+
+class SMSService : public MessageService
+{
+public:
+    void sendMessage() override
+    {
+        cout << "SMS sent\n";
+    }
+};
+
+class Notification
+{
+    MessageService* service;
+
+public:
+    Notification(MessageService* s) : service(s)
+    {
+    }
+
+    void notify()
+    {
+        service->sendMessage();
+    }
+};
+
+int main()
+{
+    EmailService email;
+    Notification n1(&email);
+    n1.notify();
+
+    SMSService sms;
+    Notification n2(&sms);
+    n2.notify();
+}
+
+Interview Explanation
+Notification = high-level module
+EmailService, SMSService = low-level modules
+MessageService = abstraction
+
+Now high-level class depends on interface, not concrete class.
+
+This follows DIP.
+
+One-line Interview Definition
+
+Dependency Inversion Principle says high-level modules should depend on abstractions, not concrete implementations.
+
+
+*********SUMMARY****
+SOLID Principles (Quick Revision)
+
+S — Single Responsibility Principle (SRP)
+→ One class should have only one responsibility / one reason to change.
+
+Example:
+Report class only generates report.
+ReportSaver class saves report.
+
+-----------------------------------
+
+O — Open/Closed Principle (OCP)
+→ Open for extension, closed for modification.
+
+Add new functionality without changing existing code.
+
+Use:
+Inheritance + Polymorphism
+
+-----------------------------------
+
+L — Liskov Substitution Principle (LSP)
+→ Derived class should safely replace base class.
+
+If child breaks expected behavior → LSP violation.
+
+Example:
+Penguin should not inherit FlyingBird.
+
+-----------------------------------
+
+I — Interface Segregation Principle (ISP)
+→ Don't force classes to implement unused methods.
+
+Prefer small interfaces over large/fat interfaces.
+
+Example:
+Robot should not implement eat().
+
+-----------------------------------
+
+D — Dependency Inversion Principle (DIP)
+→ Depend on abstraction, not concrete class.
+
+Use interfaces/abstract classes.
+
+Example:
+Computer depends on InputDevice, not Keyboard.
+
+-----------------------------------
+
+Easy Memory Trick
+
+S → Single responsibility
+O → Open/Closed
+L → Replace safely
+I → Small interfaces
+D → Depend on abstraction
+
+-----------------------------------
+
+Most Used in Real Projects
+SRP + OCP + DIP
+
+-----------------------------------
+
+Commonly Used C++ Features
+- Virtual functions
+- Abstract classes
+- Polymorphism
+- Composition
+- Dependency Injection
+
+
+
+
+
+
+
+
+
+
+
+
+

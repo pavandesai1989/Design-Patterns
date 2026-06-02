@@ -1,0 +1,192 @@
+If you are short on time, focus ONLY on:
+
+✔ Singleton (must implement in C++)
+✔ Factory (must know UML + code)
+✔ Observer (very common in system design)
+✔ Adapter (easy + frequently asked)
+✔ Decorator (confusion-based question)
+
+
+
+
+
+
+=========================================
+DESIGN PATTERN INTERVIEW QUESTIONS (PRIORITY ORDER)
+=========================================
+
+========================
+1. CREATIONAL PATTERNS (MOST ASKED)
+========================
+
+1. Singleton Pattern (🔥 TOP #1 QUESTION)
+----------------------------------------
+Q: What is Singleton pattern?
+Q: How do you implement thread-safe Singleton in C++?
+Q: Problems with Singleton?
+
+Must know:
+- Lazy vs eager initialization
+- Meyers Singleton (best answer)
+- Thread safety (C++11 magic static)
+
+VERY IMPORTANT INTERVIEW QUESTION:
+→ Why is Singleton considered an anti-pattern sometimes?
+
+----------------------------------------
+
+2. Factory Pattern
+------------------
+Q: What is Factory pattern?
+Q: Difference between Factory and Abstract Factory?
+Q: When to use Factory?
+
+Must know:
+- Object creation without exposing logic
+- Runtime polymorphism
+
+----------------------------------------
+
+3. Abstract Factory Pattern
+---------------------------
+Q: Difference between Factory vs Abstract Factory?
+Q: Real-world example of Abstract Factory?
+
+Must know:
+- Factory of factories
+- UI toolkit example (Windows/Mac buttons)
+
+----------------------------------------
+
+4. Builder Pattern
+------------------
+Q: When do you use Builder pattern?
+Q: Difference between Builder vs Constructor?
+
+Must know:
+- Step-by-step object creation
+- Useful for complex objects
+
+=========================================
+2. STRUCTURAL PATTERNS (VERY IMPORTANT)
+=========================================
+
+5. Adapter Pattern (🔥 HIGH FREQUENCY)
+--------------------------------------
+Q: What is Adapter pattern?
+Q: Real-world example?
+
+Must know:
+- Converts one interface to another
+- Like charger adapter
+
+----------------------------------------
+
+6. Decorator Pattern (VERY IMPORTANT)
+-------------------------------------
+Q: Difference between Decorator vs Inheritance?
+Q: Real-world use case?
+
+Must know:
+- Add behavior dynamically
+- Used in STL streams conceptually
+
+----------------------------------------
+
+7. Facade Pattern
+-----------------
+Q: What is Facade pattern?
+Q: Why is it used?
+
+Must know:
+- Simplifies complex subsystem
+- One interface to many classes
+
+----------------------------------------
+
+8. Proxy Pattern
+----------------
+Q: Difference between Proxy vs Decorator?
+
+Must know:
+- Controls access
+- Lazy loading, caching, security
+
+=========================================
+3. BEHAVIORAL PATTERNS (MEDIUM IMPORTANCE)
+=========================================
+
+9. Observer Pattern (🔥 VERY IMPORTANT)
+---------------------------------------
+Q: What is Observer pattern?
+Q: Real-world example?
+Q: Push vs Pull model?
+
+Must know:
+- Event-driven systems
+- One-to-many dependency
+
+Example:
+- YouTube notifications
+- Event listeners
+
+----------------------------------------
+
+10. Strategy Pattern
+--------------------
+Q: What is Strategy pattern?
+Q: Difference between Strategy vs State?
+
+Must know:
+- Runtime algorithm selection
+- Replace if-else logic
+
+----------------------------------------
+
+11. Command Pattern
+-------------------
+Q: What is Command pattern?
+Q: Use cases?
+
+Must know:
+- Encapsulates request as object
+- Undo/redo systems
+
+=========================================
+4. ADVANCED (LOW FREQUENCY BUT ASKED IN SENIOR ROLES)
+=========================================
+
+12. State Pattern
+-----------------
+Q: Difference between State vs Strategy?
+
+----------------------------------------
+
+13. Template Method Pattern
+---------------------------
+Q: What is Template Method pattern?
+
+----------------------------------------
+
+14. Chain of Responsibility
+---------------------------
+Q: Real-world use case?
+
+Example:
+- Middleware in web servers
+
+=========================================
+MOST IMPORTANT TOP 5 (FINAL REVISION LIST)
+=========================================
+1. Singleton
+2. Factory
+3. Observer
+4. Adapter
+5. Decorator
+
+=========================================
+ONE-LINE INTERVIEW ANSWER
+=========================================
+Design patterns are reusable solutions to common software design problems that improve code flexibility, maintainability, and scalability by defining proven object interaction structures.
+
+=========================================

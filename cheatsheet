@@ -1,0 +1,199 @@
+=========================================
+LLD CHEAT SHEET (DESIGN PATTERNS + CORE IDEAS)
+=========================================
+
+========================
+1. CREATIONAL PATTERNS (OBJECT CREATION)
+========================
+
+🔹 Singleton
+- One class → ONE object
+- global access point
+
+Use when:
+✔ logger
+✔ config manager
+
+Key idea:
+class has private constructor + static getInstance()
+
+-----------------------------------------
+
+🔹 Factory
+- Creates objects without exposing logic
+
+Use when:
+✔ runtime object creation
+
+Key idea:
+Client → Factory → Product
+
+-----------------------------------------
+
+🔹 Abstract Factory
+- Factory of factories
+
+Use when:
+✔ multiple related object families
+
+Example:
+Windows UI vs Mac UI
+
+-----------------------------------------
+
+🔹 Builder
+- Step-by-step object creation
+
+Use when:
+✔ complex object construction
+
+Key idea:
+Director → Builder → Product
+
+=========================================
+2. STRUCTURAL PATTERNS (OBJECT STRUCTURE)
+=========================================
+
+🔹 Adapter
+- Converts one interface → another
+
+Use when:
+✔ incompatible APIs integration
+
+Example:
+charger adapter
+
+-----------------------------------------
+
+🔹 Decorator
+- Adds features dynamically
+
+Use when:
+✔ extend behavior without inheritance
+
+Example:
+coffee + milk + sugar layers
+
+-----------------------------------------
+
+🔹 Facade
+- Simplified interface to complex system
+
+Use when:
+✔ hide subsystem complexity
+
+-----------------------------------------
+
+🔹 Proxy
+- Controls access to object
+
+Use when:
+✔ security
+✔ caching
+✔ lazy loading
+
+=========================================
+3. BEHAVIORAL PATTERNS (OBJECT INTERACTION)
+=========================================
+
+🔹 Observer
+- One-to-many dependency
+
+Use when:
+✔ event systems
+
+Example:
+YouTube notifications
+
+-----------------------------------------
+
+🔹 Strategy
+- Swap algorithms at runtime
+
+Use when:
+✔ remove if-else logic
+
+Example:
+payment methods (UPI/card/cash)
+
+-----------------------------------------
+
+🔹 Command
+- Encapsulate request as object
+
+Use when:
+✔ undo/redo systems
+
+=========================================
+4. LLD CORE PRINCIPLES (VERY IMPORTANT)
+=========================================
+
+✔ Encapsulation → hide data
+✔ Abstraction → show only required details
+✔ Inheritance → reuse behavior
+✔ Polymorphism → runtime behavior change
+
+-----------------------------------------
+
+SOLID PRINCIPLES:
+
+S - Single Responsibility
+O - Open/Closed
+L - Liskov Substitution
+I - Interface Segregation
+D - Dependency Inversion
+
+=========================================
+5. MOST ASKED INTERVIEW PATTERNS (TOP PRIORITY)
+=========================================
+
+🔥 Singleton (MUST CODE)
+🔥 Factory (MUST EXPLAIN + UML)
+🔥 Observer (EVENT SYSTEM)
+🔥 Adapter (REAL WORLD USE)
+🔥 Decorator (EXTENSION WITHOUT INHERITANCE)
+
+=========================================
+6. LLD INTERVIEW FLOW (VERY IMPORTANT)
+=========================================
+
+When asked design question:
+
+STEP 1:
+→ Identify objects (classes)
+
+STEP 2:
+→ Define relationships
+   (has-a / is-a)
+
+STEP 3:
+→ Choose patterns if needed
+
+STEP 4:
+→ Draw UML (simple boxes + arrows)
+
+STEP 5:
+→ Write APIs (functions)
+
+STEP 6:
+→ Explain scalability
+
+=========================================
+7. QUICK UML MEMORY RULE
+=========================================
+
+Arrow meanings:
+
+→ uses
+→ inherits
+→ contains
+
+Client → Service → Implementation
+
+=========================================
+8. ONE-LINE INTERVIEW ANSWER
+=========================================
+
+LLD is the process of designing class-level structure using OOP principles and design patterns to build scalable, maintainable, and extensible software systems.
+
+=========================================

@@ -1,228 +1,226 @@
-****************************Lazy Initialization *******************
-This approach creates the singleton instance only when it is needed, 
-saving resources if the singleton is never used in the application.
 
-#include <iostream>
-using namespace std;
+=============================
+SINGLETON DESIGN PATTERN (C++ FULL INTERVIEW NOTES)
+FROM BASIC → ADVANCED (WITH CODE)
+=============================
+
+========================================================
+1. BASIC IDEA (WHAT + WHY)
+========================================================
+
+IDEA:
+- Only ONE object of a class should exist
+- Provide a global access point to that object
+
+WHY:
+- Controlled access to shared resource
+- Avoid multiple instances (memory + consistency issues)
+
+USE CASES:
+- Logger
+- Configuration manager
+- Cache
+- Driver manager
+- Thread pool manager
+
+========================================================
+2. BASIC SINGLETON (LAZY - NOT THREAD SAFE)
+========================================================
+
+IDEA:
+- Object created only when needed
+
+CODE:
+--------------------------------------------------------
 class Singleton {
 private:
-    // Private constructor so no one can create objects from outside
-    Singleton() {
-        cout << "Singleton instance created\n";
-    }
-    // Delete copy constructor and assignment
+    static Singleton* instance;
+
+    Singleton() {}  // private constructor
+
     Singleton(const Singleton&) = delete;
     Singleton& operator=(const Singleton&) = delete;
-    // Static pointer to hold the single instance
-    static Singleton* instance;
+
 public:
-    // Static method to access the instance
     static Singleton* getInstance() {
         if (instance == nullptr) {
-            instance = new Singleton(); // Lazy initialization
+            instance = new Singleton();   // lazy init
         }
         return instance;
     }
-    void show() {
-        cout << "Singleton method called\n";
-    }
 };
-// Initialize the static pointer to nullptr
+
 Singleton* Singleton::instance = nullptr;
-int main() {
-    Singleton* s1 = Singleton::getInstance();
-    Singleton* s2 = Singleton::getInstance();
-    s1->show();
-    // Check both pointers are same
-    if (s1 == s2) {
-        cout << "Both are the same instance\n";
-    }
-    return 0;
-}
+--------------------------------------------------------
 
-This implementation is not thread-safe. If multiple threads call getInstance() simultaneously when instance is null, it's possible to create multiple instances.
+PROBLEM:
+- NOT thread-safe
+- multiple threads → multiple objects possible
 
+TIME:
+O(1)
 
-***********thread safe*******
-#include <iostream>
+SPACE:
+Heap object + static pointer
+
+========================================================
+3. THREAD SAFE (LOCK EVERY CALL - SIMPLE BUT SLOW)
+========================================================
+
+IDEA:
+- Protect object creation using mutex
+
+CODE:
+--------------------------------------------------------
 #include <mutex>
-using namespace std;
 
-class Singleton
-{
-  private:
-    Singleton()
-    {
-        cout<<"ob created "<<endl;
-    }
-
-    //copy 
-    Singleton(const Singleton& ob) = delete;
-    Singleton& operator=(const Singleton& ob) = delete;
-
-    static Singleton* pinstance;
+class Singleton {
+private:
+    static Singleton* instance;
     static std::mutex mtx;
 
-    public:
-     static Singleton* getInstance()
-     {
-        std::lock_guard<std::mutex> lock(mtx);  // Synchronization
-        if(pinstance == nullptr)
-        {
-            pinstance = new Singleton;
-        }
-        return pinstance;
-     }
-};
+    Singleton() {}
 
-Singleton* Singleton::pinstance = nullptr;
-std::mutex Singleton::mtx;
-
-
-int main() {
-    Singleton* s1 = Singleton::getInstance();
-    Singleton* s2 = Singleton::getInstance();
-
-
-    // Check both pointers are same
-    if (s1 == s2) {
-        cout << "Both are the same instance\n";
-    }
-
-    return 0;
-}
-
-Performance: Lock Every Time
-•	Every call to getInstance() locks the mutex, even if the instance is already created.
-•	This can cause performance overhead in multi-threaded scenarios.
-
-***************. Double-Checked Locking*****
-#include <mutex>
-#include <memory>
-
-class DoubleCheckedSingleton {
-private:
-    // The single instance, initially null, marked as volatile
-    static volatile DoubleCheckedSingleton* instance;
-    static std::mutex mutex;
-
-    // Private constructor to prevent instantiation
-    DoubleCheckedSingleton() {}
-
-    // Delete copy constructor and assignment operator to prevent copying
-    DoubleCheckedSingleton(const DoubleCheckedSingleton&) = delete;
-    DoubleCheckedSingleton& operator=(const DoubleCheckedSingleton&) = delete;
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
 
 public:
-    // Public method to get the instance
-    static DoubleCheckedSingleton* getInstance() {
-        // First check (not synchronized)
+    static Singleton* getInstance() {
+        std::lock_guard<std::mutex> lock(mtx);
+
         if (instance == nullptr) {
-            std::lock_guard<std::mutex> lock(mutex);
-            // Second check (synchronized)
-            if (instance == nullptr) {
-                // Create the instance
-                instance = new DoubleCheckedSingleton();
-            }
+            instance = new Singleton();
         }
-        // Return the instance (either newly created or existing)
         return instance;
     }
 };
 
-// Initialize the static members
-volatile DoubleCheckedSingleton* DoubleCheckedSingleton::instance = nullptr;
-std::mutex DoubleCheckedSingleton::mutex;
+Singleton* Singleton::instance = nullptr;
+std::mutex Singleton::mtx;
+--------------------------------------------------------
 
-// Example usage:
-// int main() {
-//     DoubleCheckedSingleton* singleton1 = DoubleCheckedSingleton::getInstance();
-//     DoubleCheckedSingleton* singleton2 = DoubleCheckedSingleton::getInstance();
-//
-//     if (singleton1 == singleton2) {
-//         std::cout << "Both instances are the same." << std::endl;
-//     }
-//
-//     // Remember to handle memory management if needed, or consider using a smart pointer.
-//     // For this basic example, we'll skip explicit deletion to keep it concise.
-//     // In a more complex application, you might use a custom deleter with std::unique_ptr
-//     // or ensure the singleton's lifetime is managed appropriately.
-//
-//     return 0;
-// }
+PROBLEM:
+- Every call locks mutex → performance overhead
 
-******** Eager Initialization
-// Online C++ compiler to run C++ program online
-#include <iostream>
+TIME:
+O(1) but slow due to locking
 
-class singleton
-{
-   private:
-   static singleton instance;
-   singleton() {}
+SPACE:
+Heap + mutex
 
-   singleton(const singleton& ob) = delete;
-   singleton& operator=(const singleton& ob) = delete;
+========================================================
+4. DOUBLE CHECKED LOCKING (OPTIMIZED THREAD SAFE)
+========================================================
 
-   public:
-   static singleton& getinstance()
-   {
-    return instance;
-   }
+IDEA:
+- Avoid locking every time
+
+CODE:
+--------------------------------------------------------
+#include <mutex>
+
+class Singleton {
+private:
+    static Singleton* instance;
+    static std::mutex mtx;
+
+    Singleton() {}
+
+public:
+    static Singleton* getInstance() {
+        if (instance == nullptr) {
+            std::lock_guard<std::mutex> lock(mtx);
+
+            if (instance == nullptr) {
+                instance = new Singleton();
+            }
+        }
+        return instance;
+    }
 };
 
-singleton singleton::instance;
+Singleton* Singleton::instance = nullptr;
+std::mutex Singleton::mtx;
+--------------------------------------------------------
 
+PROBLEM:
+- Complex
+- Historically tricky (older C++ memory issues)
 
+TIME:
+Fast after initialization
 
-int main() {
- singleton& singleton1 = singleton::getinstance();
-    singleton& singleton2 = singleton::getinstance();
+SPACE:
+Heap + mutex
 
-   if (&singleton1 == &singleton2) {
-        std::cout << "Both references point to the same instance." << std::endl;
+========================================================
+5. EAGER INITIALIZATION (ALWAYS CREATED)
+========================================================
+
+IDEA:
+- Object created at program start
+
+CODE:
+--------------------------------------------------------
+class Singleton {
+private:
+    static Singleton instance;
+
+    Singleton() {}
+
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+
+public:
+    static Singleton& getInstance() {
+        return instance;
     }
+};
 
-    return 0;
-}
+Singleton Singleton::instance;
+--------------------------------------------------------
 
-This approach is suitable if your application always creates and uses the singleton instance, or the overhead of creating it is minimal.
+PROS:
+- Thread-safe
+- Simple
 
-While it is inherently thread-safe, it could potentially waste resources if the singleton instance is never used by the client application.
+CONS:
+- Created even if never used (waste memory)
 
+TIME:
+Created at startup
 
-*************widely used *****
-Why This Is the Best Singleton:
-Lazy initialization: Created only on first use.
+SPACE:
+Always allocated
 
-Thread-safe: C++11 guarantees thread-safe initialization of static local variables.
+========================================================
+6. MODERN BEST WAY (MOST IMPORTANT IN INTERVIEWS)
+========================================================
 
-No need for locking or complex thread code.
+IDEA:
+- Static local variable inside function
 
-No manual destruction: Handled automatically at program exit.
-
+CODE:
+--------------------------------------------------------
 #include <iostream>
 
 class Singleton {
 private:
-    // Private constructor prevents direct instantiation
     Singleton() {
         std::cout << "Constructor called\n";
     }
 
-    // Delete copy constructor and assignment operator
     Singleton(const Singleton&) = delete;
     Singleton& operator=(const Singleton&) = delete;
 
 public:
-    // Static method to provide access to the singleton instance
     static Singleton& getInstance() {
-        static Singleton instance;  // Guaranteed to be initialized once, thread-safe in C++11+
+        static Singleton instance;  // lazy + thread-safe (C++11+)
         return instance;
     }
 
-    void sayHello() {
-        std::cout << "Hello from Singleton\n";
+    void show() {
+        std::cout << "Hello Singleton\n";
     }
 };
 
@@ -230,11 +228,50 @@ int main() {
     Singleton& s1 = Singleton::getInstance();
     Singleton& s2 = Singleton::getInstance();
 
-    s1.sayHello();
+    s1.show();
 
     if (&s1 == &s2) {
-        std::cout << "Both instances are the same.\n";
+        std::cout << "Same instance\n";
     }
-
-    return 0;
 }
+--------------------------------------------------------
+
+WHY BEST:
+- Lazy initialization
+- Thread-safe (C++11 guarantee)
+- No mutex
+- No manual memory management
+- No leaks
+
+TIME:
+O(1)
+
+SPACE:
+Single static object
+
+========================================================
+7. COMPARISON TABLE (VERY IMPORTANT)
+========================================================
+
+LAZY (RAW POINTER):
+- Fast ❌ not thread-safe
+
+LOCK EVERY CALL:
+- Safe ❌ slow
+
+DOUBLE CHECKED LOCKING:
+- Safe ⚠️ complex
+
+EAGER:
+- Safe ⚠️ wastes memory
+
+STATIC LOCAL (BEST):
+- Safe ✔️ fast ✔️ lazy ✔️ simple ✔️
+
+========================================================
+8. INTERVIEW ONE-LINER SUMMARY
+========================================================
+
+- Singleton ensures ONE object only
+- Lazy = create when needed
+- Best modern approach = static local instance

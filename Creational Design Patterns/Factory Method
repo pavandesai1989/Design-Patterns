@@ -1,3 +1,214 @@
+FACTORY METHOD DESIGN PATTERN (C++ INTERVIEW NOTES)
+====================================================
+
+1. WHAT IS FACTORY METHOD?
+----------------------------------------------------
+Factory Method is a creational design pattern that:
+- Defines an interface for object creation
+- Lets subclasses decide which object to create
+- Moves object creation away from client code
+
+CORE IDEA:
+Client does NOT create objects directly.
+Factory decides which object to create.
+
+====================================================
+
+2. WHY DO WE NEED IT?
+----------------------------------------------------
+
+WITHOUT FACTORY METHOD:
+
+Client code:
+if(type == 1) new A();
+else if(type == 2) new B();
+
+PROBLEMS:
+- Tight coupling with concrete classes
+- Violates Open/Closed Principle
+- Every new class requires modifying client code
+- Client must be recompiled again and again
+- Not scalable for large systems
+
+====================================================
+
+3. REAL-LIFE EXAMPLE
+----------------------------------------------------
+Vehicle manufacturing system:
+
+User says:
+"I want a vehicle"
+
+System decides:
+- Bike
+- Car
+- Truck
+
+User does NOT know how objects are created internally.
+
+====================================================
+
+4. CORE FLOW
+----------------------------------------------------
+Client → Factory → Product
+
+NOT:
+Client → if-else → Product ❌
+
+====================================================
+
+5. STRUCTURE
+----------------------------------------------------
+
+1. Product (Interface)
+2. Concrete Products (implementations)
+3. Factory (creates objects)
+
+====================================================
+
+6. C++ IMPLEMENTATION (FACTORY METHOD)
+====================================================
+
+-------------------------
+PRODUCT
+-------------------------
+class Vehicle {
+public:
+    virtual void printVehicle() = 0;
+    virtual ~Vehicle() {}
+};
+
+-------------------------
+CONCRETE PRODUCTS
+-------------------------
+class TwoWheeler : public Vehicle {
+public:
+    void printVehicle() override {
+        cout << "Two Wheeler" << endl;
+    }
+};
+
+class FourWheeler : public Vehicle {
+public:
+    void printVehicle() override {
+        cout << "Four Wheeler" << endl;
+    }
+};
+
+-------------------------
+FACTORY INTERFACE
+-------------------------
+class VehicleFactory {
+public:
+    virtual Vehicle* createVehicle() = 0;
+    virtual ~VehicleFactory() {}
+};
+
+-------------------------
+CONCRETE FACTORIES
+-------------------------
+class TwoWheelerFactory : public VehicleFactory {
+public:
+    Vehicle* createVehicle() override {
+        return new TwoWheeler();
+    }
+};
+
+class FourWheelerFactory : public VehicleFactory {
+public:
+    Vehicle* createVehicle() override {
+        return new FourWheeler();
+    }
+};
+
+-------------------------
+CLIENT
+-------------------------
+class Client {
+    Vehicle* vehicle;
+
+public:
+    Client(VehicleFactory* factory) {
+        vehicle = factory->createVehicle();
+    }
+
+    Vehicle* getVehicle() {
+        return vehicle;
+    }
+};
+
+-------------------------
+MAIN
+-------------------------
+int main() {
+
+    TwoWheelerFactory tf;
+    Client c1(&tf);
+    c1.getVehicle()->printVehicle();
+
+    FourWheelerFactory ff;
+    Client c2(&ff);
+    c2.getVehicle()->printVehicle();
+
+    return 0;
+}
+
+====================================================
+
+7. BENEFITS
+----------------------------------------------------
+- Loose coupling
+- Easy to extend (no modification to existing code)
+- Follows Open/Closed Principle
+- Better maintainability
+- Scalable architecture
+
+====================================================
+
+8. FACTORY METHOD vs SIMPLE FACTORY
+----------------------------------------------------
+
+SIMPLE FACTORY:
+- Uses if-else or switch
+- Single factory class
+- Not fully OCP compliant
+
+FACTORY METHOD:
+- Uses inheritance
+- Each factory creates its own object
+- Fully OCP compliant
+
+====================================================
+
+9. REAL WORLD USE CASES
+----------------------------------------------------
+- GUI frameworks (buttons, windows)
+- Payment systems (UPI, Card, PayPal)
+- Database drivers
+- Logging frameworks
+- Game object creation systems
+
+====================================================
+
+10. ONE-LINE INTERVIEW ANSWER
+----------------------------------------------------
+Factory Method defines an interface for creating objects but lets subclasses decide which class to instantiate, promoting loose coupling and Open/Closed Principle.
+
+====================================================
+
+11. MEMORY TRICK
+----------------------------------------------------
+Client → Factory → Product
+
+NOT:
+Client → if-else → Product ❌
+
+====================================================
+
+****EXTRA****
+
+
+
 /*
 The Factory Method pattern is a design pattern used to define a runtime interface for creating an object. It’s called a factory because it creates various types of objects
 without necessarily knowing what kind of object it creates or how to create it.

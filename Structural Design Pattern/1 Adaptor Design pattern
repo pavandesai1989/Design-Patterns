@@ -1,3 +1,4 @@
+ADAPTER DESIGN PATTERN
 ADAPTER DESIGN PATTERN (C++ INTERVIEW NOTES)
 =============================================
 
@@ -37,6 +38,9 @@ Use Adapter when:
 
 5. KEY IDEA
 ---------------------------------------------
+We have data in xml format but tool expects data in json 
+So we need adapter which can convert data from xml to json 
+
 Adapter acts as a "bridge" between:
 
 👉 Old system (Adaptee)
@@ -72,165 +76,307 @@ Adapter acts as a "bridge" between:
 
 👉 In real systems, Object Adapter is preferred
 
-=============================================
 
-8. C++ IMPLEMENTATION IDEA
----------------------------------------------
 
-Adaptee:
-- XmlData (returns XML string)
 
-Target:
-- DataTool (analyse() method)
 
-Adapter:
-- Converts XML → JSON
-- Implements DataTool
 
-Client:
-- Works only with DataTool
+
+
+
+
 
 =============================================
 
-9. SIMPLE CODE FLOW
----------------------------------------------
-XmlData → Adapter → DataTool → Client
+WHY DO WE NEED ADAPTER? (INTERVIEW NOTES)
+=========================================
 
-=============================================
+Problem:
+--------
+Client expects objects of type DataTool.
 
-10. BENEFITS
----------------------------------------------
-✔ Reuse existing legacy code
-✔ No modification to existing classes
-✔ Improves compatibility between systems
-✔ Follows Open/Closed Principle
-✔ Promotes loose coupling
+DataTool interface:
+    analyse()
 
-=============================================
+But legacy class XmlData provides:
+    getXml()
 
-11. DRAWBACKS
----------------------------------------------
-❌ Adds extra layer (indirection)
-❌ Can increase complexity
-❌ Sometimes many adapters needed
-❌ Slight performance overhead
+Interfaces are different.
 
-=============================================
+Client cannot directly use XmlData.
 
-12. INTERVIEW KEY POINTS (VERY IMPORTANT)
----------------------------------------------
-✔ Converts interface, NOT logic
-✔ Used for legacy system integration
-✔ Works as a wrapper
-✔ Client depends only on target interface
-✔ Helps achieve loose coupling
-✔ Object Adapter is most commonly used
+=========================================
 
-=============================================
+WITHOUT ADAPTER
+===============
 
-13. ADAPTER VS FACADE (COMMON QUESTION)
----------------------------------------------
-Adapter:
-- Converts one interface to another
-- Works with incompatible systems
+#include<iostream>
+using namespace std;
 
-Facade:
-- Simplifies a complex subsystem
-- Does NOT convert interfaces
+class xmldata
+{
+private:
+string xml;
 
-=============================================
+public:
+xmldata(string data):xml(data){}
 
-14. ONE-LINE DEFINITION (INTERVIEW READY)
----------------------------------------------
-Adapter pattern converts the interface of a class into another interface that the client expects, enabling incompatible classes to work together.
+void getxmldata()const
+{
+    cout<<"xml data is "<<xml<<endl;
+}
 
-=============================================
+};
 
-15. MEMORY TRICK
----------------------------------------------
-Adapter = "Translator between two incompatible systems"
 
-=============================================
+class tool
+{
+public:
+virtual void analysedata()=0;
+};
 
-******** IMPLEMENTATION (C++) ********
-#include <iostream>
-#include <string>
+class client
+{
+public:
+void processdata(tool* p)
+{
+    p->analysedata();
+}
+};
+
+int main()
+{
+    xmldata* pxml = new xmldata("sample xml");
+    client* pc = new client;
+    pc->processdata(pxml);
+
+    delete pxml;
+    delete pc;
+}
+
+
+
+
+ERROR:
+------
+cannot convert 'XmlData*' to 'DataTool*'
+
+Reason:
+-------
+Client expects:
+
+    DataTool*
+
+But we are passing:
+
+    XmlData*
+
+XmlData does not inherit from DataTool.
+
+Therefore client cannot use XmlData directly.
+
+=========================================
+
+BAD SOLUTION (WITHOUT ADAPTER)
+=============================
+
+Modify Client:
+
+class Client {
+public:
+    void process(XmlData* data)
+    {
+        string xml = data->getXml();
+
+        // XML -> JSON conversion
+
+        cout << xml;
+    }
+};
+
+ISSUES:
+--------
+❌ Client now knows XmlData
+❌ Client contains conversion logic
+❌ Tight coupling
+❌ Every new format requires Client modification
+
+Tomorrow:
+
+CsvData
+YamlData
+DatabaseData
+
+Client must change again.
+
+Violates Open/Closed Principle.
+
+
+
+
+
+
+
+=========================================
+
+SOLUTION: ADAPTER
+=================
+
+#include<iostream>
 using namespace std;
 
 /*
-========================================
-1. ADAPTEE (Old system - XML format)
-========================================
+=================================================
+LEGACY CLASS (ADAPTEE)
+=================================================
+
+Existing class already present in the system.
+
+Provides:
+    getxmldata()
+
+But client expects:
+    analysedata()
+
+This interface mismatch is the problem.
 */
-class XmlData {
+
+class xmldata
+{
+private:
     string xml;
 
 public:
-    XmlData(const string& data) : xml(data) {}
+    xmldata(string data):xml(data){}
 
-    string getXml() const {
-        return xml;
+    void getxmldata() const
+    {
+        cout<<"xml data is "<<xml<<endl;
     }
 };
 
 /*
-========================================
-2. TARGET INTERFACE (Expected by client)
-========================================
+=================================================
+TARGET INTERFACE
+=================================================
+
+Client is designed to work only with tool objects.
 */
-class DataTool {
+
+class tool
+{
 public:
-    virtual void analyse() = 0;
-    virtual ~DataTool() {}
+    virtual void analysedata() = 0;
 };
 
 /*
-========================================
-3. ADAPTER (XML -> JSON conversion)
-========================================
+=================================================
+ADAPTER
+=================================================
+
+Problem without Adapter:
+------------------------
+client::processdata() expects tool*
+
+But xmldata* cannot be passed because:
+
+    xmldata is NOT derived from tool
+
+Compilation Error:
+------------------
+cannot convert 'xmldata*' to 'tool*'
+
+Solution:
+---------
+Adapter inherits from tool and wraps xmldata.
+
+It translates:
+
+    analysedata()
+            ↓
+    getxmldata()
+
+Now Adapter IS-A tool.
+
+Therefore Adapter* can be passed where tool*
+is expected.
 */
-class Adapter : public DataTool {
+
+class adapter : public tool
+{
 private:
-    XmlData* xmlData;  // composition (object adapter)
-
-    string convertToJson(const string& xml) {
-        return "JSON(" + xml + ")";
-    }
+    xmldata* pxml;
 
 public:
-    Adapter(XmlData* data) : xmlData(data) {}
+    adapter(xmldata* p) : pxml(p) {}
 
-    void analyse() override {
-        string json = convertToJson(xmlData->getXml());
-        cout << "Converting XML to JSON: " << json << endl;
+    void analysedata() override
+    {
+        cout<<"Adapter translating request..."<<endl;
+
+        // Delegate call to legacy class
+        pxml->getxmldata();
     }
 };
 
-/*
-========================================
-4. CLIENT (only knows DataTool)
-========================================
-*/
-class Client {
+class client
+{
 public:
-    void process(DataTool* tool) {
-        tool->analyse();
+    void processdata(tool* p)
+    {
+        p->analysedata();
     }
 };
 
-/*
-========================================
-5. MAIN
-========================================
-*/
-int main() {
+int main()
+{
+    xmldata* pxml = new xmldata("sample xml");
 
-    XmlData xml("sample_xml_data");
+    client* pc = new client;
 
-    Adapter adapter(&xml);
+    /*
+    ============================================
+    WITHOUT ADAPTER
+    ============================================
 
-    Client client;
-    client.process(&adapter);
+    pc->processdata(pxml);
 
-    return 0;
+    ERROR:
+    ------
+    cannot convert 'xmldata*' to 'tool*'
+
+    Reason:
+    -------
+    processdata() expects tool*
+
+    xmldata provides:
+        getxmldata()
+
+    tool requires:
+        analysedata()
+
+    Interfaces are incompatible.
+    */
+
+    /*
+    ============================================
+    WITH ADAPTER
+    ============================================
+
+    Adapter implements tool.
+
+    Therefore adapter* can be passed where
+    tool* is expected.
+    */
+
+    adapter* pad = new adapter(pxml);
+
+    pc->processdata(pad);
+
+    delete pad;
+    delete pxml;
+    delete pc;
 }
+
+
+

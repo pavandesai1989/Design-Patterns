@@ -1,0 +1,605 @@
+=========================================================
+OOP PRINCIPLES – INTERVIEW NOTES (COPYABLE)
+=========================================================
+
+---------------------------------------------------------
+1. ENCAPSULATION
+---------------------------------------------------------
+
+Definition
+----------
+Encapsulation is the process of bundling data (variables) and methods (functions) together inside a class while restricting direct access to the internal data.
+
+It is achieved using:
+• private
+• protected
+• public access specifiers
+
+Purpose
+-------
+• Protect object state
+• Prevent invalid data modification
+• Hide implementation details
+• Improve maintainability
+• Improve security
+
+Example
+-------
+
+class BankAccount
+{
+private:
+    double balance;
+
+public:
+    BankAccount(double b): balance(b){}
+
+    void deposit(double amount)
+    {
+        if(amount > 0)
+            balance += amount;
+    }
+
+    double getBalance() const
+    {
+        return balance;
+    }
+};
+
+Cannot access directly
+
+account.balance = 1000;      // Error
+
+Must use
+
+account.deposit(1000);
+
+Real-world Example
+------------------
+ATM
+
+• Balance is hidden
+• User cannot directly modify balance
+• Deposit(), Withdraw(), CheckBalance() are exposed
+
+Interview Answer
+----------------
+"Encapsulation means wrapping data and methods together into a class while restricting direct access to internal data. It protects object integrity by exposing only controlled interfaces."
+
+
+
+---------------------------------------------------------
+2. ABSTRACTION
+---------------------------------------------------------
+
+Definition
+----------
+Abstraction means showing only the essential features while hiding implementation details.
+
+The user knows WHAT the object does,
+not HOW it does it.
+
+Achieved Using
+--------------
+• Abstract classes
+• Pure virtual functions
+• Interfaces
+
+Example
+-------
+
+class Shape
+{
+public:
+    virtual void draw() = 0;
+};
+
+class Circle : public Shape
+{
+public:
+    void draw() override
+    {
+        cout << "Drawing Circle";
+    }
+};
+
+User simply calls
+
+shape->draw();
+
+without knowing the implementation.
+
+Real-world Examples
+-------------------
+
+• ATM
+• Car steering wheel
+• TV Remote
+• Coffee Machine
+• Mobile Camera
+
+Interview Answer
+----------------
+
+"Abstraction hides implementation complexity while exposing only essential functionality. In C++, it is commonly achieved using abstract classes and pure virtual functions."
+
+
+
+---------------------------------------------------------
+ENCAPSULATION vs ABSTRACTION
+---------------------------------------------------------
+
+Encapsulation
+-------------
+• Hides data
+• Uses access specifiers
+• Focuses on security
+• Protects object state
+
+Abstraction
+-----------
+• Hides implementation
+• Uses abstract classes/interfaces
+• Focuses on simplicity
+• Reduces complexity
+
+
+
+---------------------------------------------------------
+3. INHERITANCE
+---------------------------------------------------------
+
+Definition
+----------
+
+Inheritance allows one class to acquire properties and behavior of another class.
+
+Represents an
+
+IS-A relationship
+
+Example
+-------
+
+class Animal
+{
+public:
+    void eat()
+    {
+        cout<<"Eating";
+    }
+};
+
+class Dog : public Animal
+{
+public:
+    void bark()
+    {
+        cout<<"Barking";
+    }
+};
+
+Dog inherits eat() from Animal.
+
+Types of Inheritance
+--------------------
+
+• Single
+• Multiple
+• Multilevel
+• Hierarchical
+• Hybrid
+
+Advantages
+----------
+
+• Code reuse
+• Extensibility
+• Supports polymorphism
+• Less duplication
+
+Disadvantages
+-------------
+
+• Tight coupling
+• Fragile base class problem
+• Deep hierarchies become difficult to maintain
+
+Interview Answer
+----------------
+
+"Inheritance allows a derived class to reuse and extend the functionality of a base class. It represents an IS-A relationship and enables runtime polymorphism."
+
+
+
+---------------------------------------------------------
+4. POLYMORPHISM
+---------------------------------------------------------
+
+Definition
+----------
+
+Polymorphism means
+
+One Interface
+Multiple Implementations
+
+The same function behaves differently for different objects.
+
+=========================================================
+A. COMPILE-TIME POLYMORPHISM
+=========================================================
+
+Also called
+
+• Static Polymorphism
+• Early Binding
+
+Achieved Using
+
+• Function Overloading
+• Operator Overloading
+• Templates
+
+Example
+
+class Math
+{
+public:
+
+    int add(int a,int b)
+    {
+        return a+b;
+    }
+
+    double add(double a,double b)
+    {
+        return a+b;
+    }
+};
+
+Compiler decides which function to call.
+
+Operator Overloading Example
+
+Complex operator+(const Complex& rhs);
+
+Template Example
+
+template<typename T>
+T maximum(T a,T b)
+{
+    return a>b ? a:b;
+}
+
+Advantages
+
+• Faster
+• No runtime overhead
+• Resolved by compiler
+
+
+
+=========================================================
+B. RUNTIME POLYMORPHISM
+=========================================================
+
+Also called
+
+• Dynamic Polymorphism
+• Late Binding
+
+Achieved Using
+
+• Virtual functions
+• Function overriding
+
+Example
+
+class Animal
+{
+public:
+
+    virtual void sound()
+    {
+        cout<<"Animal";
+    }
+};
+
+class Dog : public Animal
+{
+public:
+
+    void sound() override
+    {
+        cout<<"Dog";
+    }
+};
+
+Animal* ptr = new Dog();
+
+ptr->sound();
+
+Output
+
+Dog
+
+Compiler decides function at runtime.
+
+
+
+---------------------------------------------------------
+HOW RUNTIME POLYMORPHISM WORKS
+---------------------------------------------------------
+
+Whenever a class has a virtual function
+
+↓
+
+Compiler creates
+
+Virtual Table (vtable)
+
+↓
+
+Each object stores
+
+Virtual Pointer (vptr)
+
+↓
+
+vptr points to class's vtable
+
+↓
+
+Calling
+
+basePtr->virtualFunction();
+
+↓
+
+vptr looks into vtable
+
+↓
+
+Correct overridden function executes
+
+This process is called
+
+Dynamic Dispatch
+
+
+
+Interview Answer
+----------------
+
+"Runtime polymorphism is implemented using virtual functions. The compiler creates a virtual table (vtable), and every object stores a hidden virtual pointer (vptr). During execution, the vptr is used to locate the correct overridden function."
+
+
+
+---------------------------------------------------------
+COMPILE-TIME vs RUNTIME POLYMORPHISM
+---------------------------------------------------------
+
+Compile Time
+
+• Early binding
+• Faster
+• Function overloading
+• Operator overloading
+• Templates
+
+Runtime
+
+• Late binding
+• Slight runtime overhead
+• Virtual functions
+• Function overriding
+
+
+
+---------------------------------------------------------
+5. COMPOSITION vs INHERITANCE
+---------------------------------------------------------
+
+Inheritance
+
+Represents
+
+IS-A relationship
+
+Example
+
+Dog IS-A Animal
+
+class Animal{};
+
+class Dog : public Animal {};
+
+
+
+Composition
+
+Represents
+
+HAS-A relationship
+
+Example
+
+Car HAS-A Engine
+
+class Engine
+{
+};
+
+class Car
+{
+private:
+    Engine engine;
+};
+
+
+
+---------------------------------------------------------
+WHY PREFER COMPOSITION OVER INHERITANCE?
+---------------------------------------------------------
+
+Advantages
+
+• Low coupling
+• High flexibility
+• Easier maintenance
+• Better testability
+• Replace components independently
+• Avoid fragile base class problem
+• Supports runtime behavior changes
+
+Example
+
+Instead of
+
+class FlyingCar : public Car {};
+
+Use
+
+class Engine{};
+class Navigation{};
+class MusicSystem{};
+
+class Car
+{
+private:
+
+    Engine engine;
+    Navigation navigation;
+    MusicSystem music;
+};
+
+Each component can be replaced independently.
+
+
+
+---------------------------------------------------------
+COMPOSITION vs INHERITANCE
+---------------------------------------------------------
+
+Composition
+
+• HAS-A relationship
+• Low coupling
+• Highly flexible
+• Runtime composition
+• Preferred in modern software design
+
+Inheritance
+
+• IS-A relationship
+• Tight coupling
+• Less flexible
+• Fixed hierarchy
+• Use only when there is a true IS-A relationship
+
+
+
+=========================================================
+MOST ASKED INTERVIEW QUESTIONS
+=========================================================
+
+Q1. What is Encapsulation?
+
+Wrapping data and methods together into a class while restricting direct access to the internal data.
+
+---------------------------------------------------------
+
+Q2. What is Abstraction?
+
+Hiding implementation details while exposing only essential functionality.
+
+---------------------------------------------------------
+
+Q3. Difference between Encapsulation and Abstraction?
+
+Encapsulation hides DATA.
+
+Abstraction hides IMPLEMENTATION.
+
+---------------------------------------------------------
+
+Q4. What is Inheritance?
+
+A mechanism where a derived class acquires properties and behavior of a base class.
+
+Represents an IS-A relationship.
+
+---------------------------------------------------------
+
+Q5. What is Polymorphism?
+
+One interface with multiple implementations.
+
+---------------------------------------------------------
+
+Q6. Difference between Compile-Time and Runtime Polymorphism?
+
+Compile-Time
+• Function Overloading
+• Operator Overloading
+• Templates
+
+Runtime
+• Virtual Functions
+• Function Overriding
+
+---------------------------------------------------------
+
+Q7. How is Runtime Polymorphism Implemented in C++?
+
+Using virtual functions.
+
+Compiler creates
+• vtable (Virtual Table)
+
+Each object stores
+• vptr (Virtual Pointer)
+
+During runtime, the vptr points to the correct overridden function, enabling dynamic dispatch.
+
+---------------------------------------------------------
+
+Q8. Why Prefer Composition Over Inheritance?
+
+Because composition provides:
+
+• Low coupling
+• High cohesion
+• Better maintainability
+• Better flexibility
+• Easy testing
+• Components can be replaced independently
+
+Prefer Composition unless there is a genuine IS-A relationship.
+
+=========================================================
+1-MINUTE INTERVIEW REVISION
+=========================================================
+
+Encapsulation  → Hide Data
+Abstraction    → Hide Implementation
+Inheritance    → IS-A Relationship
+Composition    → HAS-A Relationship
+Polymorphism   → One Interface, Multiple Implementations
+
+Compile-Time Polymorphism
+• Function Overloading
+• Operator Overloading
+• Templates
+
+Runtime Polymorphism
+• Virtual Functions
+• Overriding
+• vtable
+• vptr
+• Dynamic Dispatch
+
+Golden Rule:
+"Favor Composition over Inheritance."

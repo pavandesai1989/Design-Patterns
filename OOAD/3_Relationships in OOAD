@@ -1,0 +1,677 @@
+=========================================================
+OOAD RELATIONSHIPS – INTERVIEW NOTES (COPYABLE)
+=========================================================
+
+Relationships define how classes or objects are connected in an object-oriented system.
+
+The six most common OOAD relationships are:
+
+1. Association
+2. Aggregation
+3. Composition
+4. Dependency
+5. Inheritance
+6. Realization
+
+=========================================================
+1. ASSOCIATION
+=========================================================
+
+Definition
+----------
+Association represents a relationship where one object knows or uses another object.
+
+It is the most general relationship.
+
+Represents
+----------
+USES / KNOWS
+
+Ownership
+---------
+No ownership.
+
+Object Lifetime
+---------------
+Independent.
+
+Notation (UML)
+--------------
+Solid line
+
+A -------- B
+
+Example
+-------
+
+Teacher -------- Student
+
+A teacher teaches students.
+
+Students can exist without the teacher.
+
+Teachers can exist without students.
+
+More Examples
+-------------
+
+• Customer ↔ Order
+• Doctor ↔ Patient
+• Employee ↔ Department
+• Driver ↔ Car
+
+C++ Example
+-----------
+
+class Student {};
+
+class Teacher
+{
+public:
+    void teach(Student& s)
+    {
+    }
+};
+
+Interview Answer
+----------------
+
+"Association is a relationship where two independent objects are connected. Neither object owns the other."
+
+
+
+=========================================================
+2. AGGREGATION
+=========================================================
+
+Definition
+----------
+
+Aggregation is a special type of Association that represents a HAS-A relationship with weak ownership.
+
+Represents
+----------
+
+HAS-A
+
+Ownership
+----------
+
+Weak Ownership
+
+Object Lifetime
+---------------
+
+Independent.
+
+Child can exist without Parent.
+
+Notation (UML)
+--------------
+
+Hollow Diamond
+
+Parent ◇──── Child
+
+Example
+-------
+
+Department HAS-A Employees
+
+If Department is deleted,
+
+Employees still exist.
+
+Other Examples
+--------------
+
+• Team HAS-A Players
+• University HAS-A Professors
+• Library HAS-A Books
+• School HAS-A Teachers
+
+C++ Example
+-----------
+
+class Employee
+{
+};
+
+class Department
+{
+private:
+    vector<Employee*> employees;
+};
+
+Department uses Employee objects.
+
+Employees are created elsewhere.
+
+Interview Answer
+----------------
+
+"Aggregation is a weak HAS-A relationship. The parent references child objects but does not own their lifetime."
+
+
+
+=========================================================
+3. COMPOSITION
+=========================================================
+
+Definition
+----------
+
+Composition is a strong HAS-A relationship.
+
+Parent owns the child.
+
+Represents
+----------
+
+HAS-A
+
+Ownership
+----------
+
+Strong Ownership
+
+Object Lifetime
+---------------
+
+Dependent.
+
+If Parent is destroyed,
+
+Child is automatically destroyed.
+
+Notation (UML)
+--------------
+
+Filled Diamond
+
+Parent ◆──── Child
+
+Example
+-------
+
+House HAS-A Room
+
+Destroy House
+
+↓
+
+Rooms are destroyed.
+
+More Examples
+-------------
+
+• Car HAS-A Engine
+• Computer HAS-A CPU
+• Human HAS-A Heart
+• Book HAS-A Pages
+
+C++ Example
+-----------
+
+class Engine
+{
+};
+
+class Car
+{
+private:
+    Engine engine;
+};
+
+Engine cannot exist independently of Car.
+
+Interview Answer
+----------------
+
+"Composition is a strong HAS-A relationship where the parent owns the child object. The child's lifetime depends on the parent's lifetime."
+
+
+
+=========================================================
+4. DEPENDENCY
+=========================================================
+
+Definition
+----------
+
+Dependency represents a temporary USES relationship.
+
+One object depends on another only for a short duration.
+
+Represents
+----------
+
+USES
+
+Ownership
+----------
+
+No ownership.
+
+Object Lifetime
+---------------
+
+Independent.
+
+Notation (UML)
+--------------
+
+Dashed Arrow
+
+A ---------> B
+
+Example
+-------
+
+Printer uses Document.
+
+Printer doesn't store Document.
+
+Document exists independently.
+
+More Examples
+-------------
+
+• Logger used by Service
+• PaymentService uses BankAPI
+• ReportGenerator uses Printer
+• Controller uses Validator
+
+C++ Example
+-----------
+
+class Document
+{
+};
+
+class Printer
+{
+public:
+
+    void print(Document& doc)
+    {
+    }
+};
+
+Document is passed only during function execution.
+
+Interview Answer
+----------------
+
+"Dependency is a temporary relationship where one class uses another class without owning or storing it."
+
+
+
+=========================================================
+5. INHERITANCE
+=========================================================
+
+Definition
+----------
+
+Inheritance allows one class to acquire properties and behavior of another.
+
+Represents
+----------
+
+IS-A
+
+Ownership
+----------
+
+Not applicable.
+
+Object Lifetime
+---------------
+
+Independent.
+
+Notation (UML)
+--------------
+
+Solid Line + Hollow Triangle
+
+Dog --------|> Animal
+
+Example
+-------
+
+Dog IS-A Animal
+
+Car IS-A Vehicle
+
+Manager IS-A Employee
+
+C++ Example
+-----------
+
+class Animal
+{
+};
+
+class Dog : public Animal
+{
+};
+
+Interview Answer
+----------------
+
+"Inheritance represents an IS-A relationship where a derived class inherits the properties and behavior of a base class."
+
+
+
+=========================================================
+6. REALIZATION
+=========================================================
+
+Definition
+----------
+
+Realization means a class implements an interface (or abstract class with pure virtual functions).
+
+Represents
+----------
+
+IMPLEMENTS
+
+Ownership
+----------
+
+None.
+
+Notation (UML)
+--------------
+
+Dashed Line + Hollow Triangle
+
+Circle ----- - -|> Shape
+
+Example
+-------
+
+Shape (Interface)
+
+↓
+
+Circle implements Shape
+
+C++ Example
+-----------
+
+class Shape
+{
+public:
+    virtual void draw() = 0;
+};
+
+class Circle : public Shape
+{
+public:
+
+    void draw() override
+    {
+    }
+};
+
+Interview Answer
+----------------
+
+"Realization represents an IMPLEMENTS relationship where a class provides the implementation for an interface or abstract class."
+
+
+
+=========================================================
+ASSOCIATION vs AGGREGATION vs COMPOSITION
+=========================================================
+
+Association
+-----------
+Meaning:
+Knows / Uses
+
+Ownership:
+None
+
+Lifetime:
+Independent
+
+Example:
+Teacher ↔ Student
+
+---------------------------------------------------------
+
+Aggregation
+-----------
+Meaning:
+Weak HAS-A
+
+Ownership:
+Weak
+
+Lifetime:
+Independent
+
+Example:
+Department HAS-A Employees
+
+---------------------------------------------------------
+
+Composition
+-----------
+Meaning:
+Strong HAS-A
+
+Ownership:
+Strong
+
+Lifetime:
+Dependent
+
+Example:
+Car HAS-A Engine
+
+Golden Rule
+
+Association
+↓
+
+Aggregation
+↓
+
+Composition
+
+Strength increases.
+
+
+
+=========================================================
+INHERITANCE vs REALIZATION
+=========================================================
+
+Inheritance
+-----------
+Relationship:
+IS-A
+
+Purpose:
+Reuse implementation and behavior
+
+Example:
+Dog IS-A Animal
+
+---------------------------------------------------------
+
+Realization
+-----------
+Relationship:
+IMPLEMENTS
+
+Purpose:
+Provide implementation for an interface
+
+Example:
+Circle implements Shape
+
+
+
+=========================================================
+COMPLETE SUMMARY TABLE
+=========================================================
+
+Association
+-----------
+Meaning      : Uses / Knows
+Ownership    : No
+Lifetime     : Independent
+Example      : Teacher ↔ Student
+UML          : Solid Line
+
+---------------------------------------------------------
+
+Aggregation
+-----------
+Meaning      : Weak HAS-A
+Ownership    : Weak
+Lifetime     : Independent
+Example      : Department HAS-A Employees
+UML          : Hollow Diamond
+
+---------------------------------------------------------
+
+Composition
+-----------
+Meaning      : Strong HAS-A
+Ownership    : Strong
+Lifetime     : Dependent
+Example      : Car HAS-A Engine
+UML          : Filled Diamond
+
+---------------------------------------------------------
+
+Dependency
+----------
+Meaning      : Temporary Uses
+Ownership    : No
+Lifetime     : Independent
+Example      : Printer uses Document
+UML          : Dashed Arrow
+
+---------------------------------------------------------
+
+Inheritance
+-----------
+Meaning      : IS-A
+Ownership    : N/A
+Lifetime     : Independent
+Example      : Dog IS-A Animal
+UML          : Solid Line + Hollow Triangle
+
+---------------------------------------------------------
+
+Realization
+-----------
+Meaning      : Implements
+Ownership    : N/A
+Lifetime     : Independent
+Example      : Circle implements Shape
+UML          : Dashed Line + Hollow Triangle
+
+
+
+=========================================================
+MOST ASKED INTERVIEW QUESTIONS
+=========================================================
+
+Q1. Difference between Association and Aggregation?
+
+Association:
+General relationship with no ownership.
+
+Aggregation:
+Special type of association with weak ownership.
+
+---------------------------------------------------------
+
+Q2. Difference between Aggregation and Composition?
+
+Aggregation:
+Weak ownership.
+Child can exist independently.
+
+Composition:
+Strong ownership.
+Child is destroyed with parent.
+
+---------------------------------------------------------
+
+Q3. Difference between Composition and Inheritance?
+
+Composition:
+HAS-A relationship.
+Preferred for flexibility and loose coupling.
+
+Inheritance:
+IS-A relationship.
+Used only when a true inheritance hierarchy exists.
+
+---------------------------------------------------------
+
+Q4. What is Dependency?
+
+A temporary USES relationship where one class depends on another without owning it.
+
+---------------------------------------------------------
+
+Q5. What is Realization?
+
+A relationship where a class implements an interface or abstract class.
+
+---------------------------------------------------------
+
+Q6. Which relationship is preferred in modern software design?
+
+Composition
+
+Reason:
+• Low coupling
+• High cohesion
+• Better maintainability
+• Better flexibility
+• Easier testing
+
+=========================================================
+1-MINUTE INTERVIEW REVISION
+=========================================================
+
+Association  → Uses / Knows
+
+Aggregation  → Weak HAS-A
+
+Composition  → Strong HAS-A
+
+Dependency   → Temporary Uses
+
+Inheritance  → IS-A
+
+Realization  → Implements
+
+Remember:
+
+Association → No ownership
+
+Aggregation → Weak ownership
+
+Composition → Strong ownership
+
+Inheritance → Reuse behavior
+
+Realization → Implement interface
+
+Golden Rule:
+
+Prefer Composition over Inheritance whenever possible.

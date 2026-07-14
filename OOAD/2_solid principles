@@ -1,0 +1,522 @@
+=========================================================
+SOLID PRINCIPLES – INTERVIEW NOTES (COPYABLE)
+=========================================================
+
+SOLID is a set of five object-oriented design principles that help build software that is:
+
+• Easy to maintain
+• Easy to extend
+• Loosely coupled
+• Highly cohesive
+• Testable
+• Scalable
+
+=========================================================
+S → SINGLE RESPONSIBILITY PRINCIPLE (SRP)
+=========================================================
+
+Definition
+----------
+"A class should have only ONE reason to change."
+
+In simple words,
+
+One class = One responsibility = One job.
+
+Good Example
+------------
+
+class Invoice
+{
+public:
+    void calculateTotal();
+};
+
+class InvoicePrinter
+{
+public:
+    void print();
+};
+
+class InvoiceRepository
+{
+public:
+    void saveToDatabase();
+};
+
+Each class has a single responsibility.
+
+Bad Example
+-----------
+
+class Invoice
+{
+public:
+    void calculateTotal();
+    void printInvoice();
+    void saveToDatabase();
+};
+
+This class has multiple responsibilities.
+
+Problems
+--------
+• Difficult to maintain
+• Difficult to test
+• One change may affect unrelated functionality
+
+Real-world Example
+------------------
+
+Employee
+
+Instead of
+
+Employee
+    • Calculate Salary
+    • Print Salary
+    • Save Salary
+    • Send Email
+
+Split into
+
+Employee
+SalaryCalculator
+SalaryPrinter
+EmailService
+
+Interview Answer
+----------------
+
+"SRP states that a class should have only one responsibility and therefore only one reason to change."
+
+
+
+=========================================================
+O → OPEN CLOSED PRINCIPLE (OCP)
+=========================================================
+
+Definition
+----------
+
+"Software entities should be OPEN for extension but CLOSED for modification."
+
+Meaning
+
+You should add new functionality without changing existing code.
+
+Bad Example
+-----------
+
+class Payment
+{
+public:
+
+    void pay(string type)
+    {
+        if(type=="CreditCard")
+        {
+        }
+        else if(type=="UPI")
+        {
+        }
+        else if(type=="PayPal")
+        {
+        }
+    }
+};
+
+Every new payment method requires modifying this class.
+
+Good Example
+------------
+
+class Payment
+{
+public:
+    virtual void pay() = 0;
+};
+
+class CreditCard : public Payment
+{
+};
+
+class UPI : public Payment
+{
+};
+
+class PayPal : public Payment
+{
+};
+
+Adding ApplePay requires creating a new class.
+
+Existing code remains unchanged.
+
+Real-world Example
+------------------
+
+Notification System
+
+Instead of modifying Notification every time,
+
+Create
+
+EmailNotification
+SMSNotification
+PushNotification
+
+Interview Answer
+----------------
+
+"OCP means software should allow adding new functionality without modifying existing, tested code."
+
+
+
+=========================================================
+L → LISKOV SUBSTITUTION PRINCIPLE (LSP)
+=========================================================
+
+Definition
+----------
+
+"Derived classes should be replaceable with their base class without changing program correctness."
+
+Meaning
+
+Anywhere a base class is expected,
+
+Derived class should work correctly.
+
+Bad Example
+-----------
+
+class Bird
+{
+public:
+    virtual void fly();
+};
+
+class Penguin : public Bird
+{
+public:
+    void fly()
+    {
+        throw exception();
+    }
+};
+
+Penguin cannot fly.
+
+Inheritance is wrong.
+
+Good Design
+-----------
+
+class Bird
+{
+};
+
+class FlyingBird : public Bird
+{
+public:
+    virtual void fly();
+};
+
+class Sparrow : public FlyingBird
+{
+};
+
+class Penguin : public Bird
+{
+};
+
+Now LSP is satisfied.
+
+Real-world Example
+------------------
+
+Rectangle and Square
+
+Square should not inherit Rectangle if changing width and height independently breaks expected behavior.
+
+Interview Answer
+----------------
+
+"LSP states that derived classes should be usable wherever the base class is expected without breaking the correctness of the program."
+
+
+
+=========================================================
+I → INTERFACE SEGREGATION PRINCIPLE (ISP)
+=========================================================
+
+Definition
+----------
+
+"Clients should not be forced to depend on methods they do not use."
+
+Meaning
+
+Prefer many small interfaces over one large interface.
+
+Bad Example
+-----------
+
+class Machine
+{
+public:
+
+    virtual void print() = 0;
+    virtual void scan() = 0;
+    virtual void fax() = 0;
+};
+
+SimplePrinter must implement scan() and fax() unnecessarily.
+
+Good Example
+------------
+
+class Printer
+{
+public:
+    virtual void print() = 0;
+};
+
+class Scanner
+{
+public:
+    virtual void scan() = 0;
+};
+
+class Fax
+{
+public:
+    virtual void fax() = 0;
+};
+
+SimplePrinter implements only Printer.
+
+Real-world Example
+------------------
+
+Restaurant
+
+Vegetarian customer should not be forced to order non-vegetarian items.
+
+Separate menus.
+
+Interview Answer
+----------------
+
+"ISP recommends creating small, focused interfaces so clients implement only the functionality they actually need."
+
+
+
+=========================================================
+D → DEPENDENCY INVERSION PRINCIPLE (DIP)
+=========================================================
+
+Definition
+----------
+
+"High-level modules should not depend on low-level modules.
+Both should depend on abstractions."
+
+Meaning
+
+Depend on interfaces,
+
+Not concrete classes.
+
+Bad Example
+-----------
+
+class Keyboard
+{
+};
+
+class Computer
+{
+private:
+    Keyboard keyboard;
+};
+
+Computer is tightly coupled to Keyboard.
+
+Good Example
+------------
+
+class InputDevice
+{
+public:
+    virtual void input() = 0;
+};
+
+class Keyboard : public InputDevice
+{
+};
+
+class Mouse : public InputDevice
+{
+};
+
+class Computer
+{
+private:
+    InputDevice* device;
+};
+
+Computer works with Keyboard, Mouse, TouchScreen, etc.
+
+Real-world Example
+------------------
+
+Car
+
+Car depends on Engine interface.
+
+PetrolEngine
+DieselEngine
+ElectricEngine
+
+Any engine can be plugged in.
+
+Interview Answer
+----------------
+
+"DIP states that high-level modules should depend on abstractions rather than concrete implementations, reducing coupling and improving flexibility."
+
+
+
+=========================================================
+SOLID SUMMARY TABLE
+=========================================================
+
+S → Single Responsibility Principle
+-----------------------------------
+One class should have only one responsibility.
+
+Keyword:
+One Job
+
+-----------------------------------
+
+O → Open Closed Principle
+-------------------------
+Open for extension.
+Closed for modification.
+
+Keyword:
+Extend, Don't Modify
+
+-----------------------------------
+
+L → Liskov Substitution Principle
+---------------------------------
+Derived class should completely replace base class.
+
+Keyword:
+Substitutability
+
+-----------------------------------
+
+I → Interface Segregation Principle
+-----------------------------------
+Create small interfaces.
+
+Keyword:
+Don't force unnecessary methods
+
+-----------------------------------
+
+D → Dependency Inversion Principle
+----------------------------------
+Depend on abstractions, not implementations.
+
+Keyword:
+Loose Coupling
+
+
+
+=========================================================
+MOST ASKED INTERVIEW QUESTIONS
+=========================================================
+
+Q1. What is SOLID?
+
+A collection of five object-oriented design principles that improve maintainability, extensibility, flexibility, and testability.
+
+---------------------------------------------------------
+
+Q2. Which SOLID principle is violated if one class prints, saves, and emails invoices?
+
+Answer:
+Single Responsibility Principle (SRP)
+
+---------------------------------------------------------
+
+Q3. Which principle says "Open for extension but closed for modification"?
+
+Answer:
+Open Closed Principle (OCP)
+
+---------------------------------------------------------
+
+Q4. Which SOLID principle promotes loose coupling?
+
+Answer:
+Dependency Inversion Principle (DIP)
+
+---------------------------------------------------------
+
+Q5. Which principle recommends many small interfaces?
+
+Answer:
+Interface Segregation Principle (ISP)
+
+---------------------------------------------------------
+
+Q6. Penguin cannot fly. Which SOLID principle is violated?
+
+Answer:
+Liskov Substitution Principle (LSP)
+
+---------------------------------------------------------
+
+Q7. Why are interfaces used in DIP?
+
+Answer:
+Interfaces reduce coupling, improve flexibility, simplify testing, and allow implementations to be swapped without changing high-level code.
+
+=========================================================
+1-MINUTE INTERVIEW REVISION
+=========================================================
+
+S → One Class = One Responsibility
+
+O → Extend without modifying existing code
+
+L → Derived class should completely replace base class
+
+I → Small, focused interfaces
+
+D → Depend on interfaces, not concrete classes
+
+Remember:
+
+S → One Job
+O → Extend
+L → Replace
+I → Small Interfaces
+D → Depend on Abstractions
+
+Mnemonic:
+
+S O L I D
+
+Single Responsibility
+Open Closed
+Liskov Substitution
+Interface Segregation
+Dependency Inversion

@@ -1,0 +1,177 @@
+===========================
+HIGH COHESION – INTERVIEW NOTES
+===========================
+
+Definition
+----------
+High Cohesion means a class or module should have one well-defined responsibility,
+and all its methods and data should work together to achieve that single purpose.
+
+Interview Definition (30 sec)
+-----------------------------
+"High cohesion is a design principle where a class focuses on one responsibility,
+with all its methods and data closely related. Highly cohesive classes are easier
+to understand, test, maintain, reuse, and extend because changes remain localized."
+
+Why High Cohesion?
+------------------
+• Easier to understand
+• Easier to maintain
+• Easier to test
+• Better code reuse
+• Fewer bugs
+• Changes are localized
+• Improves readability
+• Easier debugging
+• Easier extension
+
+Example
+-------
+
+❌ Low Cohesion
+
+class Employee
+{
+public:
+    void calculateSalary();
+    void saveToDatabase();
+    void sendEmail();
+    void printReport();
+};
+
+Problems:
+• Multiple unrelated responsibilities
+• Difficult to maintain
+• Hard to test
+• Multiple reasons to change
+
+
+✅ High Cohesion
+
+class SalaryCalculator
+{
+public:
+    double calculateSalary();
+};
+
+class EmployeeRepository
+{
+public:
+    void save();
+};
+
+class EmailService
+{
+public:
+    void sendEmail();
+};
+
+class ReportPrinter
+{
+public:
+    void print();
+};
+
+Each class has one clear responsibility.
+
+--------------------------------------------------
+
+High Cohesion vs Low Cohesion
+-----------------------------
+
+High Cohesion                    Low Cohesion
+------------------------------------------------------------
+One responsibility               Multiple responsibilities
+Focused class                    God/Bloated class
+Easy to maintain                 Hard to maintain
+Easy to test                     Hard to test
+Reusable                         Poor reusability
+Localized changes                Changes affect unrelated code
+
+--------------------------------------------------
+
+High Cohesion vs SRP
+--------------------
+
+High Cohesion                    Single Responsibility Principle
+-----------------------------------------------------------------------
+Design principle                 SOLID principle
+Related functionality together   One reason to change
+Focus on class internals         Focus on responsibility boundary
+
+Relationship:
+Following SRP usually results in High Cohesion.
+
+--------------------------------------------------
+
+High Cohesion vs Low Coupling
+-----------------------------
+
+High Cohesion                    Low Coupling
+------------------------------------------------------------
+Inside a class                   Between classes
+Related functionality            Minimal dependencies
+Single responsibility            Loose interaction
+
+Good Design = High Cohesion + Low Coupling
+
+--------------------------------------------------
+
+Real-world Example
+------------------
+
+Car Components
+
+Engine      -> Generates power
+Brakes      -> Stops the car
+Steering    -> Changes direction
+
+Each component performs one specific job.
+This is High Cohesion.
+
+--------------------------------------------------
+
+Frequently Asked Interview Questions
+------------------------------------
+
+Q. What is High Cohesion?
+
+A:
+"High cohesion means a class has one well-defined responsibility,
+and all its methods and data are closely related to that responsibility."
+
+--------------------------------------------------
+
+Q. Why is High Cohesion important?
+
+A:
+• Easier maintenance
+• Better readability
+• Easier testing
+• Better reusability
+• Fewer bugs
+• Localized changes
+
+--------------------------------------------------
+
+Q. Difference between High Cohesion and Low Coupling?
+
+A:
+High Cohesion focuses on keeping related functionality together within a class,
+while Low Coupling focuses on minimizing dependencies between different classes.
+
+--------------------------------------------------
+
+Q. Is High Cohesion related to SRP?
+
+A:
+Yes. A class following the Single Responsibility Principle usually has
+High Cohesion because it focuses on one responsibility.
+
+--------------------------------------------------
+
+One-Line Definition
+-------------------
+
+"High Cohesion means designing a class so that all its methods and data are
+closely related and work together to fulfill one well-defined responsibility."

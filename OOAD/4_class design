@@ -1,0 +1,694 @@
+=========================================================
+CLASS DESIGN (OOAD) – INTERVIEW NOTES (COPYABLE)
+=========================================================
+
+Class Design is the process of converting requirements into classes, objects, attributes, methods, and relationships.
+
+Goal:
+-----
+Create a design that is:
+• Simple
+• Maintainable
+• Extensible
+• Reusable
+• Loosely Coupled
+• Highly Cohesive
+
+=========================================================
+STEP 1. UNDERSTAND REQUIREMENTS
+=========================================================
+
+Before writing classes, clarify the requirements.
+
+Ask questions like:
+
+• What features are required?
+• What are the constraints?
+• Any assumptions?
+• Number of users?
+• Concurrency?
+• Future extensibility?
+
+Example (Parking Lot)
+
+Requirements
+
+• Multiple floors
+• Different parking spots
+• Car, Bike, Truck support
+• Entry and Exit gates
+• Ticket generation
+• Payment
+• Display available spots
+
+Never jump directly into coding.
+
+Always clarify requirements first.
+
+
+
+=========================================================
+STEP 2. IDENTIFY CLASSES
+=========================================================
+
+Nouns usually become Classes.
+
+For Parking Lot
+
+ParkingLot
+Floor
+ParkingSpot
+Vehicle
+Ticket
+Gate
+EntryGate
+ExitGate
+Payment
+DisplayBoard
+
+Possible Helper Classes
+
+ParkingManager
+SpotAllocator
+PaymentProcessor
+
+Interview Tip
+
+Nouns → Classes
+
+Examples
+
+Library
+
+Book
+Member
+Librarian
+IssueRecord
+
+ATM
+
+ATM
+Card
+Account
+Bank
+Transaction
+
+
+
+=========================================================
+STEP 3. IDENTIFY OBJECTS
+=========================================================
+
+Object = Instance of a Class.
+
+Example
+
+Class
+
+Car
+
+Objects
+
+Car1
+Car2
+Car3
+
+ParkingSpot
+
+Spot101
+Spot102
+Spot103
+
+Vehicle
+
+KA01AB1234
+KA02CD5678
+
+Remember
+
+Class → Blueprint
+
+Object → Real Instance
+
+
+
+=========================================================
+STEP 4. IDENTIFY ATTRIBUTES
+=========================================================
+
+Attributes describe the state of an object.
+
+Example
+
+Vehicle
+
+Attributes
+
+vehicleNumber
+vehicleType
+color
+
+ParkingSpot
+
+spotId
+spotType
+isOccupied
+
+Ticket
+
+ticketId
+entryTime
+exitTime
+fee
+
+ParkingLot
+
+name
+address
+floors
+
+Guideline
+
+Nouns describing characteristics
+usually become attributes.
+
+
+
+=========================================================
+STEP 5. IDENTIFY METHODS
+=========================================================
+
+Methods describe object behavior.
+
+Vehicle
+
+park()
+
+leave()
+
+ParkingSpot
+
+assignVehicle()
+
+removeVehicle()
+
+isAvailable()
+
+ParkingLot
+
+parkVehicle()
+
+removeVehicle()
+
+findSpot()
+
+displayAvailability()
+
+Ticket
+
+calculateFee()
+
+closeTicket()
+
+Payment
+
+makePayment()
+
+refund()
+
+Guideline
+
+Verbs usually become methods.
+
+
+
+=========================================================
+STEP 6. IDENTIFY RESPONSIBILITIES
+=========================================================
+
+Each class should have ONE responsibility (SRP).
+
+ParkingLot
+
+Responsible for
+
+• Managing floors
+• Managing entry/exit
+
+NOT
+
+• Calculating payment
+
+ParkingSpot
+
+Responsible for
+
+• Parking vehicle
+• Releasing vehicle
+
+Ticket
+
+Responsible for
+
+• Store entry time
+• Store exit time
+• Calculate fee
+
+Payment
+
+Responsible for
+
+• Collect payment
+
+DisplayBoard
+
+Responsible for
+
+• Show available spots
+
+Interview Tip
+
+Ask
+
+"What is the single responsibility of this class?"
+
+
+
+=========================================================
+STEP 7. IDENTIFY RELATIONSHIPS
+=========================================================
+
+ParkingLot
+
+HAS-A Floors
+
+Composition
+
+Floor
+
+HAS-A ParkingSpots
+
+Composition
+
+ParkingSpot
+
+HAS-A Vehicle
+
+Association
+
+Vehicle
+
+HAS-A Ticket
+
+Association
+
+ExitGate
+
+USES Payment
+
+Dependency
+
+Remember
+
+IS-A
+
+↓
+
+Inheritance
+
+HAS-A
+
+↓
+
+Composition/Aggregation
+
+USES
+
+↓
+
+Dependency
+
+
+
+=========================================================
+STEP 8. IDENTIFY DESIGN PATTERNS
+=========================================================
+
+Parking Lot commonly uses
+
+Singleton
+
+One ParkingLot instance
+
+Strategy
+
+Different pricing algorithms
+
+Factory
+
+Create vehicles
+
+Observer
+
+Display boards update automatically
+
+State
+
+Spot Available
+↓
+
+Occupied
+
+Command
+
+Entry/Exit operations
+
+
+
+=========================================================
+PARKING LOT CLASS DESIGN
+=========================================================
+
+Classes
+
+ParkingLot
+
+Attributes
+
+name
+floors
+
+Methods
+
+parkVehicle()
+
+removeVehicle()
+
+displayAvailability()
+
+----------------------------
+
+Floor
+
+Attributes
+
+floorNumber
+parkingSpots
+
+Methods
+
+findAvailableSpot()
+
+----------------------------
+
+ParkingSpot
+
+Attributes
+
+spotId
+spotType
+occupied
+
+Methods
+
+assignVehicle()
+
+removeVehicle()
+
+isAvailable()
+
+----------------------------
+
+Vehicle
+
+Attributes
+
+vehicleNumber
+vehicleType
+
+Methods
+
+getType()
+
+----------------------------
+
+Ticket
+
+Attributes
+
+ticketId
+entryTime
+exitTime
+
+Methods
+
+calculateFee()
+
+----------------------------
+
+Payment
+
+Attributes
+
+amount
+paymentMode
+
+Methods
+
+pay()
+
+refund()
+
+----------------------------
+
+DisplayBoard
+
+Methods
+
+showAvailableSpots()
+
+
+
+=========================================================
+SIMPLE UML (TEXT)
+=========================================================
+
+                ParkingLot
+                     |
+          -----------------------
+          |                     |
+        Floor               EntryGate
+          |
+    -----------------
+    |       |       |
+ ParkingSpot ParkingSpot ParkingSpot
+      |
+   Vehicle
+      |
+    Ticket
+      |
+   Payment
+
+
+
+=========================================================
+DESIGN THINKING PROCESS
+=========================================================
+
+Requirements
+
+↓
+
+Identify Nouns
+
+↓
+
+Classes
+
+↓
+
+Objects
+
+↓
+
+Attributes
+
+↓
+
+Methods
+
+↓
+
+Responsibilities
+
+↓
+
+Relationships
+
+↓
+
+Design Patterns
+
+↓
+
+Final Design
+
+
+
+=========================================================
+MOST ASKED INTERVIEW QUESTIONS
+=========================================================
+
+Q1. How do you identify classes?
+
+Answer
+
+Look for nouns in the requirements.
+
+Example
+
+Parking Lot
+
+ParkingLot
+Vehicle
+Ticket
+Gate
+Floor
+
+---------------------------------------------------------
+
+Q2. How do you identify methods?
+
+Answer
+
+Look for verbs.
+
+park()
+
+remove()
+
+pay()
+
+display()
+
+calculateFee()
+
+---------------------------------------------------------
+
+Q3. How do you identify attributes?
+
+Answer
+
+Look for characteristics of an object.
+
+Vehicle
+
+vehicleNumber
+
+vehicleType
+
+ParkingSpot
+
+spotId
+
+occupied
+
+---------------------------------------------------------
+
+Q4. How do you identify responsibilities?
+
+Answer
+
+Apply the Single Responsibility Principle (SRP).
+
+Each class should have only one responsibility.
+
+---------------------------------------------------------
+
+Q5. Which relationships are used?
+
+ParkingLot HAS-A Floors
+
+Floor HAS-A ParkingSpots
+
+ParkingSpot HAS-A Vehicle
+
+Vehicle HAS-A Ticket
+
+ExitGate USES Payment
+
+---------------------------------------------------------
+
+Q6. Which design patterns can be used?
+
+• Singleton
+• Factory
+• Strategy
+• Observer
+• State
+• Command
+
+=========================================================
+1-MINUTE INTERVIEW REVISION
+=========================================================
+
+Requirements
+
+↓
+
+Nouns
+
+↓
+
+Classes
+
+↓
+
+Objects
+
+↓
+
+Attributes
+
+↓
+
+Methods
+
+↓
+
+Responsibilities
+
+↓
+
+Relationships
+
+↓
+
+Design Patterns
+
+Golden Rules
+
+• Nouns → Classes
+
+• Verbs → Methods
+
+• Characteristics → Attributes
+
+• One Class → One Responsibility
+
+• Prefer Composition over Inheritance
+
+• Follow SOLID Principles
+
+• Keep High Cohesion and Low Coupling
+
+Interview Approach
+
+1. Clarify requirements
+2. Identify classes
+3. Define attributes
+4. Define methods
+5. Assign responsibilities
+6. Define relationships
+7. Mention suitable design patterns
+8. Explain trade-offs if asked

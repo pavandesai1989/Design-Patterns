@@ -1,0 +1,756 @@
+=========================================================
+DESIGN PRINCIPLES – INTERVIEW NOTES (COPYABLE)
+=========================================================
+
+Design Principles are guidelines for writing software that is:
+
+• Easy to understand
+• Easy to maintain
+• Easy to test
+• Easy to extend
+• Loosely coupled
+• Highly cohesive
+
+These principles are frequently asked in OOAD, LLD, and C++ interviews.
+
+=========================================================
+1. HIGH COHESION
+=========================================================
+
+Definition
+----------
+Cohesion measures how closely related the responsibilities of a class are.
+
+High Cohesion means
+
+"A class should perform one well-defined task."
+
+Good Example
+------------
+
+class Logger
+{
+public:
+    void log();
+};
+
+Logger only performs logging.
+
+Bad Example
+-----------
+
+class Logger
+{
+public:
+    void log();
+    void sendEmail();
+    void calculateSalary();
+    void printInvoice();
+};
+
+Logger is doing unrelated work.
+
+Advantages
+----------
+
+• Easy to understand
+• Easy to maintain
+• Easy to test
+• Easy to reuse
+
+Real-world Example
+------------------
+
+Calculator
+
+Only performs calculations.
+
+Not
+
+• Printing
+• Saving to DB
+• Sending emails
+
+Interview Answer
+----------------
+
+"High cohesion means a class should have closely related responsibilities and ideally one primary responsibility."
+
+
+
+=========================================================
+2. LOW COUPLING
+=========================================================
+
+Definition
+----------
+
+Coupling measures the dependency between classes.
+
+Low Coupling means
+
+"Changes in one class should have minimal impact on others."
+
+Bad Example
+-----------
+
+Computer directly creates
+
+Keyboard
+
+Mouse
+
+Monitor
+
+If Keyboard changes,
+
+Computer must change.
+
+Good Example
+------------
+
+Computer depends on
+
+InputDevice interface
+
+Keyboard
+Mouse
+TouchScreen
+
+can all implement InputDevice.
+
+Advantages
+----------
+
+• Easy maintenance
+• Better testing
+• Flexible
+• Easy replacement
+
+Interview Answer
+----------------
+
+"Low coupling minimizes dependencies between classes, making software easier to modify, test, and extend."
+
+
+
+=========================================================
+HIGH COHESION vs LOW COUPLING
+=========================================================
+
+High Cohesion
+
+• Inside one class
+• One responsibility
+• Related functionality together
+
+Low Coupling
+
+• Between classes
+• Few dependencies
+• Independent classes
+
+Golden Rule
+
+High Cohesion
+
++
+
+Low Coupling
+
+=
+
+Good Design
+
+
+
+=========================================================
+3. SEPARATION OF CONCERNS (SoC)
+=========================================================
+
+Definition
+----------
+
+Separate different responsibilities into different modules or layers.
+
+Each module focuses on one concern.
+
+Example
+
+E-commerce
+
+Presentation Layer
+
+↓
+
+Business Layer
+
+↓
+
+Data Access Layer
+
+Instead of mixing everything together.
+
+Advantages
+----------
+
+• Easy debugging
+• Easy maintenance
+• Better scalability
+• Better testing
+
+Real-world Example
+------------------
+
+Restaurant
+
+Chef
+
+↓
+
+Waiter
+
+↓
+
+Cashier
+
+Everyone has different responsibilities.
+
+Interview Answer
+----------------
+
+"SoC divides software into independent parts where each part handles a single concern."
+
+
+
+=========================================================
+4. INFORMATION HIDING
+=========================================================
+
+Definition
+----------
+
+Hide internal implementation details.
+
+Expose only what clients need.
+
+Achieved Using
+
+• private
+• protected
+• public
+
+Example
+
+class BankAccount
+{
+private:
+    double balance;
+
+public:
+    void deposit();
+    double getBalance();
+};
+
+User cannot directly modify balance.
+
+Advantages
+----------
+
+• Security
+• Prevent misuse
+• Better maintainability
+
+Real-world Example
+------------------
+
+ATM
+
+User sees
+
+Deposit()
+
+Withdraw()
+
+Balance remains hidden.
+
+Interview Answer
+----------------
+
+"Information hiding protects internal implementation and exposes only the necessary interface."
+
+
+
+=========================================================
+5. DRY
+=========================================================
+
+DRY
+
+=
+
+Don't Repeat Yourself
+
+Definition
+----------
+
+Avoid duplicate code.
+
+Bad Example
+-----------
+
+Tax calculation repeated
+
+Invoice.cpp
+
+Salary.cpp
+
+Order.cpp
+
+Good Example
+------------
+
+Create
+
+TaxCalculator
+
+Reuse everywhere.
+
+Advantages
+----------
+
+• Less bugs
+• Easy maintenance
+• One place to modify logic
+
+Interview Answer
+----------------
+
+"DRY recommends avoiding duplicated logic by placing common functionality in a single reusable location."
+
+
+
+=========================================================
+6. KISS
+=========================================================
+
+KISS
+
+=
+
+Keep It Simple, Stupid
+
+Definition
+----------
+
+Choose the simplest solution that works.
+
+Bad Example
+-----------
+
+Using
+
+Factory
+
+Builder
+
+Observer
+
+Strategy
+
+for a tiny calculator.
+
+Good Example
+------------
+
+Simple Calculator class.
+
+Advantages
+----------
+
+• Readable
+• Easy debugging
+• Less bugs
+• Faster development
+
+Interview Answer
+----------------
+
+"KISS encourages simple designs instead of unnecessarily complex solutions."
+
+
+
+=========================================================
+7. YAGNI
+=========================================================
+
+YAGNI
+
+=
+
+You Aren't Gonna Need It
+
+Definition
+----------
+
+Do not implement features until they are actually required.
+
+Bad Example
+-----------
+
+Building
+
+Chat
+
+Video Call
+
+Payments
+
+Analytics
+
+before customer requests them.
+
+Good Example
+------------
+
+Implement only current requirements.
+
+Advantages
+----------
+
+• Less code
+• Less maintenance
+• Faster delivery
+
+Interview Answer
+----------------
+
+"YAGNI advises implementing only the features required today rather than anticipating future needs."
+
+
+
+=========================================================
+8. PROGRAM TO AN INTERFACE
+=========================================================
+
+Definition
+----------
+
+Depend on abstractions,
+
+not concrete implementations.
+
+Bad Example
+-----------
+
+Computer
+
+↓
+
+Keyboard
+
+Good Example
+------------
+
+Computer
+
+↓
+
+InputDevice
+
+↓
+
+Keyboard
+
+Mouse
+
+TouchScreen
+
+Advantages
+----------
+
+• Loose coupling
+• Easy replacement
+• Better testing
+• Supports Dependency Injection
+
+Real-world Example
+------------------
+
+Payment
+
+↓
+
+Payment Interface
+
+↓
+
+UPI
+
+CreditCard
+
+PayPal
+
+Interview Answer
+----------------
+
+"Program to an interface means writing code against abstractions instead of concrete implementations."
+
+
+
+=========================================================
+9. FAVOR COMPOSITION OVER INHERITANCE
+=========================================================
+
+Definition
+----------
+
+Prefer HAS-A relationships instead of IS-A relationships whenever possible.
+
+Inheritance
+
+Dog IS-A Animal
+
+Composition
+
+Car HAS-A Engine
+
+Why?
+
+Composition
+
+• More flexible
+• Low coupling
+• Easier maintenance
+• Runtime behavior changes
+• Better testing
+
+Inheritance Problems
+
+• Tight coupling
+• Fragile base class
+• Deep hierarchy
+• Difficult maintenance
+
+Example
+
+Instead of
+
+class FlyingCar : public Car
+
+Use
+
+class Car
+{
+    Engine engine;
+    Navigation navigation;
+    MusicSystem music;
+};
+
+Interview Answer
+----------------
+
+"Composition provides greater flexibility and lower coupling than inheritance, so it should be preferred unless there is a true IS-A relationship."
+
+
+
+=========================================================
+SUMMARY TABLE
+=========================================================
+
+High Cohesion
+-------------
+Meaning:
+One class, one responsibility
+
+Goal:
+Related functionality together
+
+---------------------------------------------------------
+
+Low Coupling
+------------
+Meaning:
+Minimal dependency between classes
+
+Goal:
+Independent modules
+
+---------------------------------------------------------
+
+Separation of Concerns
+----------------------
+Meaning:
+Separate different responsibilities
+
+Goal:
+Independent layers/modules
+
+---------------------------------------------------------
+
+Information Hiding
+------------------
+Meaning:
+Hide implementation details
+
+Goal:
+Security and maintainability
+
+---------------------------------------------------------
+
+DRY
+---
+Meaning:
+Don't Repeat Yourself
+
+Goal:
+Reuse code
+
+---------------------------------------------------------
+
+KISS
+----
+Meaning:
+Keep It Simple
+
+Goal:
+Simple design
+
+---------------------------------------------------------
+
+YAGNI
+-----
+Meaning:
+Don't build unnecessary features
+
+Goal:
+Avoid over-engineering
+
+---------------------------------------------------------
+
+Program to Interface
+--------------------
+Meaning:
+Depend on abstractions
+
+Goal:
+Loose coupling
+
+---------------------------------------------------------
+
+Composition over Inheritance
+----------------------------
+Meaning:
+Prefer HAS-A over IS-A
+
+Goal:
+Flexibility and maintainability
+
+
+
+=========================================================
+MOST ASKED INTERVIEW QUESTIONS
+=========================================================
+
+Q1. What is Cohesion?
+
+The degree to which the responsibilities of a class are related.
+
+High cohesion is desirable.
+
+---------------------------------------------------------
+
+Q2. What is Coupling?
+
+The degree of dependency between classes.
+
+Low coupling is desirable.
+
+---------------------------------------------------------
+
+Q3. Difference between Cohesion and Coupling?
+
+Cohesion
+• Within a class
+• High is good
+
+Coupling
+• Between classes
+• Low is good
+
+---------------------------------------------------------
+
+Q4. What is DRY?
+
+Avoid duplicating code by keeping common logic in one place.
+
+---------------------------------------------------------
+
+Q5. What is KISS?
+
+Choose the simplest solution that satisfies the requirements.
+
+---------------------------------------------------------
+
+Q6. What is YAGNI?
+
+Implement only what is currently required, not speculative future features.
+
+---------------------------------------------------------
+
+Q7. What does "Program to an Interface" mean?
+
+Depend on interfaces or abstract classes rather than concrete implementations.
+
+---------------------------------------------------------
+
+Q8. Why prefer Composition over Inheritance?
+
+• Loose coupling
+• Better flexibility
+• Easier maintenance
+• Easier testing
+• Avoids fragile inheritance hierarchies
+
+=========================================================
+1-MINUTE INTERVIEW REVISION
+=========================================================
+
+High Cohesion
+→ One class, one responsibility
+
+Low Coupling
+→ Minimal dependency between classes
+
+Separation of Concerns
+→ Separate responsibilities into modules/layers
+
+Information Hiding
+→ Hide implementation, expose only the interface
+
+DRY
+→ Don't Repeat Yourself
+
+KISS
+→ Keep It Simple
+
+YAGNI
+→ Build only what is needed now
+
+Program to Interface
+→ Depend on abstractions, not implementations
+
+Composition over Inheritance
+→ Prefer HAS-A over IS-A
+
+Golden Rule for Good Design
+
+High Cohesion
++
+Low Coupling
++
+SOLID Principles
++
+Composition over Inheritance
+=
+Maintainable, Flexible, and Testable Software

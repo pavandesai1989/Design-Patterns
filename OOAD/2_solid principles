@@ -1,384 +1,466 @@
-=========================================================
-SOLID PRINCIPLES – INTERVIEW NOTES (FINAL)
-==========================================
 
-SOLID is a set of five Object-Oriented Design principles that help build software that is:
+************ S — Single Responsibility Principle (SRP)***************
+Meaning
 
-• Easy to maintain
-• Easy to extend
-• Loosely coupled
-• Highly cohesive
-• Testable
-• Scalable
+A class should have only one reason to change.
 
-=========================================================
-S → SINGLE RESPONSIBILITY PRINCIPLE (SRP)
-=========================================
+One class = one responsibility.
 
-## Definition
-
-"A class should have only ONE reason to change."
-
-## Meaning
-
-One Class = One Responsibility = One Job
-
-## Interview Example
-
-Bad
-
-class Invoice
+BAD CODE : 
+class Report
 {
 public:
-void calculateTotal();
-void printInvoice();
-void saveToDatabase();
+    void generateReport()
+    {
+        cout << "Generating report\n";
+    }
+
+    void saveToFile()
+    {
+        cout << "Saving report to file\n";
+    }
 };
 
-Good
+Problem
 
-class Invoice
+Report has 2 responsibilities:
+
+Generate report
+Save report
+
+If file-saving changes → class changes.
+
+GOOD EXAMPLE:
+class Report
 {
 public:
-void calculateTotal();
+    void generateReport()
+    {
+        cout << "Generating report\n";
+    }
 };
 
-class InvoicePrinter
+class ReportSaver
 {
 public:
-void printInvoice();
+    void saveToFile(Report& report)
+    {
+        cout << "Saving report to file\n";
+    }
 };
 
-class InvoiceRepository
-{
-public:
-void saveToDatabase();
-};
+Interview Line
 
-## Why?
+A class should do only one thing and have only one reason to change.
 
-Calculation, printing, and database operations are different responsibilities.
+***********2. O — Open/Closed Principle (OCP)******
+Meaning
 
-## Interview Answer
+Software should be:
 
-"SRP states that a class should have only one responsibility and therefore only one reason to change."
+Open for extension
+Closed for modification
 
-## Remember
+Add new behavior without changing old code.
 
-One Class = One Job
-
-=========================================================
-O → OPEN CLOSED PRINCIPLE (OCP)
-===============================
-
-## Definition
-
-"Software entities should be OPEN for extension but CLOSED for modification."
-
-## Meaning
-
-Add new functionality without modifying existing code.
-
-## Interview Example
-
-Bad
-
+BAD CODE:
 class Payment
 {
 public:
-void pay(string type)
-{
-if(type=="CreditCard")
-{
-}
-else if(type=="UPI")
-{
-}
-else if(type=="PayPal")
-{
-}
-}
+    void pay(string type)
+    {
+        if(type == "UPI")
+            cout << "UPI payment\n";
+        else if(type == "Card")
+            cout << "Card payment\n";
+    }
 };
 
-Good
+Problem
+Adding new payment type requires modifying existing code.
 
+GOOD CODE:
 class Payment
 {
 public:
-virtual void pay() = 0;
+    virtual void pay() = 0;
 };
 
-class CreditCard : public Payment {};
-class UPI : public Payment {};
-class PayPal : public Payment {};
-
-Need ApplePay?
-
-class ApplePay : public Payment {};
-
-## Why?
-
-Adding a new payment method requires creating a new class instead of modifying existing code.
-
-## Interview Answer
-
-"OCP means software should be open for extension but closed for modification."
-
-## Remember
-
-Extend, Don't Modify
-
-=========================================================
-L → LISKOV SUBSTITUTION PRINCIPLE (LSP)
-=======================================
-
-## Definition
-
-"Derived classes should be replaceable with their base class."
-
-## Meaning
-
-A child class should work correctly wherever the parent class is expected.
-
-## Interview Example
-
-Bad
-
-Bird
-|
-Penguin
-
-Bird has fly().
-
-Penguin cannot fly.
-
-Good
-
-Bird
-
-FlyingBird
-|
-Sparrow
-
-Penguin : Bird
-
-## Alternative Classic Example
-
-Rectangle → Square
-
-## Why?
-
-Only classes that truly satisfy the parent's behavior should inherit from it.
-
-## Interview Answer
-
-"LSP states that derived classes should be usable wherever the base class is expected without changing program correctness."
-
-## Remember
-
-Child should correctly replace Parent.
-
-=========================================================
-I → INTERFACE SEGREGATION PRINCIPLE (ISP)
-=========================================
-
-## Definition
-
-"Clients should not be forced to depend on methods they do not use."
-
-## Meaning
-
-Create small, focused interfaces.
-
-## Interview Example
-
-Bad
-
-class Machine
+class UPIPayment : public Payment
 {
 public:
-virtual void print() = 0;
-virtual void scan() = 0;
-virtual void fax() = 0;
+    void pay() override
+    {
+        cout << "UPI payment\n";
+    }
 };
 
-SimplePrinter must implement scan() and fax() unnecessarily.
-
-Good
-
-class Printer
+class CardPayment : public Payment
 {
 public:
-virtual void print() = 0;
+    void pay() override
+    {
+        cout << "Card payment\n";
+    }
 };
 
-class Scanner
+Interview Line
+
+Use abstraction/polymorphism to extend behavior without modifying existing code.
+
+**********************************L — Liskov Substitution Principle (LSP)*****************************************
+Meaning
+Derived class should be replaceable with base class without breaking behavior.
+
+👉 If Dog is a child of Animal, then wherever Animal is used, Dog should work correctly.
+
+#include <iostream>
+using namespace std;
+
+class Vehicle {
+public:
+    virtual void refuel() {
+        cout << "Refueling vehicle\n";
+    }
+};
+
+class PetrolCar : public Vehicle {
+};
+
+class ElectricCar : public Vehicle {
+public:
+    void refuel() override {
+        throw runtime_error("Electric car doesn't use fuel");
+    }
+};
+
+void fuelVehicle(Vehicle* v) {
+    v->refuel();
+}
+
+int main() {
+    PetrolCar p;
+    ElectricCar e;
+
+    fuelVehicle(&p); // OK
+    fuelVehicle(&e); // Problem
+}
+
+Why issue?
+
+Base class vehicle says:
+
+Every vehicle can refuel().
+
+But electriccar cannot truly refuel.
+It changes expected behavior.
+
+but if someone writes 
+fuelVehicle(&e); // Problem
+
+they expect normal refueling behavior from base contract.
+
+But derived class breaks that expectation.
+
+That is an LSP violatio
+
+******INTERVIEW LINE****
+Interview Explanation
+
+Parent class promised:
+
+All vehicles can refuel
+
+But child class failed to support it.
+
+So derived object cannot replace base object safely.
+
+→ LSP violated.
+
+Interview explanation (important):
+
+You can say:
+
+Base class should represent behavior common to all derived classes.
+Here refuel() is not applicable to electric cars.
+So electriccar should not inherit a contract requiring refuel().
+
+***Better design:
+
+Not every vehicle should have refuel().
+
+Separate behaviors.
+#include <iostream>
+using namespace std;
+
+class vehicle
 {
 public:
-virtual void scan() = 0;
+    virtual void start()
+    {
+        cout << "start vehicle" << endl;
+    }
 };
 
-class Fax
+class fuelvehicle : public vehicle
 {
 public:
-virtual void fax() = 0;
+    virtual void refuel()
+    {
+        cout << "refuel vehicle" << endl;
+    }
 };
 
-SimplePrinter implements only Printer.
-
-## Why?
-
-A class should implement only the operations it actually needs.
-
-## Interview Answer
-
-"ISP recommends creating small, focused interfaces so clients implement only the functionality they require."
-
-## Remember
-
-Small Interfaces
-
-=========================================================
-D → DEPENDENCY INVERSION PRINCIPLE (DIP)
-========================================
-
-## Definition
-
-"High-level modules should not depend on low-level modules.
-Both should depend on abstractions."
-
-## Meaning
-
-Depend on interfaces, not concrete implementations.
-
-## Interview Example
-
-Bad
-
-class Computer
+class petrolcar : public fuelvehicle
 {
-Keyboard keyboard;
 };
 
-Good
+class electriccar : public vehicle
+{
+};
 
-class InputDevice
+void processcar(fuelvehicle* p)
+{
+    p->refuel();
+}
+
+int main()
+{
+    petrolcar p1;
+    processcar(&p1);
+
+    electriccar e1;
+    // processcar(&e1); ❌ not allowed
+
+    return 0;
+}
+
+This is proper LSP.
+
+Because:
+
+Only fuel vehicles support refuel()
+Electric cars are not forced to implement invalid behavior
+
+This type of example is very interview-friendly because it is:
+
+simple
+realistic
+clearly shows wrong inheritance design.
+
+***********4. I — Interface Segregation Principle (ISP)
+Meaning
+Clients should not be forced to depend on interfaces they don't use.
+
+Large interfaces → split into smaller ones.
+
+BAD CODE:
+class Payment
 {
 public:
-virtual void input() = 0;
+    virtual void pay() = 0;
+    virtual void cashback() = 0;
 };
 
-class Keyboard : public InputDevice {};
-class Mouse : public InputDevice {};
-class TouchScreen : public InputDevice {};
-
-class Computer
+Some payment methods may not support cashback.
+class Payment
 {
-private:
-InputDevice* device;
+public:
+    virtual void pay() = 0;
 };
 
-## Why?
+class Cashback
+{
+public:
+    virtual void cashback() = 0;
+};
 
-The Computer can work with any input device without changing its code.
+***5. D — Dependency Inversion Principle (DIP)
+Meaning
+High-level modules should not depend on low-level modules.
 
-## Interview Answer
+Both should depend on abstraction.
 
-"DIP states that high-level modules should depend on abstractions rather than concrete implementations."
 
-## Remember
+Message Service
+BAD CODE:
+#include <iostream>
+using namespace std;
 
-Depend on Abstractions
+class EmailService
+{
+public:
+    void sendMessage()
+    {
+        cout << "Email sent\n";
+    }
+};
 
-=========================================================
-SOLID SUMMARY TABLE
-===================
+class Notification
+{
+    EmailService email;
 
-## S → Single Responsibility Principle
+public:
+    void notify()
+    {
+        email.sendMessage();
+    }
+};
 
-One Class = One Job
+int main()
+{
+    Notification n;
+    n.notify();
+}
+
+Problem:
+
+Notification directly depends on EmailService
+Cannot easily switch to:
+SMS
+WhatsApp
+Push notification
+
+Violates DIP.
+
+good code:
+#include <iostream>
+using namespace std;
+
+class MessageService
+{
+public:
+    virtual void sendMessage() = 0;
+};
+
+class EmailService : public MessageService
+{
+public:
+    void sendMessage() override
+    {
+        cout << "Email sent\n";
+    }
+};
+
+class SMSService : public MessageService
+{
+public:
+    void sendMessage() override
+    {
+        cout << "SMS sent\n";
+    }
+};
+
+class Notification
+{
+    MessageService* service;
+
+public:
+    Notification(MessageService* s) : service(s)
+    {
+    }
+
+    void notify()
+    {
+        service->sendMessage();
+    }
+};
+
+int main()
+{
+    EmailService email;
+    Notification n1(&email);
+    n1.notify();
+
+    SMSService sms;
+    Notification n2(&sms);
+    n2.notify();
+}
+
+Interview Explanation
+Notification = high-level module
+EmailService, SMSService = low-level modules
+MessageService = abstraction
+
+Now high-level class depends on interface, not concrete class.
+
+This follows DIP.
+
+One-line Interview Definition
+
+Dependency Inversion Principle says high-level modules should depend on abstractions, not concrete implementations.
+
+
+*********SUMMARY****
+SOLID Principles (Quick Revision)
+
+S — Single Responsibility Principle (SRP)
+→ One class should have only one responsibility / one reason to change.
 
 Example:
-Invoice
+Report class only generates report.
+ReportSaver class saves report.
 
-Keyword:
-One Responsibility
+-----------------------------------
 
----
+O — Open/Closed Principle (OCP)
+→ Open for extension, closed for modification.
 
-## O → Open Closed Principle
+Add new functionality without changing existing code.
 
-Open for Extension
-Closed for Modification
+Use:
+Inheritance + Polymorphism
 
-Example:
-Payment Methods
+-----------------------------------
 
-Keyword:
-Extend, Don't Modify
+L — Liskov Substitution Principle (LSP)
+→ Derived class should safely replace base class.
 
----
-
-## L → Liskov Substitution Principle
-
-Child should correctly replace Parent.
+If child breaks expected behavior → LSP violation.
 
 Example:
-Bird → Penguin
+Penguin should not inherit FlyingBird.
 
-Alternative:
-Rectangle → Square
+-----------------------------------
 
-Keyword:
-Substitutability
+I — Interface Segregation Principle (ISP)
+→ Don't force classes to implement unused methods.
 
----
-
-## I → Interface Segregation Principle
-
-Create small interfaces.
+Prefer small interfaces over large/fat interfaces.
 
 Example:
-Printer / Scanner / Fax
+Robot should not implement eat().
 
-Keyword:
-Don't force unnecessary methods
+-----------------------------------
 
----
+D — Dependency Inversion Principle (DIP)
+→ Depend on abstraction, not concrete class.
 
-## D → Dependency Inversion Principle
-
-Depend on abstractions, not implementations.
+Use interfaces/abstract classes.
 
 Example:
-Computer → InputDevice
+Computer depends on InputDevice, not Keyboard.
 
-Keyword:
-Loose Coupling
+-----------------------------------
 
-=========================================================
-1-MINUTE INTERVIEW REVISION
-===========================
+Easy Memory Trick
 
-S → One Class = One Job
-Example: Invoice
+S → Single responsibility
+O → Open/Closed
+L → Replace safely
+I → Small interfaces
+D → Depend on abstraction
 
-O → Extend without modifying
-Example: Payment
+-----------------------------------
 
-L → Child should replace Parent correctly
-Example: Bird → Penguin
+Most Used in Real Projects
+SRP + OCP + DIP
 
-I → Small Interfaces
-Example: Printer / Scanner / Fax
+-----------------------------------
 
-D → Depend on Abstractions
-Example: Computer → InputDevice
-
-Mnemonic
-
-S → One Job
-O → Extend
-L → Replace
-I → Small Interfaces
-D → Abstractions
+Commonly Used C++ Features
+- Virtual functions
+- Abstract classes
+- Polymorphism
+- Composition
+- Dependency Injection

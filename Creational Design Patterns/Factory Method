@@ -1,3 +1,13 @@
+
+Interview short answer:
+
+"Factory Method is needed to hide object creation logic from the client. 
+It reduces coupling by making the client depend on abstractions instead of concrete classes. 
+It also follows the Open/Closed Principle, because adding new object types does not require modifying existing client code."
+
+Even shorter:
+
+"Factory Method separates object creation from usage, avoids tight coupling, and makes the system easy to extend."
 Factory Method:
 
 
@@ -70,14 +80,107 @@ WITHOUT FACTORY METHOD:
 
 Example:
 
+#include <iostream>
+using namespace std;
+
+
+// Product Interface
+
+class Vehicle
+{
+public:
+
+    virtual void printVehicle() = 0;
+
+    virtual ~Vehicle() = default;
+};
+
+
+// Concrete Products
+
+class TwoWheeler : public Vehicle
+{
+public:
+
+    void printVehicle() override
+    {
+        cout << "Two Wheeler" << endl;
+    }
+};
+
+
+class FourWheeler : public Vehicle
+{
+public:
+
+    void printVehicle() override
+    {
+        cout << "Four Wheeler" << endl;
+    }
+};
+
+
+// Client directly creates objects
+
 class Client
 {
-    if(type == 1)
-        obj = new TwoWheeler();
+private:
 
-    else if(type == 2)
-        obj = new FourWheeler();
+    Vehicle* vehicle;
+
+
+public:
+
+    Client(int type)
+    {
+        // Client knows concrete classes
+
+        if(type == 1)
+        {
+            vehicle = new TwoWheeler();
+        }
+        else if(type == 2)
+        {
+            vehicle = new FourWheeler();
+        }
+        else
+        {
+            vehicle = nullptr;
+        }
+    }
+
+
+    void show()
+    {
+        if(vehicle)
+        {
+            vehicle->printVehicle();
+        }
+    }
+
+
+    ~Client()
+    {
+        delete vehicle;
+    }
 };
+
+
+
+int main()
+{
+    Client c1(1);
+
+    c1.show();
+
+
+    Client c2(2);
+
+    c2.show();
+
+
+    return 0;
+}
 
 
 

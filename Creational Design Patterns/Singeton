@@ -98,9 +98,15 @@ public:
 Singleton* Singleton::instance = nullptr;
 std::mutex Singleton::mtx;
 --------------------------------------------------------
+Pros:
+- Lazy initialization.
+- Thread-safe using a mutex.
+- Ensures only one instance is created.
 
-PROBLEM:
-- Every call locks mutex → performance overhead
+Drawbacks
+❌ Every call acquires the mutex, even after the object has already been created.
+❌ Uses manual memory management (new without delete).
+❌ Slower than the modern C++ solution.
 
 TIME:
 O(1) but slow due to locking
@@ -143,15 +149,20 @@ Singleton* Singleton::instance = nullptr;
 std::mutex Singleton::mtx;
 --------------------------------------------------------
 
-PROBLEM:
-- Complex
-- Historically tricky (older C++ memory issues)
+1. Thread-safe initialization
+--------------------------------
+- Mutex ensures only one thread creates the object.
+- The second check prevents duplicate creation.
 
-TIME:
-Fast after initialization
+2. Better performance than locking every call
+--------------------------------
+- After initialization, most calls avoid acquiring the mutex.
+- Only the first creation requires locking.
 
-SPACE:
-Heap + mutex
+3. Lazy initialization
+--------------------------------
+- Object is created only when getInstance() is called.
+- Saves memory if Singleton is never used.
 
 ========================================================
 5. EAGER INITIALIZATION (ALWAYS CREATED)
@@ -180,18 +191,19 @@ public:
 Singleton Singleton::instance;
 --------------------------------------------------------
 
-PROS:
-- Thread-safe
-- Simple
+Eager Initialization Singleton
 
-CONS:
-- Created even if never used (waste memory)
+Pros:
+✔ Thread-safe
+✔ Simple implementation
+✔ No mutex required
+✔ No memory leak (automatic destruction)
+✔ Fast access
 
-TIME:
-Created at startup
-
-SPACE:
-Always allocated
+Cons:
+✘ Not lazy (created even if unused)
+✘ May waste memory/resources
+✘ Static initialization order issues
 
 ========================================================
 6. MODERN BEST WAY (MOST IMPORTANT IN INTERVIEWS)
@@ -236,18 +248,23 @@ int main() {
 }
 --------------------------------------------------------
 
-WHY BEST:
-- Lazy initialization
-- Thread-safe (C++11 guarantee)
-- No mutex
-- No manual memory management
-- No leaks
+Meyers' Singleton
 
-TIME:
-O(1)
+Pros:
+✔ Lazy initialization
+✔ Thread-safe (C++11+)
+✔ No mutex required
+✔ No memory leak (automatic destruction)
+✔ Simple and fast
 
-SPACE:
-Single static object
+Cons:
+✘ Global state
+✘ Harder to test
+✘ Limited lifetime control
+
+Why best:
+- Provides lazy + thread-safe creation with minimal code.
+- Avoids mutex complexity and manual memory management.
 
 ========================================================
 7. COMPARISON TABLE (VERY IMPORTANT)

@@ -1,363 +1,588 @@
+====================================================
 FACTORY METHOD DESIGN PATTERN (C++ INTERVIEW NOTES)
 ====================================================
 
-1. WHAT IS FACTORY METHOD?
-----------------------------------------------------
-Factory Method is a creational design pattern that:
-- Defines an interface for object creation
-- Lets subclasses decide which object to create
-- Moves object creation away from client code
-
-CORE IDEA:
-Client does NOT create objects directly.
-Factory decides which object to create.
 
 ====================================================
+1. WHAT IS FACTORY METHOD?
+====================================================
 
-2. WHY DO WE NEED IT?
-----------------------------------------------------
+Factory Method is a creational design pattern that:
+
+- Defines an interface for creating objects.
+- Lets derived classes decide which concrete object to create.
+- Separates object creation logic from client code.
+
+CORE IDEA:
+
+Client should not create concrete objects directly.
+
+Instead:
+
+Client → Factory → Product
+
+
+The client only knows the interface, not the actual implementation.
+
+
+====================================================
+2. WHY DO WE NEED FACTORY METHOD?
+====================================================
 
 WITHOUT FACTORY METHOD:
 
-Client code:
-if(type == 1) new A();
-else if(type == 2) new B();
+Example:
+
+class Client
+{
+    if(type == 1)
+        obj = new TwoWheeler();
+
+    else if(type == 2)
+        obj = new FourWheeler();
+};
+
 
 PROBLEMS:
-- Tight coupling with concrete classes
-- Violates Open/Closed Principle
-- Every new class requires modifying client code
-- Client must be recompiled again and again
-- Not scalable for large systems
+
+1. Tight coupling
+-----------------
+Client directly depends on concrete classes.
+
+Client knows:
+- TwoWheeler
+- FourWheeler
+
+
+2. Violates Open/Closed Principle
+---------------------------------
+Open for extension,
+Closed for modification.
+
+
+Example:
+
+New class added:
+
+class ThreeWheeler
+
+
+Without Factory:
+
+Need to modify Client:
+
+if(type == 3)
+    obj = new ThreeWheeler();
+
+
+Every new class requires:
+- Client modification
+- Recompilation
+- Testing again
+
+
+3. Not scalable
+---------------
+Large systems may have hundreds of object types.
+
+Object creation logic becomes complex.
+
 
 ====================================================
+3. REAL WORLD EXAMPLE
+====================================================
 
-3. REAL-LIFE EXAMPLE
-----------------------------------------------------
-Vehicle manufacturing system:
+Vehicle Manufacturing System
 
-User says:
-"I want a vehicle"
 
-System decides:
+User:
+
+"I need a vehicle"
+
+
+System internally decides:
+
 - Bike
 - Car
 - Truck
 
-User does NOT know how objects are created internally.
+
+User does not know:
+- Which class is created
+- How object is created
+
 
 ====================================================
-
-4. CORE FLOW
-----------------------------------------------------
-Client → Factory → Product
-
-NOT:
-Client → if-else → Product ❌
-
+4. FACTORY METHOD FLOW
 ====================================================
 
-5. STRUCTURE
-----------------------------------------------------
 
-1. Product (Interface)
-2. Concrete Products (implementations)
-3. Factory (creates objects)
+WITHOUT FACTORY:
+
+Client
+  |
+  |
+if-else
+  |
+  |
+Concrete Object
+
+
+Problem:
+Client knows everything.
+
+
+----------------------------------------------
+
+
+WITH FACTORY METHOD:
+
+
+Client
+
+  |
+
+Factory Interface
+
+  |
+
+Concrete Factory
+
+  |
+
+Concrete Product
+
 
 ====================================================
-
-6. C++ IMPLEMENTATION (FACTORY METHOD)
+5. FACTORY METHOD STRUCTURE
 ====================================================
 
--------------------------
-PRODUCT
--------------------------
-class Vehicle {
-public:
-    virtual void printVehicle() = 0;
-    virtual ~Vehicle() {}
-};
 
--------------------------
-CONCRETE PRODUCTS
--------------------------
-class TwoWheeler : public Vehicle {
-public:
-    void printVehicle() override {
-        cout << "Two Wheeler" << endl;
-    }
-};
+Components:
 
-class FourWheeler : public Vehicle {
-public:
-    void printVehicle() override {
-        cout << "Four Wheeler" << endl;
-    }
-};
+1. Product Interface
 
--------------------------
-FACTORY INTERFACE
--------------------------
-class VehicleFactory {
-public:
-    virtual Vehicle* createVehicle() = 0;
-    virtual ~VehicleFactory() {}
-};
+   Common interface for all objects.
 
--------------------------
-CONCRETE FACTORIES
--------------------------
-class TwoWheelerFactory : public VehicleFactory {
-public:
-    Vehicle* createVehicle() override {
-        return new TwoWheeler();
-    }
-};
 
-class FourWheelerFactory : public VehicleFactory {
-public:
-    Vehicle* createVehicle() override {
-        return new FourWheeler();
-    }
-};
+2. Concrete Products
 
--------------------------
-CLIENT
--------------------------
-class Client {
-    Vehicle* vehicle;
+   Actual implementations.
 
-public:
-    Client(VehicleFactory* factory) {
-        vehicle = factory->createVehicle();
-    }
 
-    Vehicle* getVehicle() {
-        return vehicle;
-    }
-};
+3. Factory Interface
 
--------------------------
-MAIN
--------------------------
-int main() {
+   Defines object creation method.
 
-    TwoWheelerFactory tf;
-    Client c1(&tf);
-    c1.getVehicle()->printVehicle();
 
-    FourWheelerFactory ff;
-    Client c2(&ff);
-    c2.getVehicle()->printVehicle();
+4. Concrete Factories
 
-    return 0;
-}
+   Decide which object to create.
+
 
 ====================================================
-
-7. BENEFITS
-----------------------------------------------------
-- Loose coupling
-- Easy to extend (no modification to existing code)
-- Follows Open/Closed Principle
-- Better maintainability
-- Scalable architecture
-
+6. FACTORY METHOD C++ IMPLEMENTATION
 ====================================================
 
-8. FACTORY METHOD vs SIMPLE FACTORY
-----------------------------------------------------
 
-SIMPLE FACTORY:
-- Uses if-else or switch
-- Single factory class
-- Not fully OCP compliant
-
-FACTORY METHOD:
-- Uses inheritance
-- Each factory creates its own object
-- Fully OCP compliant
-
-====================================================
-
-9. REAL WORLD USE CASES
-----------------------------------------------------
-- GUI frameworks (buttons, windows)
-- Payment systems (UPI, Card, PayPal)
-- Database drivers
-- Logging frameworks
-- Game object creation systems
-
-====================================================
-
-10. ONE-LINE INTERVIEW ANSWER
-----------------------------------------------------
-Factory Method defines an interface for creating objects but lets subclasses decide which class to instantiate, promoting loose coupling and Open/Closed Principle.
-
-====================================================
-
-11. MEMORY TRICK
-----------------------------------------------------
-Client → Factory → Product
-
-NOT:
-Client → if-else → Product ❌
-
-====================================================
-
-****EXTRA****
-
-
-
-/*
-The Factory Method pattern is a design pattern used to define a runtime interface for creating an object. It’s called a factory because it creates various types of objects
-without necessarily knowing what kind of object it creates or how to create it.
-*/
-
-***************** NEED**********
 #include <iostream>
-using namespace std;
- 
-// Library classes
-class Vehicle {
-public:
-    virtual void printVehicle() = 0;
-};
-class TwoWheeler : public Vehicle {
-public:
-    void printVehicle()  {
-        cout << "I am two wheeler" << endl;
-    }
-};
-class FourWheeler : public Vehicle {
-    public:
-    void printVehicle()  {
-        cout << "I am four wheeler" << endl;
-    }
-};
- 
-// Client (or user) class
-class Client {
-public:
-    Client(int type)  {
- 
-        // Client explicitly creates classes according to type
-        if (type == 1)
-            pVehicle = new TwoWheeler();
-        else if (type == 2)
-            pVehicle = new FourWheeler();
-        else
-            pVehicle = NULL;
-    }
- 
-    ~Client()   {
-        if (pVehicle)
-        {
-            delete[] pVehicle;
-            pVehicle = NULL;
-        }
-    }
- 
-    Vehicle* getVehicle() {
-        return pVehicle;
-    }
-private:
-    Vehicle *pVehicle;
-};
- 
-// Driver program
-int main() {
-    Client *pClient = new Client(1);
-    Vehicle * pVehicle = pClient->getVehicle();
-    pVehicle->printVehicle();
-    return 0;
-}
-
-
-What are the problems with the above design? 
-As you must have observed in the above example, the Client creates objects of either TwoWheeler or FourWheeler based on some input during constructing
-its object. 
-Say, the library introduces a new class ThreeWheeler to incorporate three-wheeler vehicles also. What would happen? The client will end up
-chaining a new else if in the conditional ladder to create objects of ThreeWheeler. Which in turn will need the Client to be recompiled. So, each 
-time a new change is made at the library side, the Client would need to make some corresponding changes at its end and recompile the code. Sounds bad? 
-This is a very bad practice of design.
-
-*************************************
-
-#include<iostream>
+#include <memory>
 
 using namespace std;
 
-enum VehicleType
-{
-	VT_TwoWheeler,
-	VT_ThreeWheeler,
-	VT_FourWheeler
-};
+
+
+====================================================
+PRODUCT INTERFACE
+====================================================
 
 
 class Vehicle
 {
 public:
-	virtual void PrintVehicle() = 0;
+
+    virtual void printVehicle() = 0;
+
+    virtual ~Vehicle() = default;
 };
 
-class TwoWheeler:public Vehicle
+
+
+====================================================
+CONCRETE PRODUCTS
+====================================================
+
+
+class TwoWheeler : public Vehicle
 {
 public:
-	void PrintVehicle()
-	{
-		cout<<"I am Two wheeler"<<endl;
-	}
+
+    void printVehicle() override
+    {
+        cout<<"Two Wheeler"<<endl;
+    }
 };
 
-class ThreeWheeler:public Vehicle
+
+
+class FourWheeler : public Vehicle
 {
 public:
-	void PrintVehicle()
-	{
-		cout<<"I am Three wheeler"<<endl;
-	}
+
+    void printVehicle() override
+    {
+        cout<<"Four Wheeler"<<endl;
+    }
 };
 
-class Fourwheeler:public Vehicle
+
+
+====================================================
+FACTORY INTERFACE
+====================================================
+
+
+class VehicleFactory
 {
 public:
-	void PrintVehicle()
-	{
-		cout<<"I am Four wheeler"<<endl;
-	}
+
+    virtual unique_ptr<Vehicle> createVehicle() = 0;
+
+    virtual ~VehicleFactory() = default;
 };
 
-class Factory
+
+
+====================================================
+CONCRETE FACTORIES
+====================================================
+
+
+class TwoWheelerFactory : public VehicleFactory
 {
 public:
-	Factory()
-	{
-		cout<<"I am factory "<<endl;
-	}
+
+    unique_ptr<Vehicle> createVehicle() override
+    {
+        return make_unique<TwoWheeler>();
+    }
+};
+
+
+
+class FourWheelerFactory : public VehicleFactory
+{
+public:
+
+    unique_ptr<Vehicle> createVehicle() override
+    {
+        return make_unique<FourWheeler>();
+    }
+};
+
+
+
+====================================================
+CLIENT
+====================================================
+
+
+class Client
+{
+
+private:
+
+    unique_ptr<Vehicle> vehicle;
+
 
 public:
-	static Vehicle* GetVehicle(VehicleType type)
-	{
-		if(type == VT_TwoWheeler)
-			return new TwoWheeler;
-		else if(type == VT_ThreeWheeler)
-			return new ThreeWheeler;
-		else if(type == VT_FourWheeler)
-			return new Fourwheeler;
-	}
+
+    Client(VehicleFactory& factory)
+    {
+        vehicle = factory.createVehicle();
+    }
+
+
+    void show()
+    {
+        vehicle->printVehicle();
+    }
+
 };
+
+
+
+====================================================
+MAIN
+====================================================
 
 
 int main()
 {
-	VehicleType type = VT_FourWheeler;
 
-	Vehicle *pVehicle = Factory::GetVehicle(type);
+    TwoWheelerFactory twoFactory;
 
-	pVehicle->PrintVehicle();
+    Client c1(twoFactory);
+
+    c1.show();
 
 
-	return 0;
+
+    FourWheelerFactory fourFactory;
+
+    Client c2(fourFactory);
+
+    c2.show();
+
+
+    return 0;
 }
+
+
+====================================================
+7. HOW FACTORY METHOD SOLVES THE PROBLEM?
+====================================================
+
+
+Before:
+
+Client creates objects directly.
+
+Client
+ |
+ |
+TwoWheeler
+FourWheeler
+
+
+Problem:
+Tight coupling.
+
+
+
+After:
+
+Client only knows interface.
+
+Client
+ |
+ |
+VehicleFactory
+ |
+ |
+Concrete Factory
+ |
+ |
+Vehicle
+
+
+Benefits:
+
+- Client does not depend on concrete classes.
+- New products can be added easily.
+- Existing client code does not change.
+
+
+
+Example:
+
+Add:
+
+class ThreeWheeler : public Vehicle
+
+
+Create:
+
+class ThreeWheelerFactory : public VehicleFactory
+
+
+No client modification required.
+
+
+====================================================
+8. BENEFITS
+====================================================
+
+
+✔ Loose coupling
+
+✔ Follows Open/Closed Principle
+
+✔ Easy extension
+
+✔ Better maintainability
+
+✔ Centralized object creation
+
+✔ Cleaner architecture
+
+
+
+====================================================
+9. FACTORY METHOD vs SIMPLE FACTORY
+====================================================
+
+
+SIMPLE FACTORY:
+
+Example:
+
+Factory::create(type)
+
+
+Implementation:
+
+if(type == CAR)
+    return new Car();
+
+else if(type == BIKE)
+    return new Bike();
+
+
+
+Characteristics:
+
+- One factory class.
+- Uses if/else or switch.
+- Easy initially.
+- Adding new types requires modifying factory.
+- Not fully OCP compliant.
+
+
+
+----------------------------------------------
+
+
+FACTORY METHOD:
+
+
+Characteristics:
+
+- Uses inheritance.
+- Each factory creates one type of object.
+- Adding new products requires adding new factory.
+- Existing code remains unchanged.
+- Follows OCP better.
+
+
+
+====================================================
+10. REAL WORLD USE CASES
+====================================================
+
+
+- Vehicle creation systems
+
+- GUI frameworks
+
+  ButtonFactory:
+    WindowsButton
+    MacButton
+
+
+- Payment systems:
+
+  PaymentFactory:
+
+    UPI
+    CreditCard
+    PayPal
+
+
+- Database drivers:
+
+  MySQLConnectionFactory
+  OracleConnectionFactory
+
+
+- Logging frameworks
+
+
+- Game object creation
+
+
+====================================================
+11. INTERVIEW ONE-LINER
+====================================================
+
+
+"Factory Method is a creational pattern that defines an interface
+for creating objects but allows subclasses to decide which concrete
+class should be instantiated. It reduces coupling and follows the
+Open/Closed Principle."
+
+
+====================================================
+12. MEMORY TRICK
+====================================================
+
+
+Remember:
+
+
+Client → Factory → Product
+
+
+NOT:
+
+
+Client → if-else → Concrete Object ❌
+
+
+====================================================
+13. KEY INTERVIEW POINTS
+====================================================
+
+
+Q: Why not create objects directly?
+
+Answer:
+
+"Direct creation couples the client with concrete classes.
+Factory Method hides object creation and allows new types without
+modifying existing client code."
+
+
+Q: Why is it called Factory Method?
+
+Answer:
+
+"Because object creation is delegated to a factory method,
+which subclasses can override to create different products."
+
+
+Q: Is Simple Factory a Factory Method?
+
+Answer:
+
+"No. Simple Factory uses a single factory with if/switch logic.
+Factory Method uses inheritance and separate factories."
+
+
+====================================================
+FINAL SUMMARY
+====================================================
+
+Factory Method:
+
+Purpose:
+- Hide object creation.
+
+
+Main benefit:
+- Loose coupling.
+
+
+Pattern type:
+- Creational Design Pattern.
+
+
+Most important concepts:
+- Interface based design
+- OCP
+- Polymorphism
+- Dependency inversion
+
+
+Priority:
+⭐⭐⭐⭐⭐ Must know for LLD interviews

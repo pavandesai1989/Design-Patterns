@@ -1,0 +1,312 @@
+=========================================================
+DESIGN PRINCIPLES - MOST ASKED INTERVIEW QUESTIONS
+=========================================================
+
+Q1. What is SOLID?
+---------------------------------------------------------
+
+Answer:
+
+SOLID is a set of five object-oriented design principles that
+help build maintainable, flexible and extensible software.
+
+S - Single Responsibility Principle
+O - Open/Closed Principle
+L - Liskov Substitution Principle
+I - Interface Segregation Principle
+D - Dependency Inversion Principle
+
+
+=========================================================
+Q2. What is Coupling?
+---------------------------------------------------------
+
+Answer:
+
+Coupling is the degree of dependency between two classes.
+
+Low coupling means classes depend as little as possible
+on each other.
+
+Lower coupling improves maintainability, testing and flexibility.
+
+
+=========================================================
+Q3. What is Cohesion?
+---------------------------------------------------------
+
+Answer:
+
+Cohesion measures how closely related the responsibilities
+inside a class are.
+
+High cohesion means a class has one well-defined responsibility.
+
+High cohesion makes code easier to understand, maintain and reuse.
+
+
+=========================================================
+Q4. High Cohesion vs Low Coupling?
+---------------------------------------------------------
+
+Answer:
+
+High Cohesion:
+- Inside a class
+- One clear responsibility
+
+Low Coupling:
+- Between classes
+- Minimal dependencies
+
+Good software design aims for:
+
+High Cohesion
++
+Low Coupling
+
+
+=========================================================
+Q5. Why prefer Composition over Inheritance?
+---------------------------------------------------------
+
+Answer:
+
+Composition is preferred because it provides better flexibility
+and lower coupling.
+
+Behavior can be changed by replacing composed objects instead
+of modifying the inheritance hierarchy.
+
+Inheritance represents an "is-a" relationship.
+
+Composition represents a "has-a" relationship.
+
+Prefer composition unless inheritance truly models an "is-a" relationship.
+
+
+=========================================================
+Q6. What is Tight Coupling?
+---------------------------------------------------------
+
+Answer:
+
+Two classes are tightly coupled when one class directly depends
+on another concrete class.
+
+Any change in one class may require changes in the other.
+
+Example:
+
+Notification --> EmailService
+
+Instead, depend on an abstraction.
+
+
+=========================================================
+Q7. What is Loose Coupling?
+---------------------------------------------------------
+
+Answer:
+
+Loose coupling means classes communicate through interfaces
+or abstractions instead of concrete implementations.
+
+Benefits:
+- Easy maintenance
+- Easy testing
+- Easy replacement
+- Better scalability
+
+
+=========================================================
+Q8. What is Programming to an Interface?
+---------------------------------------------------------
+
+Answer:
+
+Code should depend on abstractions rather than concrete classes.
+
+Instead of:
+
+Notification --> EmailService
+
+Use:
+
+Notification --> MessageService
+
+This improves flexibility and follows Dependency Inversion Principle.
+
+
+=========================================================
+Q9. What is Open/Closed Principle?
+---------------------------------------------------------
+
+Answer:
+
+Software entities should be:
+
+Open for extension
+Closed for modification.
+
+Add new functionality by extending existing code rather than
+changing tested code.
+
+Example:
+
+Adding UPI payment should require creating a new class,
+not modifying existing payment logic.
+
+
+=========================================================
+Q10. Why are virtual destructors important?
+---------------------------------------------------------
+
+Answer:
+
+When deleting an object through a base class pointer,
+the base class destructor must be virtual.
+
+Otherwise, the derived destructor may not execute,
+leading to resource leaks or undefined behavior.
+
+
+=========================================================
+Q11. Why use Interfaces (Abstract Classes)?
+---------------------------------------------------------
+
+Answer:
+
+Interfaces provide abstraction.
+
+They:
+- Reduce coupling
+- Support polymorphism
+- Improve extensibility
+- Enable Dependency Inversion
+- Simplify testing
+
+
+=========================================================
+Q12. Why use Design Patterns?
+---------------------------------------------------------
+
+Answer:
+
+Design patterns are proven solutions to common software
+design problems.
+
+Benefits:
+- Reusable solutions
+- Better maintainability
+- Flexible architecture
+- Improved communication among developers
+
+
+=========================================================
+Q13. Factory Method vs Abstract Factory?
+---------------------------------------------------------
+
+Factory Method:
+- Creates one product.
+- One factory creates one object.
+
+Example:
+VehicleFactory -> Car
+
+Abstract Factory:
+- Creates a family of related products.
+
+Example:
+WindowsFactory ->
+    WindowsButton
+    WindowsScrollbar
+
+
+=========================================================
+Q14. Builder vs Factory Method?
+---------------------------------------------------------
+
+Factory Method:
+- Creates an object in one step.
+
+Builder:
+- Builds a complex object step by step.
+
+Example:
+
+Factory:
+createCar()
+
+Builder:
+setEngine()
+setBody()
+setSeats()
+build()
+
+
+=========================================================
+Q15. Singleton Drawbacks?
+---------------------------------------------------------
+
+Answer:
+
+- Global state
+- Harder to test
+- Hidden dependencies
+- Can become a bottleneck in multithreaded applications
+- Lifetime is difficult to control
+
+
+=========================================================
+Q16. What is Dependency Injection?
+---------------------------------------------------------
+
+Answer:
+
+Dependency Injection means dependencies are provided from outside
+instead of creating them inside the class.
+
+Example:
+
+Notification(MessageService*)
+
+instead of
+
+Notification creates EmailService itself.
+
+Benefits:
+- Loose coupling
+- Better testing
+- Follows Dependency Inversion Principle
+
+
+=========================================================
+Q17. Why avoid "new" inside business logic?
+---------------------------------------------------------
+
+Answer:
+
+Using "new" directly tightly couples the class to a concrete implementation.
+
+Instead:
+- Inject dependencies
+- Use Factory Method
+- Use Abstract Factory
+
+This improves extensibility and testability.
+
+
+=========================================================
+Q18. Golden Rule of Good OO Design
+---------------------------------------------------------
+
+High Cohesion
++
+Low Coupling
++
+Composition over Inheritance
++
+Program to Interfaces
+=
+Maintainable, Flexible and Extensible Software

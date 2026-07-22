@@ -1,9 +1,280 @@
+=========================================================
+CREATIONAL DESIGN PATTERNS (INTERVIEW QUICK REVISION)
+=========================================================
+
+---------------------------------------------------------
+1. SINGLETON
+---------------------------------------------------------
+
+Purpose:
+- Ensure only ONE object exists.
+- Provide global access to it.
+
+Need:
+- Shared resource should have only one instance.  *****************
+
+Core Idea:
+One Object + Global Access
+
+Real-world Examples:
+- Logger
+- Configuration Manager
+- Cache Manager
+- Thread Pool Manager
+- Database Connection Manager
+
+Interview Example:
+Application-wide Logger
+
+Pros:
+✔ One instance only
+✔ Saves memory
+✔ Global access
+
+Cons:
+✘ Global state
+✘ Harder to unit test
+✘ Can become a bottleneck
+
+Best Modern Implementation:
+Meyers' Singleton (static local variable)
+
+Interview One-Liner:
+"Singleton ensures only one instance of a class exists and provides a global access point."
 
 
-| Pattern              | Purpose                                                                         |
-| -------------------- | ------------------------------------------------------------------------------- |
-| **Singleton**        | Ensures a class has only one instance and provides a global point of access.    |
-| **Factory Method**   | Delegates the object instantiation to subclasses.                               |
-| **Abstract Factory** | Produces families of related objects without specifying their concrete classes. |
-| **Builder**          | Separates object construction from representation.                              |
-| **Prototype**        | Clones existing objects without depending on their classes.                     |
+---------------------------------------------------------
+2. FACTORY METHOD
+---------------------------------------------------------
+
+Purpose:
+- Hide object creation.
+- Let subclasses decide which object to create.
+
+Need:
+- Client should not create concrete objects directly. *************
+
+Core Idea:
+Client → Factory → Product
+
+Real-world Examples:
+- Payment Gateway (UPI, Card, PayPal)
+- Database Drivers
+- Logger Creation
+- Notification Service
+- GUI Widgets
+
+Interview Example:
+Vehicle Factory
+(CarFactory, BikeFactory)
+
+Pros:
+✔ Loose coupling
+✔ Follows Open/Closed Principle
+✔ Easy to extend
+
+Cons:
+✘ More classes
+✘ Slightly more complex
+
+Interview One-Liner:
+"Factory Method delegates object creation to factory subclasses instead of letting the client create objects directly."
+
+
+---------------------------------------------------------
+3. ABSTRACT FACTORY
+---------------------------------------------------------
+
+Purpose:
+- Create families of related objects.
+
+Need:
+- Multiple related objects must always be created together.
+
+Core Idea:
+Factory creates a COMPLETE FAMILY.
+
+Real-world Examples:
+- Cross-platform GUI
+  Windows:
+    - WindowsButton
+    - WindowsScrollbar
+
+  Mac:
+    - MacButton
+    - MacScrollbar
+
+- Mobile UI Themes
+- Game Engine (Desert Theme, Snow Theme)
+- Database Families
+- Cloud Provider SDKs (AWS, Azure, GCP)
+
+Interview Example:
+GUI Framework
+
+WindowsFactory
+    -> WindowsButton
+    -> WindowsScrollbar
+
+MacFactory
+    -> MacButton
+    -> MacScrollbar
+
+Pros:
+✔ Keeps related objects together
+✔ Prevents mixing incompatible objects
+✔ Loose coupling
+✔ Easy to switch entire product family
+
+Cons:
+✘ More interfaces/classes
+✘ Harder to add new product types
+
+Interview One-Liner:
+"Abstract Factory creates families of related objects without exposing their concrete classes."
+
+
+---------------------------------------------------------
+4. BUILDER
+---------------------------------------------------------
+
+Purpose:
+- Build complex objects step-by-step.
+
+Need:
+- Object has many fields or optional parameters.
+
+Core Idea:
+Construction separated from representation.
+
+Flow:
+Client
+   ↓
+Director
+   ↓
+Builder
+   ↓
+Product
+
+Real-world Examples:
+- Car Builder
+- Pizza Builder
+- House Builder
+- SQL Query Builder
+- HTTP Request Builder
+- Email Builder
+- Report/PDF Builder
+
+Interview Example:
+Car Builder
+
+SportsCarBuilder
+
+LuxuryCarBuilder
+
+Director builds the car.
+
+Pros:
+✔ Step-by-step construction
+✔ Avoids huge constructors
+✔ Cleaner code
+✔ Same process builds different products
+
+Cons:
+✘ More classes
+✘ Slightly more boilerplate
+
+Interview One-Liner:
+"Builder constructs complex objects step-by-step while separating construction from representation."
+
+
+=========================================================
+WHEN TO USE WHICH?
+=========================================================
+
+Singleton
+→ One shared object
+
+Example:
+Logger
+
+
+Factory Method
+→ Need ONE object, but type varies
+
+Example:
+Vehicle Factory
+
+
+Abstract Factory
+→ Need a FAMILY of related objects
+
+Example:
+Windows Button + Windows Scrollbar
+
+
+Builder
+→ Need to construct a COMPLEX object step-by-step
+
+Example:
+Build a Car with engine, body, seats
+
+
+=========================================================
+MEMORY TRICK
+=========================================================
+
+Singleton
+→ One Object
+
+Factory Method
+→ Create One Object
+
+Abstract Factory
+→ Create Family of Objects
+
+Builder
+→ Build Complex Object Step-by-Step
+
+
+=========================================================
+MOST COMMON LLD QUESTIONS
+=========================================================
+
+Singleton
+→ Logger
+→ Config Manager
+→ Cache Manager
+
+Factory Method
+→ Payment System
+→ Notification System
+→ Vehicle Factory
+
+Abstract Factory
+→ GUI Framework
+→ Theme Engine
+→ Cross-platform UI
+
+Builder
+→ Car Builder
+→ Pizza Builder
+→ SQL Query Builder
+→ HTTP Request Builder
+
+
+=========================================================
+30-SECOND INTERVIEW SUMMARY
+=========================================================
+
+Singleton:
+"One instance for the entire application."
+
+Factory Method:
+"Delegates creation of one object to a factory."
+
+Abstract Factory:
+"Creates a family of related objects."
+
+Builder:
+"Builds a complex object step-by-step."

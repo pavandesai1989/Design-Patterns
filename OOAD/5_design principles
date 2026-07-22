@@ -27,67 +27,68 @@ These principles are frequently asked in OOAD, LLD, and C++ interviews.
 =========================================================
 1. HIGH COHESION
 =========================================================
+Cohesion measures how closely related the responsibilities within a class are.
+
+In simple words:*******
+All methods in a class should work together to achieve one specific purpose.
 
 Definition
 ----------
-Cohesion measures how closely related the responsibilities of a class are.
+Interview One-liner
+SRP tells you how many responsibilities a class should have (one).
+High Cohesion tells you how closely related those responsibilities should be.
 
-High Cohesion means
+Memory Trick
+SRP = One Job
+High Cohesion = Related Work
 
-"A class should perform one well-defined task."
-
-Good Example
-------------
-
-class Logger
-{
-public:
-    void log();
-};
-
-Logger only performs logging.
-
-Bad Example
------------
-
-class Logger
-{
-public:
-    void log();
-    void sendEmail();
-    void calculateSalary();
-    void printInvoice();
-};
-
-Logger is doing unrelated work.
-
-Advantages
-----------
-
-• Easy to understand
-• Easy to maintain
-• Easy to test
-• Easy to reuse
-
-Real-world Example
-------------------
-
-Calculator
-
-Only performs calculations.
-
-Not
-
-• Printing
-• Saving to DB
-• Sending emails
+A class can have one job (SRP), and all the methods for that job should be closely related (High Cohesion). 
+This is why classes following SRP usually have high cohesion, but the concepts are not identical.
 
 Interview Answer
 ----------------
-
 "High cohesion means a class should have closely related responsibilities and ideally one primary responsibility."
 
+Think of it like this:***********************************
+SRP asks: "How many jobs does this class have?"
+High Cohesion asks: "Are all the methods related to the same job?"
 
+Example 1 (Both SRP and High Cohesion) *******VVVVIMPP
+class Logger
+{
+public:
+    void logInfo();
+    void logError();
+    void logWarning();
+};
+
+SRP? ✅ Yes
+Only one responsibility: Logging.
+
+High Cohesion? ✅ Yes
+All methods are related to logging.
+
+Example 2 (Violates SRP and Low Cohesion)
+class Employee
+{
+public:
+    void calculateSalary();
+    void printInvoice();
+    void sendEmail();
+    void saveToDatabase();
+};
+
+SRP? ❌ No
+Multiple responsibilities.
+
+High Cohesion? ❌ No
+Methods are unrelated.
+
+| SRP                  | High Cohesion                        |
+| -------------------- | ------------------------------------ |
+| One responsibility   | Closely related responsibilities     |
+| SOLID principle      | General design principle             |
+| One reason to change | Related functionality stays together |
 
 =========================================================
 2. LOW COUPLING
@@ -95,97 +96,107 @@ Interview Answer
 
 Definition
 ----------
-
 Coupling measures the dependency between classes.
 
-Low Coupling means
+Low Coupling means:
+"Changes in one class should have minimal impact on other classes."
 
-"Changes in one class should have minimal impact on others."
-
+---------------------------------------------------------
 Bad Example
------------
+---------------------------------------------------------
+Computer directly depends on concrete classes:
 
-Computer directly creates
+- Keyboard
+- Mouse
+- Monitor
 
-Keyboard
+If the Keyboard implementation changes,
+the Computer class may also need to change.
 
-Mouse
+Result:
+- Tight dependency
+- Difficult maintenance
+- Hard to extend
 
-Monitor
-
-If Keyboard changes,
-
-Computer must change.
-
+---------------------------------------------------------
 Good Example
-------------
+---------------------------------------------------------
 
-Computer depends on
+Computer depends on an abstraction:
+InputDevice (Interface)
 
-InputDevice interface
+Implementations:
 
-Keyboard
-Mouse
-TouchScreen
+- Keyboard
+- Mouse
+- TouchScreen
 
-can all implement InputDevice.
+All devices implement InputDevice.
 
+Computer interacts only with InputDevice,
+so new devices can be added without modifying Computer.
+
+---------------------------------------------------------
 Advantages
-----------
+---------------------------------------------------------
 
-• Easy maintenance
-• Better testing
-• Flexible
-• Easy replacement
+✔ Easy maintenance
+✔ Loose coupling
+✔ Better testing (easy to mock)
+✔ Easy to replace implementations
+✔ Easy to extend
 
+---------------------------------------------------------
 Interview Answer
-----------------
+---------------------------------------------------------
 
-"Low coupling minimizes dependencies between classes, making software easier to modify, test, and extend."
-
-
+"Low Coupling means minimizing dependencies between classes so that changes 
+in one class have minimal impact on others. This makes software easier to maintain, test, and extend."
 
 =========================================================
 HIGH COHESION vs LOW COUPLING
 =========================================================
 
 High Cohesion
-
-• Inside one class
-• One responsibility
-• Related functionality together
+-------------
+• Focuses on a single class.
+• One responsibility.
+• Related functionality stays together.
 
 Low Coupling
+------------
+• Focuses on relationships between classes.
+• Classes depend on abstractions, not concrete implementations.
+• Changes in one class have minimal impact on others.
 
-• Between classes
-• Few dependencies
-• Independent classes
-
+---------------------------------------------------------
 Golden Rule
+---------------------------------------------------------
 
 High Cohesion
-
-+
-
+       +
 Low Coupling
+       =
+Good Software Design
 
-=
+Why?
 
-Good Design
+• Each class has one well-defined responsibility (High Cohesion).
+• Classes have minimal dependencies on each other (Low Coupling).
+• Changes in one class rarely affect other classes.
+• Easier to maintain, test, extend, and reuse.
 
-
+"High Cohesion ensures each class does one job well, while Low Coupling minimizes dependencies between classes. 
+Together, they produce maintainable, flexible, and scalable software."
 
 =========================================================
 3. SEPARATION OF CONCERNS (SoC)
 =========================================================
-
 Definition
 ----------
-
-Separate different responsibilities into different modules or layers.
+Separate different responsibilities into different modules or layers.****
 
 Each module focuses on one concern.
-
 Example
 
 E-commerce
@@ -232,27 +243,19 @@ Interview Answer
 
 "SoC divides software into independent parts where each part handles a single concern."
 
-
-
 =========================================================
 4. INFORMATION HIDING
 =========================================================
-
 Definition
 ----------
-
 Hide internal implementation details.
-
 Expose only what clients need.
-
 Achieved Using
-
 • private
 • protected
 • public
 
 Example
-
 class BankAccount
 {
 private:
@@ -295,21 +298,16 @@ Interview Answer
 =========================================================
 5. DRY
 =========================================================
-
 DRY
-
 =
-
 Don't Repeat Yourself
 
 Definition
 ----------
-
 Avoid duplicate code.
 
 Bad Example
 -----------
-
 Tax calculation repeated
 
 Invoice.cpp
@@ -336,29 +334,22 @@ Advantages
 
 Interview Answer
 ----------------
-
 "DRY recommends avoiding duplicated logic by placing common functionality in a single reusable location."
-
-
 
 =========================================================
 6. KISS
 =========================================================
 
 KISS
-
 =
-
 Keep It Simple, Stupid
 
 Definition
 ----------
-
 Choose the simplest solution that works.
 
 Bad Example
 -----------
-
 Using
 
 Factory
@@ -389,26 +380,20 @@ Interview Answer
 
 "KISS encourages simple designs instead of unnecessarily complex solutions."
 
-
-
 =========================================================
 7. YAGNI
 =========================================================
 
 YAGNI
-
 =
-
 You Aren't Gonna Need It
 
 Definition
 ----------
-
 Do not implement features until they are actually required.
 
 Bad Example
 -----------
-
 Building
 
 Chat
@@ -438,15 +423,11 @@ Interview Answer
 
 "YAGNI advises implementing only the features required today rather than anticipating future needs."
 
-
-
 =========================================================
 8. PROGRAM TO AN INTERFACE
 =========================================================
-
 Definition
 ----------
-
 Depend on abstractions,
 
 not concrete implementations.

@@ -6,6 +6,27 @@ INTERVIEW ONE-LINER
 creation from the client, ensuring compatible objects are created together
 and reducing coupling."
 
+Application:
+====================================================
+MOST ASKED IN INTERVIEWS
+====================================================
+
+1. GUI Framework (Windows/Mac)
+2. Car Manufacturing System
+3. Database Driver Factory
+
+Interview tip
+
+If you're solving an LLD problem and notice multiple related objects that always come as a set, that's a clue to consider Abstract Factory.
+
+For example:
+
+Car → Engine + Seat + Dashboard
+Windows UI → Button + Checkbox + Scrollbar
+Database → Connection + Statement + Transaction
+
+The key trigger is: "Create a family of compatible objects together." That's when Abstract Factory is the right fit.
+
 
 WHAT IS ABSTRACT FACTORY?
 ----------------------------------------------------

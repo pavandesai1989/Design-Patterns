@@ -1,0 +1,195 @@
+=========================================================
+COMPOSITION OVER INHERITANCE
+=========================================================
+
+Definition
+----------
+Prefer Composition (HAS-A) over Inheritance (IS-A) whenever possible.
+
+Composition means a class contains another object to reuse its behavior,
+instead of inheriting from it.
+
+=========================================================
+WHY PREFER COMPOSITION?
+=========================================================
+
+Inheritance creates rigid class hierarchies.
+
+Once a class inherits from another,
+its behavior is fixed.
+
+Composition is more flexible because behavior
+can be changed by replacing composed objects.
+
+=========================================================
+REAL-TIME EXAMPLE
+(Payment + Discount)
+=========================================================
+
+Without Composition (Inheritance)
+---------------------------------
+
+Suppose we have:
+
+Payment
+|
+|-- UPIPayment
+|
+|-- CardPayment
+
+
+Business Requirement:
+
+Support different discounts:
+
+- No Discount
+- Festival Discount
+- Premium Discount
+
+
+Using Inheritance:
+
+UPIPayment
+UPIPaymentWithFestivalDiscount
+UPIPaymentWithPremiumDiscount
+
+CardPayment
+CardPaymentWithFestivalDiscount
+CardPaymentWithPremiumDiscount
+
+
+Every new discount creates more subclasses.
+
+If there are:
+
+5 Payment Types
+5 Discount Types
+
+Need 25 different classes.
+
+Problems:
+
+❌ Too many subclasses
+❌ Difficult to maintain
+❌ Difficult to extend
+
+
+=========================================================
+WITH COMPOSITION
+=========================================================
+
+Create a separate Discount abstraction.
+
+Payment HAS-A Discount.
+
+               Payment
+                  |
+                HAS-A
+                  |
+              Discount
+              /   |    \
+             /    |     \
+    NoDiscount  Festival  Premium
+
+
+Now Payment does NOT know how discount works.
+
+It simply delegates the work to Discount.
+
+Examples:
+
+UPI + FestivalDiscount
+
+UPI + PremiumDiscount
+
+Card + NoDiscount
+
+Card + FestivalDiscount
+
+
+No new Payment subclasses are required.
+
+
+=========================================================
+WHY IS THIS BETTER?
+=========================================================
+
+Suppose tomorrow business asks for:
+
+NewYearDiscount
+
+Inheritance:
+
+Need to create:
+
+UPIPaymentWithNewYearDiscount
+CardPaymentWithNewYearDiscount
+...
+
+Many new subclasses.
+
+
+Composition:
+
+Simply create:
+
+class NewYearDiscount : public Discount
+{
+};
+
+Done.
+
+Existing Payment code does NOT change.
+
+
+=========================================================
+BENEFITS
+=========================================================
+
+✔ Loose coupling
+✔ Better flexibility
+✔ Easy to extend
+✔ Better code reuse
+✔ Easier testing
+✔ Avoids subclass explosion
+✔ Behavior can be changed without modifying existing classes
+
+=========================================================
+INTERVIEW ANSWER
+=========================================================
+
+"We prefer composition over inheritance because inheritance creates rigid 
+  and tightly coupled class hierarchies. Composition provides a HAS-A relationship, 
+    allowing behavior to be reused and changed by composing different objects 
+    instead of creating many subclasses. This results in flexible, maintainable, and extensible software."
+
+=========================================================
+MEMORY TRICK
+=========================================================
+
+Inheritance
+
+IS-A
+
+Example:
+
+Car IS-A Vehicle ✔
+
+
+Composition
+
+HAS-A
+
+Examples:
+
+Car HAS-A Engine ✔
+
+Payment HAS-A Discount ✔
+
+Notification HAS-A MessageService ✔
+
+
+Rule:
+
+If the relationship is "HAS-A", prefer Composition.
+If the relationship is truly "IS-A", use Inheritance.

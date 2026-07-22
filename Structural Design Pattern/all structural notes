@@ -21,3 +21,8 @@ Creational  → How objects are CREATED.
 Structural  → How objects are CONNECTED.
 
 Behavioral  → How objects COMMUNICATE.
+
+1. Adapter      ⭐⭐⭐⭐⭐
+2. Decorator    ⭐⭐⭐⭐⭐
+3. Facade       ⭐⭐⭐⭐⭐
+3. Proxy        ⭐⭐⭐⭐☆

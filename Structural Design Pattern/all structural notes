@@ -1,3 +1,18 @@
+
+Structural design patterns deal with how classes and objects are composed to form larger 
+structures while keeping the system flexible and loosely coupled.
+
+They focus on organizing relationships between objects rather
+than creating them.
+
+Purpose
+-------
+
+- Simplify object relationships
+- Reduce coupling
+- Reuse existing classes
+- Build flexible and scalable systems
+
 Memory Trick
 ------------
 

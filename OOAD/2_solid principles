@@ -63,35 +63,75 @@ Closed for modification
 
 Add new behavior without changing old code.
 
-BAD CODE:
-class Payment
+#include <iostream>
+using namespace std;
+
+//////////////////////////////////////////////////////
+// BAD DESIGN (Violates Open/Closed Principle)
+//////////////////////////////////////////////////////
+
+class PaymentProcessor
 {
 public:
-    void pay(string type)
+    void pay(int type)
     {
-        if(type == "UPI")
-            cout << "UPI payment\n";
-        else if(type == "Card")
-            cout << "Card payment\n";
+        if(type == 1)
+        {
+            cout << "UPI Payment" << endl;
+        }
+        else if(type == 2)
+        {
+            cout << "Card Payment" << endl;
+        }
     }
 };
 
-Problem
-Adding new payment type requires modifying existing code.
+int main()
+{
+    PaymentProcessor p;
 
-GOOD CODE:
+    p.pay(1);
+    p.pay(2);
+
+    // Later...
+    // Add NetBanking?
+    //
+    // Need to modify PaymentProcessor
+    //
+    // else if(type == 3)
+    //      cout << "NetBanking Payment";
+}
+
+Problems
+Tight coupling
+Violates Open/Closed Principle
+Every new payment type modifies existing code
+Needs recompilation and retesting
+
+#include <iostream>
+using namespace std;
+
+//////////////////////////////////////////////////////
+// Payment Interface
+//////////////////////////////////////////////////////
+
 class Payment
 {
 public:
     virtual void pay() = 0;
+    virtual ~Payment() = default;
 };
+
+//////////////////////////////////////////////////////
+// Concrete Payments
+//////////////////////////////////////////////////////
 
 class UPIPayment : public Payment
 {
 public:
     void pay() override
     {
-        cout << "UPI payment\n";
+        cout << "UPI Payment" << endl;
     }
 };
 
@@ -100,17 +140,68 @@ class CardPayment : public Payment
 public:
     void pay() override
     {
-        cout << "Card payment\n";
+        cout << "Card Payment" << endl;
     }
 };
 
-Interview Line
+class NetBankingPayment : public Payment
+{
+public:
+    void pay() override
+    {
+        cout << "NetBanking Payment" << endl;
+    }
+};
 
+//////////////////////////////////////////////////////
+// Payment Processor
+//////////////////////////////////////////////////////
+
+class PaymentProcessor
+{
+public:
+    void processPayment(Payment* payment)
+    {
+        payment->pay();
+    }
+};
+
+//////////////////////////////////////////////////////
+// Client
+//////////////////////////////////////////////////////
+
+int main()
+{
+    PaymentProcessor processor;
+
+    UPIPayment upi;
+    CardPayment card;
+    NetBankingPayment net;
+
+    processor.processPayment(&upi);
+    processor.processPayment(&card);
+    processor.processPayment(&net);
+
+    return 0;
+}
+
+Need:
+Avoid modifying existing code whenever new functionality is added.*******
+
+How OCP helps:
+Depend on abstractions (Payment)
+Extend by adding new derived classes
+Existing code remains unchanged
+
+Interview Line
 Use abstraction/polymorphism to extend behavior without modifying existing code.
 
 **********************************L — Liskov Substitution Principle (LSP)*****************************************
 Meaning
 Derived class should be replaceable with base class without breaking behavior.
+In simple words:
+
+If B is derived from A, then anywhere an A object is expected, a B object should work correctly.
 
 👉 If Dog is a child of Animal, then wherever Animal is used, Dog should work correctly.
 
@@ -147,9 +238,7 @@ int main() {
 }
 
 Why issue?
-
 Base class vehicle says:
-
 Every vehicle can refuel().
 
 But electriccar cannot truly refuel.
@@ -159,20 +248,15 @@ but if someone writes
 fuelVehicle(&e); // Problem
 
 they expect normal refueling behavior from base contract.
-
 But derived class breaks that expectation.
-
-That is an LSP violatio
+That is an LSP violation
 
 ******INTERVIEW LINE****
 Interview Explanation
-
 Parent class promised:
-
 All vehicles can refuel
 
 But child class failed to support it.
-
 So derived object cannot replace base object safely.
 
 → LSP violated.
@@ -180,7 +264,6 @@ So derived object cannot replace base object safely.
 Interview explanation (important):
 
 You can say:
-
 Base class should represent behavior common to all derived classes.
 Here refuel() is not applicable to electric cars.
 So electriccar should not inherit a contract requiring refuel().
@@ -248,42 +331,167 @@ simple
 realistic
 clearly shows wrong inheritance design.
 
-***********4. I — Interface Segregation Principle (ISP)
+***********4. I — Interface Segregation Principle (ISP)**********************************
 Meaning
-Clients should not be forced to depend on interfaces they don't use.
+Clients should not be forced to depend on methods they do not use.
+Instead of one large interface, create multiple smaller, focused interfaces.
 
-Large interfaces → split into smaller ones.
+Interview one-liner:
+"Prefer many small interfaces over one large interface."
 
-BAD CODE:
+***BAD DESIGN***
+#include <iostream>
+using namespace std;
+
 class Payment
 {
 public:
     virtual void pay() = 0;
-    virtual void cashback() = 0;
+    virtual void refund() = 0;
 };
 
-Some payment methods may not support cashback.
+class UPIPayment : public Payment
+{
+public:
+    void pay() override
+    {
+        cout << "UPI Payment\n";
+    }
+
+    void refund() override
+    {
+        // UPI app doesn't support refund
+        throw runtime_error("Refund not supported");
+    }
+};
+
+class CardPayment : public Payment
+{
+public:
+    void pay() override
+    {
+        cout << "Card Payment\n";
+    }
+
+    void refund() override
+    {
+        cout << "Refund processed\n";
+    }
+};
+Problem
+UPIPayment is forced to implement refund().
+It doesn't actually support it.
+Interface is too large.
+Classes implement methods they don't need.
+
+ISP violated.
+**GOOD CODE**
+#include <iostream>
+using namespace std;
+
 class Payment
 {
 public:
     virtual void pay() = 0;
 };
 
-class Cashback
+class Refund
 {
 public:
-    virtual void cashback() = 0;
+    virtual void refund() = 0;
 };
 
-***5. D — Dependency Inversion Principle (DIP)
-Meaning
-High-level modules should not depend on low-level modules.
+class UPIPayment : public Payment
+{
+public:
+    void pay() override
+    {
+        cout << "UPI Payment\n";
+    }
+};
 
-Both should depend on abstraction.
+class CardPayment : public Payment, public Refund
+{
+public:
+    void pay() override
+    {
+        cout << "Card Payment\n";
+    }
+
+    void refund() override
+    {
+        cout << "Refund processed\n";
+    }
+};
+
+Why is this better?
+Small, focused interfaces.
+Classes implement only what they need.
+No dummy or empty implementations.
+Easier to maintain and extend.
+
+Interview Explanation
+
+Bad Design:
+
+Payment
+ ├── pay()
+ └── refund()
+
+UPI implements refund() even though it doesn't need it.
+
+Good Design:
+
+Payment
+ └── pay()
+
+Refund
+ └── refund()
+
+CardPayment → Payment + Refund
+UPIPayment  → Payment
+
+Each class depends only on the functionality it actually uses.
+
+Interview One-Liner
+
+"ISP says a class should not be forced to implement methods it doesn't need. 
+Instead of one large interface, split it into smaller, focused interfaces."
 
 
-Message Service
-BAD CODE:
+
+# 5. D — Dependency Inversion Principle (DIP)
+
+## Meaning
+
+**High-level modules should not depend on low-level modules.**
+
+Both should depend on **abstractions (interfaces).**
+
+**Interview One-liner:**
+
+> High-level classes should depend on interfaces, not concrete implementations.
+
+---
+
+## Real-Life Example
+
+**Notification System**
+
+Notification can send messages through:
+
+* Email
+* SMS
+* WhatsApp
+* Push Notification
+
+The Notification class should not care **how** the message is sent.
+
+---
+
+# BAD DESIGN (Violates DIP)
+
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -298,7 +506,8 @@ public:
 
 class Notification
 {
-    EmailService email;
+private:
+    EmailService email;      // Direct dependency
 
 public:
     void notify()
@@ -312,27 +521,38 @@ int main()
     Notification n;
     n.notify();
 }
+```
 
-Problem:
+### Problems
 
-Notification directly depends on EmailService
-Cannot easily switch to:
-SMS
-WhatsApp
-Push notification
+* Notification directly depends on `EmailService`.
+* Tight coupling between high-level and low-level classes.
+* Difficult to switch to:
 
-Violates DIP.
+  * SMS
+  * WhatsApp
+  * Push Notification
+* Every new message service requires modifying `Notification`.
+* Violates **Dependency Inversion Principle**.
+* Also violates **Open/Closed Principle**.
 
-good code:
+---
+
+# GOOD DESIGN (Follows DIP)
+
+```cpp
 #include <iostream>
 using namespace std;
 
+// Abstraction
 class MessageService
 {
 public:
     virtual void sendMessage() = 0;
+    virtual ~MessageService() = default;
 };
 
+// Low-level module
 class EmailService : public MessageService
 {
 public:
@@ -342,6 +562,7 @@ public:
     }
 };
 
+// Low-level module
 class SMSService : public MessageService
 {
 public:
@@ -351,12 +572,15 @@ public:
     }
 };
 
+// High-level module
 class Notification
 {
+private:
     MessageService* service;
 
 public:
-    Notification(MessageService* s) : service(s)
+    Notification(MessageService* s)
+        : service(s)
     {
     }
 
@@ -375,20 +599,104 @@ int main()
     SMSService sms;
     Notification n2(&sms);
     n2.notify();
+
+    return 0;
 }
+```
 
-Interview Explanation
-Notification = high-level module
-EmailService, SMSService = low-level modules
-MessageService = abstraction
+---
 
-Now high-level class depends on interface, not concrete class.
+# Why This Design Is Better
 
-This follows DIP.
+* Notification depends only on the `MessageService` interface.
+* Easy to add new services:
 
-One-line Interview Definition
+  * WhatsAppService
+  * PushNotificationService
+  * SlackService
+* No changes required in `Notification`.
+* Loose coupling.
+* Easy to test using mock implementations.
+* Follows both **DIP** and **Open/Closed Principle**.
 
-Dependency Inversion Principle says high-level modules should depend on abstractions, not concrete implementations.
+---
+
+# Interview Explanation
+
+```
+High-Level Module
+-----------------
+Notification
+
+        |
+        v
+
+Abstraction
+-----------
+MessageService
+
+     /        \
+    /          \
+EmailService  SMSService
+
+Low-Level Modules
+```
+
+* **High-Level Module:** `Notification`
+* **Low-Level Modules:** `EmailService`, `SMSService`
+* **Abstraction:** `MessageService`
+
+The high-level module now depends only on the abstraction, not on concrete implementations.
+
+---
+
+# Real-World Use Cases
+
+* Notification Service → Email, SMS, Push Notification
+* Payment System → UPI, Card, PayPal
+* Logging Framework → Console Logger, File Logger, Database Logger
+* Database Layer → MySQL, PostgreSQL, Oracle
+
+---
+
+# Interview One-Line Answer
+
+> "Dependency Inversion Principle states that high-level modules should depend on abstractions 
+rather than concrete implementations. 
+This reduces coupling, improves extensibility, and makes the system easier to test."
+
+---
+
+# Memory Trick
+
+**Bad:**
+
+```
+Notification
+      |
+      v
+ EmailService
+```
+
+High-level class depends on concrete implementation ❌
+
+---
+
+**Good:**
+
+```
+Notification
+      |
+      v
+MessageService
+   /        \
+Email      SMS
+```
+
+High-level class depends on an interface ✔
+
+These notes are concise, technically correct, and are at the level expected in senior C++/LLD interviews.
+
 
 
 *********SUMMARY****
@@ -411,6 +719,8 @@ Add new functionality without changing existing code.
 Use:
 Inheritance + Polymorphism
 
+example : paymentprocessor 
+
 -----------------------------------
 
 L — Liskov Substitution Principle (LSP)
@@ -419,7 +729,7 @@ L — Liskov Substitution Principle (LSP)
 If child breaks expected behavior → LSP violation.
 
 Example:
-Penguin should not inherit FlyingBird.
+vehicle refuel petrol and electric 
 
 -----------------------------------
 
@@ -429,7 +739,7 @@ I — Interface Segregation Principle (ISP)
 Prefer small interfaces over large/fat interfaces.
 
 Example:
-Robot should not implement eat().
+refund and pay   UPI and DEBIT . UPI does not support refund 
 
 -----------------------------------
 
@@ -439,7 +749,7 @@ D — Dependency Inversion Principle (DIP)
 Use interfaces/abstract classes.
 
 Example:
-Computer depends on InputDevice, not Keyboard.
+notify  notification class bad: emailservice   good:messagetype* 
 
 -----------------------------------
 

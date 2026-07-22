@@ -1,0 +1,673 @@
+=========================================================
+BUILDER DESIGN PATTERN (C++ INTERVIEW NOTES)
+=========================================================
+
+Pattern Type:
+--------------
+Creational Design Pattern
+
+Purpose:
+--------
+Construct a complex object step-by-step while separating
+the construction process from its representation.
+
+Main Principle:
+---------------
+Separate object construction from object representation.
+
+Priority:
+---------
+⭐⭐⭐⭐⭐ MUST KNOW FOR C++ LLD INTERVIEWS
+
+
+=========================================================
+1. WHAT IS BUILDER PATTERN?
+=========================================================
+
+Builder is a creational design pattern used when an object
+requires multiple construction steps.
+
+Instead of creating the object directly using a large
+constructor, the object is built one step at a time.
+
+CORE IDEA:
+
+Client should NOT know how a complex object is built.
+
+Builder is responsible for constructing the object.
+
+FLOW:
+
+Client
+   |
+Director
+   |
+Builder Interface
+   |
+Concrete Builder
+   |
+Product
+
+
+=========================================================
+2. WHY DO WE NEED BUILDER?
+=========================================================
+
+Suppose we need to create a Car.
+
+A Car has:
+
+- Engine
+- Body
+- Seats
+- Airbags
+- GPS
+- Sunroof
+- Music System
+
+Without Builder:
+
+Car car("V8",
+        "Coupe",
+        "Leather",
+        true,
+        true,
+        false,
+        ...);
+
+Problems:
+
+• Constructor becomes very large.
+• Difficult to remember parameter order.
+• Many optional parameters.
+• Hard to read.
+• Hard to maintain.
+• Difficult to create different configurations.
+
+Builder solves this by constructing the object
+step-by-step.
+
+
+=========================================================
+3. WITHOUT BUILDER (PROBLEM)
+=========================================================
+
+#include <iostream>
+using namespace std;
+
+class Car
+{
+public:
+
+    string engine;
+    string body;
+    string seats;
+
+    Car(string e,
+        string b,
+        string s)
+    {
+        engine = e;
+        body = b;
+        seats = s;
+    }
+
+    void show()
+    {
+        cout << engine << " "
+             << body << " "
+             << seats << endl;
+    }
+};
+
+int main()
+{
+    Car sports("V8",
+               "Coupe",
+               "2 Sports Seats");
+
+    sports.show();
+
+    Car luxury("V6 Turbo",
+               "Sedan",
+               "5 Leather Seats");
+
+    luxury.show();
+}
+
+=========================================================
+PROBLEMS
+=========================================================
+
+1. Large constructors.
+
+2. Difficult to remember parameter order.
+
+3. Optional parameters make constructors huge.
+
+4. Construction logic is duplicated.
+
+5. Hard to create multiple configurations.
+
+6. Difficult to maintain.
+
+
+=========================================================
+4. HOW BUILDER SOLVES THE PROBLEM
+=========================================================
+
+Instead of:
+
+Client -> new Car(...)
+
+We do:
+
+Client
+   |
+Director
+   |
+Builder
+   |
+Car
+
+The Builder constructs each part separately.
+
+Example:
+
+builder->setEngine();
+
+builder->setBody();
+
+builder->setSeats();
+
+Director controls the sequence.
+
+
+=========================================================
+5. STRUCTURE
+=========================================================
+
+Builder Pattern has 5 participants.
+
+
+1. Product
+----------
+
+Object being created.
+
+Example:
+
+Car
+
+
+2. Builder Interface
+--------------------
+
+Defines construction steps.
+
+Example:
+
+setEngine()
+
+setBody()
+
+setSeats()
+
+
+3. Concrete Builder
+-------------------
+
+Implements construction logic.
+
+Example:
+
+SportsCarBuilder
+
+LuxuryCarBuilder
+
+
+4. Director
+-----------
+
+Controls construction order.
+
+Example:
+
+buildCar()
+
+
+5. Client
+---------
+
+Chooses the builder and starts construction.
+
+
+=========================================================
+6. C++ IMPLEMENTATION
+=========================================================
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+=========================================================
+PRODUCT
+=========================================================
+
+class Car
+{
+public:
+
+    string engine;
+    string body;
+    string seats;
+
+    void show()
+    {
+        cout << "Engine : " << engine << endl;
+        cout << "Body   : " << body << endl;
+        cout << "Seats  : " << seats << endl;
+    }
+};
+
+=========================================================
+BUILDER INTERFACE
+=========================================================
+
+class CarBuilder
+{
+public:
+
+    virtual void setEngine() = 0;
+
+    virtual void setBody() = 0;
+
+    virtual void setSeats() = 0;
+
+    virtual Car* getCar() = 0; ***************
+
+    virtual ~CarBuilder() {}
+};
+
+=========================================================
+CONCRETE BUILDER
+=========================================================
+
+class SportsCarBuilder : public CarBuilder
+{
+private:
+
+    Car* car; *********
+
+public:
+
+    SportsCarBuilder()
+    {
+        car = new Car();
+    }
+
+    void setEngine() override
+    {
+        car->engine = "V8";
+    }
+
+    void setBody() override
+    {
+        car->body = "Coupe";
+    }
+
+    void setSeats() override
+    {
+        car->seats = "2 Sports Seats";
+    }
+
+    Car* getCar() override
+    {
+        return car;
+    }
+};
+
+class LuxuryCarBuilder : public CarBuilder
+{
+private:
+
+    Car* car;
+
+public:
+
+    LuxuryCarBuilder()
+    {
+        car = new Car();
+    }
+
+    void setEngine() override
+    {
+        car->engine = "V6 Turbo";
+    }
+
+    void setBody() override
+    {
+        car->body = "Sedan";
+    }
+
+    void setSeats() override
+    {
+        car->seats = "5 Leather Seats";
+    }
+
+    Car* getCar() override
+    {
+        return car;
+    }
+};
+
+=========================================================
+DIRECTOR
+=========================================================
+
+class CarDirector
+{
+private:
+
+    CarBuilder* builder;
+
+public:
+
+    CarDirector(CarBuilder* b)
+    {
+        builder = b;
+    }
+
+    Car* buildCar()
+    {
+        builder->setEngine();
+        builder->setBody();
+        builder->setSeats();
+
+        return builder->getCar();
+    }
+};
+
+=========================================================
+CLIENT
+=========================================================
+
+int main()
+{
+    SportsCarBuilder sportsBuilder;
+
+    CarDirector director(&sportsBuilder);
+
+    Car* sports = director.buildCar();
+
+    sports->show();
+
+    cout << endl;
+
+    LuxuryCarBuilder luxuryBuilder;
+
+    CarDirector director2(&luxuryBuilder);
+
+    Car* luxury = director2.buildCar();
+
+    luxury->show();
+
+    delete sports;
+    delete luxury;
+}
+
+=========================================================
+7. HOW BUILDER SOLVES THE PROBLEM
+=========================================================
+
+WITHOUT BUILDER
+
+Client
+
+ |
+
+Large Constructor
+
+ |
+
+Car
+
+
+Problems:
+
+- Large constructor
+- Many parameters
+- Hard to maintain
+
+
+---------------------------------------------------------
+
+WITH BUILDER
+
+Client
+
+ |
+
+Director
+
+ |
+
+Builder
+
+ |
+
+Car
+
+
+Benefits:
+
+- Step-by-step construction
+- Cleaner code
+- Reusable construction logic
+- Easy to create different variants
+
+
+=========================================================
+8. BENEFITS
+=========================================================
+
+✔ Step-by-step object construction
+
+✔ Cleaner code
+
+✔ Avoids telescoping constructors
+
+✔ Same construction process creates
+  different products
+
+✔ Better readability
+
+✔ Better maintainability
+
+✔ Follows Single Responsibility Principle
+
+
+=========================================================
+9. DRAWBACKS
+=========================================================
+
+✘ More classes
+
+✘ More boilerplate code
+
+✘ Slightly more complex
+
+✘ Overkill for simple objects
+
+
+=========================================================
+10. REAL WORLD USE CASES
+=========================================================
+
+• Car manufacturing
+
+• Computer assembly
+
+• Pizza ordering
+
+• House construction
+
+• SQL Query Builder
+
+• HTTP Request Builder
+
+• Email Builder
+
+• PDF Report Builder
+
+• Game character creation
+
+
+=========================================================
+11. BUILDER vs FACTORY METHOD
+=========================================================
+
+Factory Method
+
+• Creates ONE object.
+• Focus is object creation.
+• Returns object immediately.
+
+Example:
+
+createVehicle()
+
+----------------------------
+
+Builder
+
+• Builds complex object step-by-step.
+• Focus is construction process.
+• Multiple build steps.
+
+Example:
+
+setEngine()
+
+setBody()
+
+setSeats()
+
+buildCar()
+
+
+=========================================================
+12. IMPORTANT INTERVIEW QUESTIONS
+=========================================================
+
+Q. Why Builder instead of constructor?
+
+Answer:
+
+Large constructors become difficult to read,
+maintain, and extend.
+
+Builder constructs objects step-by-step.
+
+
+---------------------------------------------------------
+
+Q. What is the Director?
+
+Answer:
+
+Director controls the construction sequence.
+It knows HOW to build, but not the implementation.
+
+
+---------------------------------------------------------
+
+Q. Can Builder work without Director?
+
+Answer:
+
+Yes.
+
+The client can directly call builder methods.
+
+Director is optional but improves reuse.
+
+
+---------------------------------------------------------
+
+Q. Difference between Factory and Builder?
+
+Answer:
+
+Factory creates an object.
+
+Builder constructs a complex object step-by-step.
+
+
+=========================================================
+13. INTERVIEW ONE-LINE ANSWER
+=========================================================
+
+"Builder is a creational design pattern used to construct
+complex objects step-by-step while separating construction
+logic from the final representation."
+
+
+=========================================================
+14. MEMORY TRICK
+=========================================================
+
+Factory
+--------
+
+Creates object.
+
+Builder
+--------
+
+Builds object step-by-step.
+
+
+Remember:
+
+Factory → Create
+
+Builder → Construct
+
+
+=========================================================
+15. FINAL SUMMARY
+=========================================================
+
+Pattern Type:
+Creational
+
+Purpose:
+Construct complex objects step-by-step
+
+Main Principle:
+Separate construction from representation
+
+Core Components:
+
+Product
+
+Builder Interface
+
+Concrete Builder
+
+Director
+
+Client
+
+Use When:
+
+✔ Object has many fields
+
+✔ Construction is complex
+
+✔ Multiple configurations are needed
+
+Priority:
+
+⭐⭐⭐⭐⭐ MUST KNOW FOR SENIOR C++ LLD INTERVIEWS

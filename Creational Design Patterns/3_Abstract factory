@@ -2,18 +2,103 @@
 INTERVIEW ONE-LINER
 ----------------------------------------------------
 
-"Abstract Factory creates families of related objects while hiding their
-creation from the client, ensuring compatible objects are created together
-and reducing coupling."
+Abstract Factory is a creational design pattern that provides
+an interface for creating a family of related objects without
+exposing their concrete classes to the client.
 
-Application:
-====================================================
-MOST ASKED IN INTERVIEWS
-====================================================
+The client only interacts with the abstract factory and
+abstract products, ensuring compatible objects are created
+together.
 
-1. GUI Framework (Windows/Mac)
+=========================================================
+Abstract Factory - Real World Applications
+=========================================================
+
+1. GUI Framework (Windows / Mac / Linux)
+
+Problem:
+
+Different operating systems need different UI components.
+
+Example:
+
+Windows Factory
+    |
+    |-- Windows Button
+    |-- Windows Checkbox
+    |-- Windows TextBox
+
+
+Mac Factory
+    |
+    |-- Mac Button
+    |-- Mac Checkbox
+    |-- Mac TextBox
+
+
+Client uses the factory and gets a matching family of UI
+components without knowing the operating system.
+
+
+=========================================================
+
 2. Car Manufacturing System
+
+Problem:
+
+Different car brands have families of related components.
+
+Example:
+
+BMW Factory
+
+    |-- BMW Engine
+    |-- BMW Wheel
+    |-- BMW Interior
+
+
+Mercedes Factory
+
+    |-- Mercedes Engine
+    |-- Mercedes Wheel
+    |-- Mercedes Interior
+
+
+Factory ensures compatible parts are created together.
+
+
+=========================================================
+
 3. Database Driver Factory
+
+Problem:
+
+Application supports multiple databases.
+
+Example:
+
+MySQL Factory
+
+    |-- MySQL Connection
+    |-- MySQL Query Executor
+
+
+Oracle Factory
+
+    |-- Oracle Connection
+    |-- Oracle Query Executor
+
+
+Client works with common interfaces and does not know the
+database-specific implementation.
+
+
+=========================================================
+Interview Summary:
+
+Abstract Factory is useful when we need to create multiple
+related objects that should work together as a family.
+=========================================================
 
 Interview tip
 

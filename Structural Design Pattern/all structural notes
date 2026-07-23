@@ -1,9 +1,6 @@
 
-Structural design patterns deal with how classes and objects are composed to form larger 
-structures while keeping the system flexible and loosely coupled.
-
-They focus on organizing relationships between objects rather
-than creating them.
+"Structural design patterns are used to define how classes and objects are composed together. 
+They reduce tight coupling and make the system flexible and easier to extend."
 
 Purpose
 -------
@@ -26,3 +23,24 @@ Behavioral  → How objects COMMUNICATE.
 2. Decorator    ⭐⭐⭐⭐⭐
 3. Facade       ⭐⭐⭐⭐⭐
 3. Proxy        ⭐⭐⭐⭐☆
+
+
+1. Adapter
+   - Makes incompatible interfaces work together.
+
+2. Decorator
+   - Adds new behavior dynamically without modifying
+     existing classes.
+
+3. Facade
+   - Provides a simple interface over a complex subsystem.
+
+4. Composite
+   - Treats individual objects and groups of objects
+     uniformly.
+
+5. Proxy
+   - Controls access to another object.
+
+6. Bridge
+   - Separates abstraction from implementation.

@@ -1,0 +1,242 @@
+# PROXY DESIGN PATTERN
+
+=========================================================
+
+## 1. DEFINITION
+
+=========================================================
+
+The **Proxy Pattern** is a **Structural Design Pattern** that provides a **placeholder (proxy)** for another object and controls access to it.
+
+**One-Line Definition**
+
+> Proxy controls access to the real object without modifying it.
+
+---
+
+## 2. WHY DO WE NEED PROXY?
+
+Without Proxy:
+
+* Client directly accesses the real object.
+* No security, caching or lazy loading.
+
+With Proxy:
+
+* Controls access.
+* Performs permission checks.
+* Supports lazy loading.
+* Can add logging/caching.
+
+---
+
+## 3. STRUCTURE
+
+```text
+        Client
+           │
+           ▼
+        Proxy
+           │
+           ▼
+     Real Subject
+```
+
+---
+
+## 4. COMPONENTS
+
+* **Subject** → Common interface
+* **Real Subject** → Actual implementation
+* **Proxy** → Controls access before forwarding request
+
+---
+
+## 5. TYPES OF PROXY
+
+* Protection Proxy (Access Control)
+* Virtual Proxy (Lazy Loading)
+* Remote Proxy (Remote Object)
+* Caching Proxy (Performance)
+
+---
+
+## 6. BENEFITS
+
+✔ Controls access
+
+✔ Improves security
+
+✔ Lazy initialization
+
+✔ Supports logging/caching
+
+---
+
+## 7. DRAWBACKS
+
+❌ Extra layer
+
+❌ Slight performance overhead
+
+---
+
+## 8. REAL-WORLD EXAMPLES
+
+* File Access Permission
+* College Internet Firewall
+* Image Lazy Loading
+* Database Cache
+
+---
+
+## 9. INTERVIEW CODE
+
+**(Keep your Protection Proxy implementation here.)**
+
+---
+
+## 10. MOST ASKED INTERVIEW QUESTIONS
+
+**Q. What problem does Proxy solve?**
+
+Controls access to the real object.
+
+---
+
+**Q. Does Proxy change business logic?**
+
+No. It only controls access.
+
+---
+
+**Q. Which SOLID principle does it follow?**
+
+Open/Closed Principle (OCP).
+
+---
+
+**Q. Does Proxy use composition?**
+
+Yes. Proxy **HAS-A** Real Subject.
+
+---
+
+## 11. PROXY vs DECORATOR
+
+| Proxy             | Decorator             |
+| ----------------- | --------------------- |
+| Controls access   | Adds new behavior     |
+| Security, caching | Extends functionality |
+
+---
+
+## 12. INTERVIEW ONE-LINER
+
+**Proxy provides a surrogate object that controls access to the real object by adding security, 
+lazy loading, caching, or logging without modifying the real object.**
+
+#include <iostream>
+using namespace std;
+
+//=====================
+// SUBJECT
+//=====================
+
+class Folder
+{
+public:
+    virtual void readWrite() = 0;
+    virtual ~Folder() = default;
+};
+
+//=====================
+// REAL SUBJECT
+//=====================
+
+class RealFolder : public Folder
+{
+public:
+    void readWrite() override
+    {
+        cout << "Read/Write operation allowed." << endl;
+    }
+};
+
+//=====================
+// USER
+//=====================
+
+class User
+{
+private:
+    string role;
+
+public:
+    User(string r) : role(r)
+    {
+    }
+
+    string getRole() const
+    {
+        return role;
+    }
+};
+
+//=====================
+// PROXY
+//=====================
+
+class ProxyFolder : public Folder
+{
+private:
+    Folder* folder;
+    User* user;
+
+public:
+    ProxyFolder(User* u)
+        : folder(nullptr), user(u)
+    {
+    }
+
+    ~ProxyFolder()
+    {
+        delete folder;
+    }
+
+    void readWrite() override
+    {
+        if (user->getRole() == "Manager")
+        {
+            folder = new RealFolder();
+            folder->readWrite();
+        }
+        else
+        {
+            cout << "Access Denied!" << endl;
+        }
+    }
+};
+
+//=====================
+// CLIENT
+//=====================
+
+int main()
+{
+    User* developer = new User("Developer");
+    User* manager = new User("Manager");
+
+    Folder* f1 = new ProxyFolder(developer);
+    Folder* f2 = new ProxyFolder(manager);
+
+    f1->readWrite();
+    f2->readWrite();
+
+    delete f1;
+    delete f2;
+    delete developer;
+    delete manager;
+
+    return 0;
+}

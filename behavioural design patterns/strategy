@@ -1,148 +1,339 @@
-Payment Processing System Without Strategy Pattern
+# Strategy Design Pattern (Interview Notes)
 
-Imagine we have a system that processes payments using various methods such as credit cards, PayPal, and bank transfers. Without using the Strategy design pattern, you might implement all payment logic within a single class using conditional statements. This approach can lead to code that's difficult to maintain, extend, and test.
+## Definition
 
-#include <iostream>
-#include <string>
+The **Strategy Pattern** is a **behavioral design pattern** that defines a family of algorithms,
+encapsulates each algorithm in a separate class, and makes them interchangeable. 
+The Context can switch between algorithms **at runtime** without modifying its own code.
 
-class PaymentProcessor {
-private:
-    std::string paymentMethod;  // Current payment method
+**Key Idea:**
 
+> **Encapsulate what varies and program to an interface, not an implementation.**
+
+---
+
+# Interview Scenario
+
+### Payment Processing System
+
+An e-commerce application supports multiple payment methods such as:
+
+* Credit Card
+* PayPal
+* Bank Transfer
+* UPI
+* Apple Pay
+
+The payment algorithm depends on the payment method selected by the user.
+
+---
+
+# Without Strategy Pattern
+
+All payment logic is placed inside a single class using multiple **if-else** statements.
+
+```cpp
+class PaymentProcessor
+{
 public:
-    // Constructor to set the initial payment method
-    PaymentProcessor(const std::string& method) : paymentMethod(method) {}
-
-    // Method to change the payment method dynamically
-    void setPaymentMethod(const std::string& method) {
-        paymentMethod = method;
-    }
-
-    // Method to process payment based on the current payment method   
-    void processPayment(int amount) {
-        if (paymentMethod == "credit_card") {
-            std::cout << "Processing payment of $" << amount << " using Credit Card." << std::endl;
-            // Add logic specific to credit card payment
-        } else if (paymentMethod == "paypal") {
-            std::cout << "Processing payment of $" << amount << " using PayPal." << std::endl;
-            // Add logic specific to PayPal payment
-        } else if (paymentMethod == "bank_transfer") {
-            std::cout << "Processing payment of $" << amount << " using Bank Transfer." << std::endl;
-            // Add logic specific to bank transfer payment
-        } else {
-            std::cout << "Invalid payment method selected!" << std::endl;
+    void processPayment(string paymentMethod, int amount)
+    {
+        if(paymentMethod == "CreditCard")
+        {
+            // Credit Card logic
+        }
+        else if(paymentMethod == "PayPal")
+        {
+            // PayPal logic
+        }
+        else if(paymentMethod == "BankTransfer")
+        {
+            // Bank Transfer logic
         }
     }
 };
+```
 
-// Main function to demonstrate the PaymentProcessor class without Strategy Pattern
-int main() {
-    // Create a PaymentProcessor object with an initial payment method
-    PaymentProcessor processor("credit_card");
-    processor.processPayment(100);
+---
 
-    // Change the payment method to PayPal
-    processor.setPaymentMethod("paypal");
-    processor.processPayment(200);
+## Problems
 
-    // Change the payment method to Bank Transfer
-    processor.setPaymentMethod("bank_transfer");
-    processor.processPayment(300);
+### 1. Violates Open/Closed Principle (OCP)
 
-    return 0;
-}
+Whenever a new payment method is added (UPI, Apple Pay, Crypto, etc.), the existing `processPayment()` function must be modified.
 
+```cpp
+if(...)
+else if(...)
+else if(...)
+else if(...)
+...
+```
 
+The class keeps growing with every new payment option.
 
-Disadvantages of This Approach
-Lack of Flexibility: Each time you need to add a new payment method, you must modify the processPayment method, violating the Open/Closed Principle (code should be open for extension but closed for modification).
+---
 
-Code Duplication: The use of if-else statements for different payment methods can lead to duplicated code and increased complexity.
+### 2. Difficult to Maintain
 
-Difficult to Maintain: With multiple payment methods, the processPayment function becomes long and challenging to manage.
+As the number of payment methods increases, the function becomes large and difficult to understand.
 
-Tightly Coupled Code: All payment logic is tightly coupled within a single class, making it difficult to reuse the logic elsewhere or change one method without potentially affecting others.
+```
+Credit Card
+PayPal
+UPI
+Bank Transfer
+Apple Pay
+Crypto
+Net Banking
+Wallet
+```
 
+Everything is handled inside one function.
 
-*******Using strategy ****
-#include <iostream>
+---
 
-// Step 1: Strategy Interface
-class PaymentStrategy {
+### 3. Tightly Coupled Code
+
+The `PaymentProcessor` knows the implementation details of every payment method.
+
+Changing one payment algorithm may accidentally affect others.
+
+---
+
+### 4. Poor Extensibility
+
+Adding a new payment method requires modifying already tested code, increasing the risk of introducing bugs.
+
+---
+
+### 5. Hard to Unit Test
+
+Each payment algorithm cannot be tested independently because all logic resides in one function.
+
+---
+
+# Using Strategy Pattern
+
+## Step 1: Strategy Interface
+
+```cpp
+class PaymentStrategy
+{
 public:
-    virtual ~PaymentStrategy() {}
-    virtual void pay(int amount) = 0;  // Pure virtual function for payment processing
+    virtual ~PaymentStrategy() = default;
+    virtual void pay(int amount) = 0;
 };
+```
 
-// Step 2: Concrete Strategy Classes
+---
 
-// Credit Card payment strategy
-class CreditCardPayment : public PaymentStrategy {
+## Step 2: Concrete Strategy Classes
+
+```cpp
+class CreditCardPayment : public PaymentStrategy
+{
 public:
-    void pay(int amount) override {
-        std::cout << "Processing payment of $" << amount << " using Credit Card." << std::endl;
+    void pay(int amount) override
+    {
+        cout << "Processing payment using Credit Card\n";
     }
 };
 
-// PayPal payment strategy
-class PayPalPayment : public PaymentStrategy {
+class PayPalPayment : public PaymentStrategy
+{
 public:
-    void pay(int amount) override {
-        std::cout << "Processing payment of $" << amount << " using PayPal." << std::endl;
+    void pay(int amount) override
+    {
+        cout << "Processing payment using PayPal\n";
     }
 };
 
-// Bank Transfer payment strategy
-class BankTransferPayment : public PaymentStrategy {
+class BankTransferPayment : public PaymentStrategy
+{
 public:
-    void pay(int amount) override {
-        std::cout << "Processing payment of $" << amount << " using Bank Transfer." << std::endl;
+    void pay(int amount) override
+    {
+        cout << "Processing payment using Bank Transfer\n";
     }
 };
+```
 
-// Step 3: Context Class
-class PaymentProcessor {
+Each class implements its own payment algorithm.
+
+---
+
+## Step 3: Context Class
+
+The Context delegates payment processing to the selected strategy.
+
+```cpp
+class PaymentProcessor
+{
 private:
-    PaymentStrategy* paymentStrategy;  // Raw pointer to manage strategy
+    PaymentStrategy* paymentStrategy;
 
 public:
-    // Constructor to set the initial payment strategy
-    PaymentProcessor(PaymentStrategy* strategy) : paymentStrategy(strategy) {}
-
-    // Destructor to clean up dynamically allocated strategy
-    ~PaymentProcessor() {
-        delete paymentStrategy;  // Delete the currently assigned strategy
+    PaymentProcessor(PaymentStrategy* strategy)
+        : paymentStrategy(strategy)
+    {
     }
 
-    // Method to set the payment strategy dynamically
-    void setPaymentStrategy(PaymentStrategy* strategy) {
-        delete paymentStrategy;  // Delete the previous strategy to prevent memory leaks
+    ~PaymentProcessor()
+    {
+        delete paymentStrategy;
+    }
+
+    void setPaymentStrategy(PaymentStrategy* strategy)
+    {
+        delete paymentStrategy;
         paymentStrategy = strategy;
     }
 
-    // Method to process payment using the current strategy
-    void processPayment(int amount) {
-        if (paymentStrategy) {
+    void processPayment(int amount)
+    {
+        if(paymentStrategy)
+        {
             paymentStrategy->pay(amount);
-        } else {
-            std::cout << "Payment strategy is not set." << std::endl;
         }
     }
 };
+```
 
-// Main function to demonstrate Strategy Pattern
-int main() {
-    // Use CreditCardPayment strategy initially
-    PaymentProcessor processor(new CreditCardPayment());
-    processor.processPayment(100);
+---
 
-    // Change to PayPalPayment strategy
-    processor.setPaymentStrategy(new PayPalPayment());
-    processor.processPayment(200);
+## Client Code
 
-    // Change to BankTransferPayment strategy
-    processor.setPaymentStrategy(new BankTransferPayment());
-    processor.processPayment(300);
+```cpp
+PaymentProcessor processor(new CreditCardPayment());
 
-    return 0;
-}
+processor.processPayment(100);
+
+processor.setPaymentStrategy(new PayPalPayment());
+
+processor.processPayment(200);
+
+processor.setPaymentStrategy(new BankTransferPayment());
+
+processor.processPayment(300);
+```
+
+The payment algorithm changes **at runtime** without modifying the `PaymentProcessor`.
+
+---
+
+# Class Diagram
+
+```
+                 PaymentProcessor
+                        |
+                        | has-a
+                        |
+                        V
+                PaymentStrategy
+                      ^
+        -------------------------------
+        |             |              |
+ CreditCard     PayPalPayment   BankTransfer
+```
+
+---
+
+# Advantages
+
+### ✔ Follows Open/Closed Principle
+
+To add a new payment method, simply create a new strategy.
+
+```cpp
+class UpiPayment : public PaymentStrategy
+{
+public:
+    void pay(int amount) override
+    {
+        cout << "UPI Payment\n";
+    }
+};
+```
+
+No existing code needs modification.
+
+---
+
+### ✔ Runtime Flexibility
+
+The payment algorithm can be changed dynamically.
+
+```cpp
+processor.setPaymentStrategy(new PayPalPayment());
+```
+
+No changes are required in the `PaymentProcessor`.
+
+---
+
+### ✔ Loose Coupling
+
+The `PaymentProcessor` depends only on the `PaymentStrategy` interface.
+
+It does not know the implementation details of individual payment methods.
+
+---
+
+### ✔ Easy to Extend
+
+Adding new payment methods does not affect existing strategy classes.
+
+---
+
+### ✔ Easy to Test
+
+Each payment strategy can be unit tested independently.
+
+```
+CreditCardPayment
+
+PayPalPayment
+
+BankTransferPayment
+```
+
+---
+
+### ✔ Better Maintainability
+
+Each class has a single responsibility, making the code cleaner and easier to maintain.
+
+---
+
+# Interview Summary (30 Seconds)
+
+> The Strategy Pattern defines a family of algorithms, encapsulates each algorithm into a 
+separate class, and makes them interchangeable. Instead of writing long if-else chains, 
+the Context delegates the work to a Strategy object. This follows the Open/Closed Principle, 
+supports runtime behavior changes, reduces coupling, improves maintainability, and allows each algorithm to be tested independently.
+
+---
+
+# Real-World Examples
+
+* Payment Gateway (Credit Card, PayPal, UPI, Apple Pay)
+* Compression Algorithms (ZIP, RAR, 7Z)
+* Route Planning (Car, Bike, Walking)
+* Sorting Algorithms (Quick Sort, Merge Sort, Heap Sort)
+* Discount Calculation (Festival, Student, Premium)
+* Tax Calculation (India, US, UK)
+* Authentication (OAuth, LDAP, JWT)
+* Image Compression (JPEG, PNG, WebP)
+
+---
+
+# Key Interview Points
+
+* **Design Pattern:** Behavioral
+* **Purpose:** Encapsulate interchangeable algorithms.
+* **Relationship:** Context **has-a** Strategy.
+* **Polymorphism:** Runtime polymorphism.
+* **SOLID Principle:** Open/Closed Principle (OCP).
+* **Memory Management:** When using raw pointers, ensure proper ownership by deleting the previous 
+strategy before assigning a new one and declaring the base class destructor as `virtual`.

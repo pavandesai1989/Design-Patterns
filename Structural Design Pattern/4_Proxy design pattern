@@ -1,3 +1,53 @@
+=========================================================
+PROXY PATTERN: ATM EXAMPLE
+=========================================================
+
+Without Proxy:
+
+Customer
+    |
+    v
+Bank Server
+
+
+Problem:
+- Bank Server handles both banking operations and security.
+- Authentication, PIN check, logging etc. are mixed with core logic.
+
+
+With Proxy:
+
+Customer
+    |
+    v
+ATM Proxy
+    |
+    |-- Validate PIN
+    |-- Check limits
+    |-- Log transaction
+    |
+    v
+Bank Server (Real Object)
+
+
+ATM Proxy acts as a middle layer that controls access
+to the Bank Server.
+
+Why Proxy?
+
+- Controls access to the real object.
+- Separates security logic from business logic.
+- Adds features like authentication, logging, caching
+  without modifying the real object.
+
+Interview Line:
+
+"Proxy Pattern provides a substitute object that controls
+access to the real object while keeping the real object's
+responsibility limited to its core functionality."
+=========================================================
+
+
 # PROXY DESIGN PATTERN
 
 =========================================================

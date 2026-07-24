@@ -1,0 +1,263 @@
+=========================================================
+STRUCTURAL DESIGN PATTERNS - MOST ASKED INTERVIEW QUESTIONS
+=========================================================
+
+=========================================================
+1. What is a Structural Design Pattern?
+=========================================================
+
+Structural patterns explain how classes and objects are
+combined to form larger, flexible and maintainable systems.
+
+=========================================================
+2. Adapter vs Facade
+=========================================================
+
+Adapter
+--------
+• Converts one interface into another.
+• Makes incompatible classes work together.
+• Usually wraps one existing class.
+
+Example:
+XML → JSON Converter
+
+Facade
+-------
+• Provides a simplified interface to a complex subsystem.
+• Does NOT change the interface.
+• Hides complexity from the client.
+
+Example:
+Order Processing System
+
+Interview Line:
+Adapter changes the interface.
+Facade simplifies the interface.
+
+=========================================================
+3. Decorator vs Proxy
+=========================================================
+
+Decorator
+----------
+• Adds new behavior dynamically.
+• Focus is extending functionality.
+
+Example:
+Pizza + Cheese + Olives
+
+Proxy
+------
+• Controls access to an object.
+• Focus is authentication, authorization,
+  lazy loading, logging, caching.
+
+Example:
+Folder Access Permission
+
+Interview Line:
+Decorator adds functionality.
+Proxy controls access.
+
+=========================================================
+4. Bridge vs Adapter
+=========================================================
+
+Bridge
+-------
+• Separates abstraction from implementation.
+• Designed before the system is built.
+• Prevents class explosion.
+
+Example:
+Shape + Color
+
+Adapter
+--------
+• Makes incompatible classes work together.
+• Usually applied after classes already exist.
+
+Example:
+XML → JSON Converter
+
+Interview Line:
+Bridge separates two independent hierarchies.
+Adapter connects incompatible interfaces.
+
+=========================================================
+5. Why use composition instead of inheritance?
+=========================================================
+
+Composition provides:
+• Loose coupling
+• Better flexibility
+• Runtime behavior changes
+• Better extensibility
+
+Inheritance creates tight coupling and often leads to
+class explosion.
+
+=========================================================
+6. Why Bridge instead of inheritance?
+=========================================================
+
+Inheritance creates classes like:
+
+RedCircle
+BlueCircle
+GreenCircle
+RedRectangle
+BlueRectangle
+
+Bridge separates:
+
+Shape
+Color
+
+and combines them using composition.
+
+Result:
+No class explosion.
+
+=========================================================
+7. Why not implement access control inside the real object instead of Proxy?
+=========================================================
+
+Because access control is a separate responsibility.
+
+Real Object:
+• Business logic only
+
+Proxy:
+• Authentication
+• Authorization
+• Logging
+• Lazy loading
+
+This follows Single Responsibility Principle.
+
+=========================================================
+8. Types of Proxy
+=========================================================
+
+• Protection Proxy
+  → Access control
+
+• Virtual Proxy
+  → Lazy initialization
+
+• Remote Proxy
+  → Access remote object
+
+• Cache Proxy
+  → Cache expensive results
+
+=========================================================
+9. Why use Decorator instead of inheritance?
+=========================================================
+
+Inheritance:
+
+CheesePizza
+OlivePizza
+CheeseOlivePizza
+CheeseOliveMushroomPizza
+
+Decorator:
+
+Pizza
+ + Cheese
+ + Olives
+ + Mushroom
+
+Behavior can be added dynamically.
+
+=========================================================
+10. What problem does Facade solve?
+=========================================================
+
+Facade hides the complexity of multiple subsystems by
+providing a single simple interface.
+
+Instead of:
+
+Payment
+Inventory
+Shipping
+Notification
+
+Client simply calls:
+
+placeOrder()
+
+=========================================================
+11. What problem does Adapter solve?
+=========================================================
+
+Adapter allows incompatible interfaces to work together
+without modifying existing code.
+
+Example:
+
+Existing System → XML
+
+New Tool → JSON
+
+Adapter converts XML → JSON.
+
+=========================================================
+12. What problem does Bridge solve?
+=========================================================
+
+Bridge avoids class explosion by separating two
+independent dimensions and connecting them using
+composition.
+
+=========================================================
+13. What problem does Proxy solve?
+=========================================================
+
+Proxy controls access to an object by acting as an
+intermediate layer.
+
+It can provide:
+• Security
+• Logging
+• Lazy loading
+• Caching
+
+=========================================================
+14. Which Structural Patterns use Composition?
+=========================================================
+
+✔ Adapter
+✔ Decorator
+✔ Proxy
+✔ Bridge
+✔ Facade
+
+Most structural patterns prefer composition over
+inheritance.
+
+=========================================================
+15. One-line Definitions
+=========================================================
+
+Adapter
+→ Converts one interface into another.
+
+Decorator
+→ Adds new behavior dynamically.
+
+Facade
+→ Provides a simple interface to a complex subsystem.
+
+Proxy
+→ Controls access to another object.
+
+Bridge
+→ Separates abstraction from implementation so both
+can vary independently.
+
+=========================================================

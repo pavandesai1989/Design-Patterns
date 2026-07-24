@@ -6,7 +6,7 @@
 | **Decorator** | Add new behavior dynamically             | **Pizza (Cheese, Olives)**   |
 | **Facade**    | Simplify complex subsystem               | **Order Processing System**  |
 | **Proxy**     | Control access to an object              | **Folder Access Permission** |
-| **Bridge**    | Separate abstraction from implementation | **Remote + TV**              |
+| **Bridge**    | Separate abstraction from implementation | **Shape + Color**            |
 | **Composite** | Treat object & group uniformly           | **File System**              |
 | **Flyweight** | Share objects to save memory             | **Text Editor Characters**   |
 
@@ -85,7 +85,7 @@ OrderFacade
 
 **Memory**
 
-Facade = Front Door
+Facade = Front Door / Single Entry Point
 
 ---
 
@@ -97,7 +97,7 @@ Control access to the real object.
 
 ### Example
 
-**Folder Permission**
+**Folder Access Permission**
 
 ```text
 Client
@@ -107,9 +107,11 @@ ProxyFolder
 RealFolder
 ```
 
-Developer ❌
+```text
+Developer  ❌ Access Denied
 
-Manager ✔
+Manager    ✔ Access Allowed
+```
 
 **Memory**
 
@@ -121,23 +123,62 @@ Proxy = Security Guard
 
 ### Intent
 
-Separate abstraction from implementation.
+Separate **Abstraction** and **Implementation** so both can vary independently using **composition**.
+
+### Problem
+
+Without Bridge → **Class Explosion**
+
+```text
+RedCircle
+BlueCircle
+GreenCircle
+
+RedRectangle
+BlueRectangle
+GreenRectangle
+...
+```
+
+### Solution
+
+Separate the two dimensions.
+
+```text
+Shape (Abstraction)
+        │ HAS-A
+        ▼
+Color (Implementation)
+```
 
 ### Example
 
-**Remote + TV**
+**Shape + Color**
 
 ```text
-Remote
-   │
-Samsung TV
+Rectangle ───► Blue
 
-Sony TV
+Circle ──────► Green
 ```
+
+Runtime composition:
+
+```cpp
+Shape* s1 = new Rectangle(new Blue());
+
+Shape* s2 = new Circle(new Green());
+```
+
+### Real Examples
+
+* Shape + Color
+* Remote + TV
+* Payment + Gateway
+* Database + Driver
 
 **Memory**
 
-Bridge = Separate
+Bridge = Separate Two Dimensions
 
 ---
 
@@ -197,17 +238,17 @@ Flyweight = Memory Sharing
 
 **Adapter** → Converts one interface into another.
 
-**Decorator** → Adds new behavior dynamically.
+**Decorator** → Adds functionality dynamically without modifying the object.
 
-**Facade** → Provides one entry point to a complex subsystem.
+**Facade** → Provides one simplified entry point to a complex subsystem.
 
 **Proxy** → Controls access to the real object.
 
-**Bridge** → Separates abstraction from implementation.
+**Bridge** → Separates abstraction and implementation to avoid class explosion.
 
-**Composite** → Treats objects and groups uniformly.
+**Composite** → Treats individual objects and groups uniformly.
 
-**Flyweight** → Shares objects to reduce memory usage.
+**Flyweight** → Shares common objects to reduce memory usage.
 
 ---
 
@@ -222,9 +263,9 @@ Facade     → Front Door
 
 Proxy      → Security Guard
 
-Bridge     → Separate
+Bridge     → Separate Two Dimensions
 
-Composite  → Tree
+Composite  → Tree Structure
 
 Flyweight  → Memory Sharing
 ```

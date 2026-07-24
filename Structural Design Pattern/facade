@@ -2,58 +2,125 @@
 
 =========================================================
 
-1. DEFINITION
-   =========================================================
+## 1. DEFINITION
+
+=========================================================
 
 The **Facade Pattern** is a **Structural Design Pattern** that provides a **single, simplified interface** to a complex subsystem.
 
-Instead of forcing the client to interact with multiple subsystem classes, the Facade exposes a **single entry point** 
-that internally coordinates all subsystem operations.
+It hides internal complexity and exposes **one entry point** for the client.
 
 **One-Line Definition**
 
-> Facade provides a unified, simplified interface to a set of subsystems.
+> Facade provides a unified interface to a set of subsystems.
 
 ---
 
-# 2. WHY DO WE NEED FACADE?
+## 2. WHY DO WE NEED FACADE?
 
-Suppose an application consists of multiple subsystems.
+Without Facade:
 
-Example:
+* Client communicates with multiple subsystem classes.
+* Client knows execution order.
+* High coupling.
+* Difficult to maintain.
 
-* Payment
-* Inventory
-* Invoice
-* Email
+With Facade:
 
-Without Facade, the client must know:
-
-* Which subsystem to call
-* In what order
-* How the subsystems interact
-
-This increases complexity and coupling.
-
-Facade hides this complexity behind a single API.
+* Client calls only one method.
+* Facade coordinates all subsystem interactions.
 
 ---
 
-# 3. INTENT
+## 3. INTENT
 
 ✔ Simplify subsystem usage
 
 ✔ Hide implementation complexity
 
-✔ Reduce coupling between client and subsystem
+✔ Reduce client-subsystem coupling
 
 ✔ Provide a single entry point
 
 ---
 
-# 4. PROBLEM WITHOUT FACADE
+## 4. STRUCTURE
 
-Client directly communicates with every subsystem.
+```text
+            Client
+               │
+               ▼
+            Facade
+       ┌──────┼──────┐
+       ▼      ▼      ▼
+   Payment Inventory Email
+```
+
+---
+
+## 5. COMPONENTS
+
+* **Client** → Uses only the Facade.
+* **Facade** → Coordinates subsystem calls.
+* **Subsystems** → Perform actual business logic.
+
+---
+
+## 6. RELATIONSHIP
+
+Uses **Composition (HAS-A)**
+
+```text
+OrderFacade HAS-A PaymentGateway
+
+OrderFacade HAS-A Inventory
+
+OrderFacade HAS-A InvoiceSystem
+
+OrderFacade HAS-A EmailService
+```
+
+Facade does **NOT** modify subsystem behavior.
+
+---
+
+## 7. BENEFITS
+
+✔ Simplifies client code
+
+✔ Reduces coupling
+
+✔ Hides complexity
+
+✔ Easier maintenance
+
+✔ Centralized workflow
+
+---
+
+## 8. DRAWBACKS
+
+❌ Can become a God Class
+
+❌ Extra abstraction layer
+
+❌ May hide advanced subsystem functionality
+
+---
+
+## 9. REAL-WORLD EXAMPLES
+
+* Hotel Reception
+* Order Processing
+* Banking App
+* Deployment Pipeline
+* Computer Startup
+
+---
+
+## 10. WITHOUT FACADE
+
+Client manages everything.
 
 ```text
 Client
@@ -64,18 +131,71 @@ Client
    └── Email
 ```
 
-Problems
+### Code
 
-* High coupling
-* Client knows internal workflow
-* Difficult to maintain
-* Difficult to change subsystem implementation
+```cpp
+#include <iostream>
+using namespace std;
+
+class PaymentGateway
+{
+public:
+    void processPayment()
+    {
+        cout << "Payment processed." << endl;
+    }
+};
+
+class Inventory
+{
+public:
+    void checkStock()
+    {
+        cout << "Inventory checked." << endl;
+    }
+};
+
+class InvoiceSystem
+{
+public:
+    void generateInvoice()
+    {
+        cout << "Invoice generated." << endl;
+    }
+};
+
+class EmailService
+{
+public:
+    void sendConfirmationEmail()
+    {
+        cout << "Email sent." << endl;
+    }
+};
+
+int main()
+{
+    PaymentGateway payment;
+    Inventory inventory;
+    InvoiceSystem invoice;
+    EmailService email;
+
+    inventory.checkStock();
+    payment.processPayment();
+    invoice.generateInvoice();
+    email.sendConfirmationEmail();
+
+    cout << "Order placed successfully!" << endl;
+
+    return 0;
+}
+```
 
 ---
 
-# 5. SOLUTION
+## 11. WITH FACADE
 
-Introduce a Facade.
+Client communicates with only one object.
 
 ```text
 Client
@@ -89,128 +209,7 @@ OrderFacade
    └── Email
 ```
 
-Now the client calls only:
-
-```cpp
-order.placeOrder();
-```
-
-The Facade internally coordinates all subsystem calls.
-
----
-
-# 6. STRUCTURE
-
-```text
-                Client
-                   │
-                   ▼
-                Facade
-      ┌──────────┼──────────┐
-      ▼          ▼          ▼
- Payment      Inventory    Email
-```
-
----
-
-# 7. COMPONENTS
-
-### Client
-
-Uses only the Facade.
-
----
-
-### Facade
-
-Provides a simplified API.
-
-Coordinates subsystem interactions.
-
----
-
-### Subsystems
-
-Contain the actual business logic.
-
-Subsystems are unaware of the Facade.
-
----
-
-# 8. RELATIONSHIP
-
-Facade uses **Composition**.
-
-```text
-OrderFacade HAS-A PaymentGateway
-
-OrderFacade HAS-A Inventory
-
-OrderFacade HAS-A InvoiceSystem
-
-OrderFacade HAS-A EmailService
-```
-
-Facade does **NOT** use inheritance.
-
----
-
-# 9. KEY IDEA
-
-Think of the Facade as the **Front Desk** of a hotel.
-
-Instead of talking to:
-
-* Housekeeping
-* Restaurant
-* Laundry
-* Security
-
-You simply contact the reception.
-
-The reception coordinates everything internally.
-
-Facade = **Front Door to the System**
-
----
-
-# 10. REAL-WORLD EXAMPLES
-
-* Hotel Reception
-* Mobile Banking App
-* Order Processing System
-* Deployment Automation
-* Computer Startup (CPU, Memory, Hard Disk)
-
----
-
-# 11. BENEFITS
-
-✔ Simplifies client code
-
-✔ Reduces coupling
-
-✔ Hides subsystem complexity
-
-✔ Improves readability
-
-✔ Centralizes workflow
-
-✔ Easier maintenance
-
----
-
-# 12. DRAWBACKS
-
-❌ Can become a God Class
-
-❌ May hide useful subsystem functionality
-
-❌ Extra abstraction layer
-
----
-
-# 13. INTERVIEW CODE EXAMPLE
+### Code
 
 ```cpp
 #include <iostream>
@@ -294,7 +293,7 @@ int main()
 }
 ```
 
-### Output
+Output
 
 ```text
 Inventory checked.
@@ -306,107 +305,84 @@ Order placed successfully!
 
 ---
 
-# 14. MOST ASKED INTERVIEW QUESTIONS
+## 12. MOST ASKED INTERVIEW QUESTIONS
 
-### What problem does Facade solve?
+**Q. What problem does Facade solve?**
 
-It hides the complexity of multiple subsystems by providing a single entry point.
-
----
-
-### Why use Facade?
-
-To simplify client code and reduce coupling.
+Provides a single entry point to multiple subsystems and reduces client complexity.
 
 ---
 
-### Does Facade change subsystem behavior?
+**Q. Why not let the client call subsystem classes directly?**
 
-No.
-
-It only coordinates subsystem calls.
-
-Subsystem classes remain unchanged.
+That increases coupling and forces the client to know the subsystem workflow.
 
 ---
 
-### Does Facade use inheritance?
+**Q. Does Facade change subsystem behavior?**
 
-No.
-
-Facade primarily uses **Composition**.
+No. It only coordinates subsystem calls.
 
 ---
 
-### Which SOLID principle does Facade support?
+**Q. Does Facade use inheritance?****************************
 
-**Dependency Inversion Principle (DIP)** by reducing direct dependencies between the client and multiple subsystem classes.
-
-It also supports **Single Responsibility Principle (SRP)** because the client no longer manages subsystem coordination.
+No. It mainly uses **Composition (HAS-A)**.
 
 ---
 
-### Can subsystems be used without the Facade?
+**Q. Can subsystem classes be used without the Facade?**
 
-Yes.
-
-Facade is optional.
-
-Clients can still directly access subsystem classes if needed.
+Yes. Facade is optional.
 
 ---
 
-### Is Facade responsible for business logic?
+**Q. Which SOLID principle does it support?**
 
-No.
-
-Business logic belongs to subsystem classes.
-
-Facade only orchestrates the calls.
+* SRP (Client doesn't coordinate subsystems.)
+* DIP (Client depends on Facade instead of many subsystem classes.)
 
 ---
 
-# 15. FACADE vs ADAPTER
+## 13. FACADE vs ADAPTER
 
-| Facade                                         | Adapter                                     |
-| ---------------------------------------------- | ------------------------------------------- |
-| Simplifies a complex subsystem                 | Converts one interface into another         |
-| Provides one entry point                       | Makes incompatible interfaces work together |
-| Client already understands subsystem interface | Client expects a different interface        |
-| Focus is simplicity                            | Focus is compatibility                      |
-
----
-
-# 16. FACADE vs DECORATOR
-
-| Facade                     | Decorator                         |
-| -------------------------- | --------------------------------- |
-| Simplifies subsystem usage | Adds new behavior                 |
-| One entry point            | Wraps an object                   |
-| Hides complexity           | Extends functionality dynamically |
-| Uses composition           | Uses inheritance + composition    |
+| Facade                 | Adapter                           |
+| ---------------------- | --------------------------------- |
+| Simplifies a subsystem | Converts one interface to another |
+| Single entry point     | Compatibility wrapper             |
+| Hides complexity       | Changes interface                 |
 
 ---
 
-# 17. INTERVIEW ONE-LINER
+## 14. FACADE vs DECORATOR
 
-**Facade is used when a system contains multiple complex subsystems. It provides a single,
-simplified interface that hides internal complexity, reduces coupling, and makes the system easier to use.**
+| Facade                     | Decorator                      |
+| -------------------------- | ------------------------------ |
+| Simplifies subsystem usage | Adds new behavior              |
+| One entry point            | Wraps an object                |
+| Uses composition           | Uses inheritance + composition |
 
 ---
 
-# 18. MEMORY TRICK
+## 15. INTERVIEW ONE-LINER
+
+> **Facade provides a single, simplified interface to a complex subsystem, 
+hiding internal complexity and reducing coupling between the client and subsystem classes.**
+
+---
+
+## 16. MEMORY TRICK
 
 ```text
-Facade
+FACADE
 
-Think:
+Front Desk
 
-"Front Desk"
+↓
 
 One Door
 
-One Entry Point
+↓
 
-Many Subsystems Hidden Behind It.
+Many Subsystems Hidden
 ```

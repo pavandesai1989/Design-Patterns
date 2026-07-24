@@ -1,46 +1,230 @@
+# STRUCTURAL DESIGN PATTERNS - QUICK REVISION
 
-"Structural design patterns are used to define how classes and objects are composed together. 
-They reduce tight coupling and make the system flexible and easier to extend."
+| Pattern       | Purpose                                  | Your Example                 |
+| ------------- | ---------------------------------------- | ---------------------------- |
+| **Adapter**   | Convert one interface to another         | **XML → JSON Converter**     |
+| **Decorator** | Add new behavior dynamically             | **Pizza (Cheese, Olives)**   |
+| **Facade**    | Simplify complex subsystem               | **Order Processing System**  |
+| **Proxy**     | Control access to an object              | **Folder Access Permission** |
+| **Bridge**    | Separate abstraction from implementation | **Remote + TV**              |
+| **Composite** | Treat object & group uniformly           | **File System**              |
+| **Flyweight** | Share objects to save memory             | **Text Editor Characters**   |
 
-Purpose
--------
+---
 
-- Simplify object relationships
-- Reduce coupling
-- Reuse existing classes
-- Build flexible and scalable systems
+# 1. ADAPTER
 
-Memory Trick
-------------
+### Intent
 
-Creational  → How objects are CREATED.
+Convert one interface into another compatible interface.
 
-Structural  → How objects are CONNECTED.
+### Example
 
-Behavioral  → How objects COMMUNICATE.
+**XML → JSON Converter**
 
-1. Adapter      ⭐⭐⭐⭐⭐
-2. Decorator    ⭐⭐⭐⭐⭐
-3. Facade       ⭐⭐⭐⭐⭐
-3. Proxy        ⭐⭐⭐⭐☆
+```text
+Client
+   │
+Target
+   ▲
+Adapter
+   │
+Adaptee(XML)
+```
 
+**Memory**
 
-1. Adapter
-   - Makes incompatible interfaces work together.
+Adapter = Compatibility
 
-2. Decorator
-   - Adds new behavior dynamically without modifying
-     existing classes.
+---
 
-3. Facade
-   - Provides a simple interface over a complex subsystem.
+# 2. DECORATOR
 
-4. Composite
-   - Treats individual objects and groups of objects
-     uniformly.
+### Intent
 
-5. Proxy
-   - Controls access to another object.
+Add new functionality dynamically.
 
-6. Bridge
-   - Separates abstraction from implementation.
+### Example
+
+**Pizza**
+
+```text
+PlainPizza
+     │
+ Cheese
+     │
+ Olives
+```
+
+**Memory**
+
+Decorator = Add Features
+
+---
+
+# 3. FACADE
+
+### Intent
+
+Provide one simplified interface to a complex subsystem.
+
+### Example
+
+**Order Processing**
+
+```text
+Client
+   │
+OrderFacade
+   │
+├── Inventory
+├── Payment
+├── Invoice
+└── Email
+```
+
+**Memory**
+
+Facade = Front Door
+
+---
+
+# 4. PROXY
+
+### Intent
+
+Control access to the real object.
+
+### Example
+
+**Folder Permission**
+
+```text
+Client
+   │
+ProxyFolder
+   │
+RealFolder
+```
+
+Developer ❌
+
+Manager ✔
+
+**Memory**
+
+Proxy = Security Guard
+
+---
+
+# 5. BRIDGE
+
+### Intent
+
+Separate abstraction from implementation.
+
+### Example
+
+**Remote + TV**
+
+```text
+Remote
+   │
+Samsung TV
+
+Sony TV
+```
+
+**Memory**
+
+Bridge = Separate
+
+---
+
+# 6. COMPOSITE
+
+### Intent
+
+Treat individual objects and groups uniformly.
+
+### Example
+
+**File System**
+
+```text
+Folder
+│
+├── File
+├── File
+└── Folder
+      ├── File
+      └── File
+```
+
+**Memory**
+
+Composite = Tree Structure
+
+---
+
+# 7. FLYWEIGHT
+
+### Intent
+
+Share common objects to reduce memory usage.
+
+### Example
+
+**Text Editor**
+
+```text
+Character Factory
+
+'A'
+'B'
+'C'
+
+Shared by multiple documents
+```
+
+**Memory**
+
+Flyweight = Memory Sharing
+
+---
+
+# INTERVIEW ONE-LINERS
+
+**Adapter** → Converts one interface into another.
+
+**Decorator** → Adds new behavior dynamically.
+
+**Facade** → Provides one entry point to a complex subsystem.
+
+**Proxy** → Controls access to the real object.
+
+**Bridge** → Separates abstraction from implementation.
+
+**Composite** → Treats objects and groups uniformly.
+
+**Flyweight** → Shares objects to reduce memory usage.
+
+---
+
+# EASY MEMORY TRICK
+
+```text
+Adapter    → Compatibility
+
+Decorator  → Add Features
+
+Facade     → Front Door
+
+Proxy      → Security Guard
+
+Bridge     → Separate
+
+Composite  → Tree
+
+Flyweight  → Memory Sharing
+```

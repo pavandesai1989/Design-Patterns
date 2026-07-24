@@ -1,27 +1,72 @@
+Suppose I have a FileWriter class.
+
+Initially, it only writes data to a file.
+
+Later, new requirements come:
+- Compress the data
+- Encrypt the data
+- Log every write
+
+If I use inheritance, I'll end up creating classes like
+CompressedFileWriter,
+EncryptedFileWriter,
+LoggedFileWriter,
+CompressedEncryptedFileWriter,
+LoggedCompressedEncryptedFileWriter, and so on.
+
+As more optional features are added, the number of subclasses grows rapidly.
+
+Decorator solves this by creating one decorator per feature.
+At runtime, I simply wrap the object:
+
+FileWriter
+   ↓
+Compression
+   ↓
+Encryption
+   ↓
+Logging
+
+This avoids class explosion, allows features to be enabled or disabled dynamically, and follows the Open/Closed Principle.
+
+Decorator is needed when behavior is optional, combinable, 
+and should be added dynamically at runtime without creating subclasses for every feature combination.
+
+
+VVVVVIMP
+In the Decorator Pattern, every decorator wraps the
+previous object, forming a chain of responsibility and
+ownership. This ensures each object has exactly one owner,
+preventing double deletion and enabling dynamic behavior
+addition at runtime.
+
+
+=========================================================
 DECORATOR DESIGN PATTERN
-DECORATOR PATTERN
-=================
+=========================================================
 
-What is it?
------------
-Decorator Pattern is used to add new functionality
-to an object dynamically without modifying its
-existing class.
+1. WHAT IS IT?
+---------------------------------------------------------
+Decorator Pattern is a Structural Design Pattern used to
+add new functionality (behavior) to an object dynamically
+without modifying its existing class.
 
-It wraps the original object inside another object
-(decorator) that adds extra behavior.
+Instead of changing the original object, it wraps the
+object inside another object (Decorator) that adds
+additional behavior.
 
-=================================================
+One-Line Definition:
+Decorator Pattern dynamically adds behavior to an object
+by wrapping it inside another object of the same interface.
 
-WHY WAS IT NEEDED?
-------------------
+=========================================================
 
-Without Decorator:
-------------------
+2. WHY WAS IT NEEDED?
+---------------------------------------------------------
 
 Suppose we have a Pizza.
 
-Requirements:
+Possible features:
 ✔ Cheese
 ✔ Olives
 ✔ Mushroom
@@ -29,428 +74,6 @@ Requirements:
 Using inheritance:
 
 Pizza
-PizzaWithCheese
-PizzaWithOlives
-PizzaWithMushroom
-PizzaWithCheeseOlives
-PizzaWithCheeseMushroom
-PizzaWithOlivesMushroom
-PizzaWithCheeseOlivesMushroom
-
-Problem:
---------
-❌ Too many subclasses
-❌ Hard to maintain
-❌ Not flexible
-
-This is called:
----------------
-CLASS EXPLOSION
-
-=================================================
-
-HOW DECORATOR SOLVES IT?
-------------------------
-
-Instead of creating many subclasses,
-we wrap the object with decorators.
-
-Example:
-
-PlainPizza
-     |
-Cheese
-     |
-Olives
-     |
-Mushroom
-
-Features are added dynamically at runtime.
-
-=================================================
-
-30-SECOND INTERVIEW EXPLANATION
--------------------------------
-
-Decorator Pattern is used to add new functionality
-to an object dynamically without changing its class.
-
-It solves the class explosion problem caused by
-inheritance when many feature combinations are
-required.
-
-In my Pizza example, instead of creating multiple
-subclasses such as PizzaWithCheese or
-PizzaWithCheeseAndOlives, I wrap the base Pizza
-object with Cheese and Olives decorators at runtime,
-making the design flexible and extensible.
-
-=================================================
-
-ONE-LINE INTERVIEW ANSWER
--------------------------
-
-Decorator Pattern dynamically adds behavior to an
-object by wrapping it inside other objects of the
-same interface, avoiding subclass explosion.
-
-Memory trick
-Need:
------
-Avoid class explosion
-
-Solution:
----------
-Wrap object with decorators
-
-Decorator = Feature Adder
-Adapter = Translator
-
-Real-World Analogy
-
-Think of a plain coffee. Now add milk. Now add sugar. Each addition enhances the original but doesn’t change the base.
-
-The Decorator Pattern works the same way: stacking behaviors while keeping the core intact.
-
-1. INTENT
----------------------------------------------
-Attach additional responsibilities to an object dynamically.
- c
-👉 Add features at runtime WITHOUT modifying existing class.
-
-=============================================
-
-2. REAL-WORLD ANALOGY
----------------------------------------------
-- Pizza toppings (cheese, olives, mushrooms)
-- Coffee customization (milk, sugar, syrup)
-- Logging / encryption / compression layers
-- C++ IO streams (fstream decorators internally)
-
-=============================================
-
-3. KEY IDEA (MOST IMPORTANT)
----------------------------------------------
-Wrap objects inside objects repeatedly.
-
-Example:
-PlainPizza → Cheese → Olives → ExtraCheese
-
-This forms a CHAIN of decorators.
-
-=============================================
-
-4. PROBLEM WITHOUT DECORATOR
----------------------------------------------
-- Class explosion problem:
-  PizzaWithCheese
-  PizzaWithCheeseOlives
-  PizzaWithCheeseOlivesMushroom ...
-
-- Not flexible at runtime
-- Violates Open/Closed Principle
-
-=============================================
-
-5. STRUCTURE
----------------------------------------------
-
-1. Component (Interface)
-   - Pizza (base interface)
-
-2. Concrete Component
-   - PlainPizza
-
-3. Decorator Base Class
-   - Has-a + Is-a relationship
-   - Holds pointer to base component
-
-4. Concrete Decorators
-   - Cheese, Olives, etc.
-
-=============================================
-
-6. BENEFITS
----------------------------------------------
-✔ Dynamic behavior addition
-✔ No modification of base class
-✔ Avoid subclass explosion
-✔ Follows Open/Closed Principle
-✔ Flexible chaining of features
-
-=============================================
-
-7. DRAWBACKS
----------------------------------------------
-❌ Many wrapper objects
-❌ Debugging becomes harder (deep chains)
-❌ Memory management complexity (important in C++)
-
-=============================================
-
-8. INTERVIEW KEY POINTS
----------------------------------------------
-✔ Uses composition (HAS-A relationship)
-✔ Runtime behavior modification
-✔ Each decorator is same type as base (IS-A)
-✔ Recursive structure
-✔ Used in streams, middleware, UI systems
-
-=============================================
-
-9. CRITICAL C++ NOTE (IMPORTANT ADDITION)
----------------------------------------------
-👉 Current code uses RAW POINTERS
-In real production C++:
-✔ Prefer smart pointers (unique_ptr/shared_ptr)
-to avoid memory leaks
-
-=============================================
-
-10. ONE-LINE DEFINITION
----------------------------------------------
-Decorator pattern dynamically adds behavior to an object by wrapping it inside other objects of the same type.
-
-=============================================
-
-11. MEMORY TRICK
----------------------------------------------
-Decorator = "Layers on top of object"
-
-=============================================
-
-12. IMPLEMENTATION (YOUR CODE - KEPT + COMPLETE)
----------------------------------------------
-#include <iostream>
-#include <memory>
-#include <string>
-
-using namespace std;
-
-/*
-=================================================
-COMPONENT
-=================================================
-Common interface for all pizzas
-*/
-
-class Pizza
-{
-public:
-    virtual string getDescription() const = 0;
-    virtual double getCost() const = 0;
-
-    virtual ~Pizza() = default;
-};
-
-/*
-=================================================
-CONCRETE COMPONENT
-=================================================
-Base Pizza
-*/
-
-class PlainPizza : public Pizza
-{
-public:
-    string getDescription() const override
-    {
-        return "Plain Pizza";
-    }
-
-    double getCost() const override
-    {
-        return 5.0;
-    }
-};
-
-/*
-=================================================
-DECORATOR BASE CLASS
-=================================================
-Wraps a Pizza object and forwards calls
-*/
-
-class PizzaDecorator : public Pizza
-{
-protected:
-    unique_ptr<Pizza> pizza;
-
-public:
-    PizzaDecorator(unique_ptr<Pizza> p)
-        : pizza(move(p))
-    {
-    }
-
-    virtual ~PizzaDecorator() = default;
-
-    string getDescription() const override
-    {
-        return pizza->getDescription();
-    }
-
-    double getCost() const override
-    {
-        return pizza->getCost();
-    }
-};
-
-/*
-=================================================
-CONCRETE DECORATOR - CHEESE
-=================================================
-Adds Cheese functionality
-*/
-
-class Cheese : public PizzaDecorator
-{
-public:
-    Cheese(unique_ptr<Pizza> p)
-        : PizzaDecorator(move(p))
-    {
-    }
-
-    string getDescription() const override
-    {
-        return pizza->getDescription() + ", Cheese";
-    }
-
-    double getCost() const override
-    {
-        return pizza->getCost() + 2.0;
-    }
-};
-
-/*
-=================================================
-CONCRETE DECORATOR - OLIVES
-=================================================
-Adds Olives functionality
-*/
-
-class Olives : public PizzaDecorator
-{
-public:
-    Olives(unique_ptr<Pizza> p)
-        : PizzaDecorator(move(p))
-    {
-    }
-
-    string getDescription() const override
-    {
-        return pizza->getDescription() + ", Olives";
-    }
-
-    double getCost() const override
-    {
-        return pizza->getCost() + 1.5;
-    }
-};
-
-/*
-=================================================
-MAIN
-=================================================
-*/
-
-int main()
-{
-    unique_ptr<Pizza> pizza =
-        make_unique<PlainPizza>();
-
-    cout << pizza->getDescription()
-         << " -> $" << pizza->getCost() << endl;
-
-    pizza =
-        make_unique<Cheese>(move(pizza));
-
-    cout << pizza->getDescription()
-         << " -> $" << pizza->getCost() << endl;
-
-    pizza =
-        make_unique<Olives>(move(pizza));
-
-    cout << pizza->getDescription()
-         << " -> $" << pizza->getCost() << endl;
-
-    return 0;
-}
-
-
-=================================================
-DECORATOR INTERVIEW ADDITIONS (IMPORTANT)
-=================================================
-
-1. DECORATOR VS ADAPTER
--------------------------------------------------
-
-Decorator:
------------
-Purpose:
-Add new functionality to an existing object.
-
-Focus:
--------
-Behavior Extension
-
-Example:
---------
-PlainPizza
-    |
-Cheese
-    |
-Olives
-
-Result:
--------
-New features added dynamically.
-
-Memory Trick:
--------------
-Decorator = Feature Adder
-
--------------------------------------------------
-
-Adapter:
----------
-Purpose:
-Convert one interface into another interface
-expected by the client.
-
-Focus:
--------
-Interface Conversion
-
-Example:
---------
-analysedata()
-        ↓
-getxmldata()
-
-Result:
--------
-Incompatible classes work together.
-
-Memory Trick:
--------------
-Adapter = Translator
-
--------------------------------------------------
-
-INTERVIEW ONE-LINER:
---------------------
-Decorator adds functionality.
-Adapter converts interfaces.
-
-=================================================
-2. DECORATOR VS INHERITANCE
-=================================================
-
-Inheritance Approach:
----------------------
-
-Pizza
-
 ├── PizzaWithCheese
 ├── PizzaWithOlives
 ├── PizzaWithMushroom
@@ -460,112 +83,1108 @@ Pizza
 └── PizzaWithCheeseOlivesMushroom
 
 Problems:
----------
+
 ❌ Too many subclasses
 ❌ Hard to maintain
-❌ Not flexible at runtime
+❌ Not flexible
+❌ Every new feature combination requires another class
 
-This is called:
----------------
+This problem is called:
+
 CLASS EXPLOSION
 
--------------------------------------------------
+=========================================================
 
-Decorator Approach:
--------------------
+3. HOW DECORATOR SOLVES IT
+---------------------------------------------------------
+
+Instead of creating many subclasses, we wrap the object
+with decorators.
 
 PlainPizza
-      |
+      │
+      ▼
 Cheese Decorator
-      |
+      │
+      ▼
 Olives Decorator
-      |
+      │
+      ▼
 Mushroom Decorator
 
-Benefits:
----------
-✔ No class explosion
+Features are added one by one at runtime.
+
+Each decorator adds only its own responsibility.
+
+=========================================================
+
+4. INTENT
+---------------------------------------------------------
+
+Attach additional responsibilities to an object
+dynamically.
+
+Add features at runtime without modifying the
+existing class.
+
+=========================================================
+
+5. STRUCTURE
+---------------------------------------------------------
+
+Participants:
+
+1. Component
+   - Common interface
+   Example:
+   Pizza
+
+2. Concrete Component
+   - Original object
+   Example:
+   PlainPizza
+
+3. Decorator
+   - Implements same interface
+   - Holds a Component object
+   Example:
+   PizzaDecorator
+
+4. Concrete Decorators
+   - Add new functionality
+   Example:
+   Cheese
+   Olives
+   Mushroom
+
+=========================================================
+
+6. RELATIONSHIP (IMPORTANT)
+---------------------------------------------------------
+
+Decorator uses BOTH Inheritance and Composition.
+
+IS-A Relationship
+
+Cheese IS-A Pizza
+Olives IS-A Pizza
+
+(Because decorators inherit from Pizza.)
+
+HAS-A Relationship
+
+Cheese HAS-A Pizza
+Olives HAS-A Pizza
+
+(Because decorators hold a Pizza object internally.)
+
+This allows recursive wrapping.
+
+=========================================================
+
+7. KEY IDEA
+---------------------------------------------------------
+
+Don't extend classes.
+
+Extend objects.
+
+Objects are wrapped repeatedly.
+
+PlainPizza
+      │
+      ▼
+Cheese
+      │
+      ▼
+Olives
+      │
+      ▼
+Extra Cheese
+
+This creates a chain of decorators.
+
+=========================================================
+
+8. BENEFITS
+---------------------------------------------------------
+
+✔ Add behavior dynamically
+✔ No modification of base class
+✔ Avoid class explosion
 ✔ Runtime flexibility
 ✔ Better code reuse
+✔ Supports recursive wrapping
 ✔ Follows Open/Closed Principle
 
--------------------------------------------------
+=========================================================
 
-INTERVIEW ONE-LINER:
---------------------
-Inheritance adds behavior at compile time,
-while Decorator adds behavior dynamically
-at runtime.
+9. DRAWBACKS
+---------------------------------------------------------
 
-=================================================
-3. WHY NOT USE INHERITANCE?
-(COMMON INTERVIEW QUESTION)
-=================================================
+❌ Many wrapper objects
+❌ Deep decorator chains are harder to debug
+❌ More object creation
+❌ Raw pointers require careful memory management
+   (Prefer smart pointers in C++)
 
-Question:
----------
-Why do we need Decorator Pattern when
-inheritance already exists?
+=========================================================
 
-Answer:
--------
+10. COMMON REAL-WORLD EXAMPLES
+---------------------------------------------------------
 
-Inheritance creates a new subclass for every
-possible feature combination.
+✔ Pizza toppings
+✔ Coffee + Milk + Sugar
+✔ Logging wrappers
+✔ Compression wrappers
+✔ Encryption wrappers
+✔ Authentication middleware
+✔ Network protocol layers
+✔ GUI widgets
+✔ C++ IO Streams (istream, ostream, fstream)
 
-For example:
+=========================================================
+
+11. INTERVIEW KEY POINTS
+---------------------------------------------------------
+
+✔ Structural Design Pattern
+✔ Uses Composition over Inheritance
+✔ Runtime behavior modification
+✔ Decorator implements the same interface
+✔ Recursive object wrapping
+✔ Multiple decorators can be stacked
+✔ Follows Open/Closed Principle
+
+=========================================================
+
+12. DECORATOR VS INHERITANCE
+---------------------------------------------------------
+
+Inheritance
 
 Pizza
-PizzaWithCheese
-PizzaWithOlives
-PizzaWithCheeseAndOlives
-PizzaWithCheeseAndOlivesAndMushroom
+├── PizzaWithCheese
+├── PizzaWithOlives
+├── PizzaWithCheeseOlives
+└── ...
 
-As features increase, the number of subclasses
-grows rapidly, leading to class explosion.
+Problems
 
-Decorator Pattern solves this problem by
-allowing features to be combined dynamically
-at runtime through object composition.
+❌ Class explosion
+❌ Compile-time extension
+❌ Poor flexibility
+
+Decorator
+
+PlainPizza
+      │
+      ▼
+Cheese
+      │
+      ▼
+Olives
+
+Benefits
+
+✔ Runtime extension
+✔ No class explosion
+✔ Better reuse
+✔ Open/Closed Principle
+
+Interview One-Liner:*****************
+
+Inheritance extends classes.
+
+Decorator extends objects.
+
+=========================================================
+
+13. DECORATOR VS ADAPTER
+---------------------------------------------------------
+
+Decorator
+
+Purpose:
+Add functionality.
+
+Focus:
+Behavior Extension
+
+Memory Trick:
+
+Decorator = Feature Adder
+
+--------------------------------------------
+
+Adapter
+
+Purpose:
+Convert one interface into another.
+
+Focus:
+Interface Conversion
+
+Memory Trick:
+
+Adapter = Translator
+
+--------------------------------------------
+
+Interview One-Liner:
+
+Decorator adds functionality.
+
+Adapter converts interfaces.
+
+=========================================================
+
+14. WHY NOT USE INHERITANCE?
+---------------------------------------------------------
+
+Interview Question:
+
+Why do we need Decorator Pattern when inheritance
+already exists?
+
+Answer:
+
+Inheritance creates a new subclass for every possible
+feature combination.
+
+As features increase, subclasses increase rapidly,
+leading to Class Explosion.
+
+Decorator solves this by combining behaviors
+dynamically at runtime using composition.
 
 Benefits:
----------
+
 ✔ No subclass explosion
 ✔ Runtime flexibility
 ✔ Better maintainability
 ✔ Reusable decorators
-✔ Follows Open/Closed Principle
+✔ Open/Closed Principle
 
--------------------------------------------------
+=========================================================
 
-INTERVIEW ONE-LINER:
---------------------
-Decorator is preferred over inheritance when
-features need to be combined dynamically at
-runtime without creating many subclasses.
+15. COMMON INTERVIEW QUESTIONS
+---------------------------------------------------------
 
-=================================================
+Q1. Why does Decorator use Composition?*************************
+
+Because composition allows functionality to be added
+dynamically at runtime.
+
+---------------------------------------------------------
+
+Q2. What problem does Decorator solve?
+
+Class Explosion caused by inheritance.*****************
+
+---------------------------------------------------------
+
+Q3. Does Decorator follow SOLID?
+
+Yes.
+
+✔ Open/Closed Principle
+✔ Dependency Inversion (through abstraction)
+
+---------------------------------------------------------
+
+Q4. Can multiple decorators be applied?
+
+Yes.
+
+Decorators can be chained.
+
+Example:
+
+PlainPizza
+      │
+      ▼
+Cheese
+      │
+      ▼
+Olives
+      │
+      ▼
+Mushroom
+
+=========================================================
+
+30-SECOND INTERVIEW EXPLANATION
+---------------------------------------------------------
+
+Decorator Pattern is used to add new functionality to an
+object dynamically without modifying its existing class.
+
+Instead of creating many subclasses, it wraps the object
+inside decorator objects that implement the same
+interface.
+
+It uses both Inheritance (IS-A) and Composition (HAS-A),
+avoids class explosion, follows the Open/Closed Principle,
+and is commonly used in logging, compression, encryption,
+and C++ stream libraries.
+
+=========================================================
+
 MEMORY TRICKS
-=================================================
+---------------------------------------------------------
 
-Adapter   = Translator
 Decorator = Feature Adder
 
-Adapter:
----------
-Changes Interface
+Adapter = Translator
 
-Decorator:
------------
-Adds Functionality
+Inheritance = Compile-Time Extension
 
-Inheritance:
--------------
-Compile-Time Extension
+Decorator = Runtime Extension
 
-Decorator:
------------
-Runtime Extension
+Decorator = Wrap Object
+
+=========================================================
+CODE 
+=========================================================
+WITHOUT DECORATOR (Using Inheritance)
+=========================================================
+
+Problem:
+Every new topping combination requires a new class.
+
+#include <iostream>
+using namespace std;
+
+class Pizza
+{
+public:
+    virtual string getDescription() = 0;
+    virtual double getCost() = 0;
+    virtual ~Pizza() = default;
+};
+
+class PlainPizza : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza";
+    }
+
+    double getCost() override
+    {
+        return 5.0;
+    }
+};
+
+class PizzaWithCheese : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza + Cheese";
+    }
+
+    double getCost() override
+    {
+        return 7.0;
+    }
+};
+
+class PizzaWithOlives : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza + Olives";
+    }
+
+    double getCost() override
+    {
+        return 6.5;
+    }
+};
+
+class PizzaWithCheeseOlives : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza + Cheese + Olives";
+    }
+
+    double getCost() override
+    {
+        return 8.5;
+    }
+};
+
+int main()
+{
+    Pizza* pizza = new PizzaWithCheeseOlives();
+
+    cout << pizza->getDescription() << endl;
+    cout << pizza->getCost() << endl;
+
+    delete pizza;
+}
+
+=========================================================
+PROBLEM
+=========================================================
+
+If we add Mushroom, Paneer, Corn...
+
+Need classes like
+
+PizzaWithCheeseMushroom
+PizzaWithCheeseOlivesMushroom
+PizzaWithPaneer
+PizzaWithCorn
+PizzaWithPaneerCorn
+...
+
+❌ Class Explosion
+❌ Difficult to maintain
+❌ Not flexible
+
+=========================================================
+WITH DECORATOR (Using Raw Pointers)
+=========================================================
+
+#include <iostream>
+using namespace std;
+
+///////////////////////////////////////////////////////////
+// COMPONENT
+///////////////////////////////////////////////////////////
+
+class Pizza
+{
+public:
+    virtual string getDescription() = 0;
+    virtual double getCost() = 0;
+
+    virtual ~Pizza() = default;
+};
+
+///////////////////////////////////////////////////////////
+// CONCRETE COMPONENT
+///////////////////////////////////////////////////////////
+
+class PlainPizza : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza";
+    }
+
+    double getCost() override
+    {
+        return 5.0;
+    }
+};
+
+///////////////////////////////////////////////////////////
+// DECORATOR
+///////////////////////////////////////////////////////////
+
+class PizzaDecorator : public Pizza
+{
+protected:
+    Pizza* pizza;
+
+public:
+    PizzaDecorator(Pizza* p)
+        : pizza(p)
+    {
+    }
+
+    virtual ~PizzaDecorator()
+    {
+        delete pizza;
+    }
+
+    string getDescription() override
+    {
+        return pizza->getDescription();
+    }
+
+    double getCost() override
+    {
+        return pizza->getCost();
+    }
+};
+
+///////////////////////////////////////////////////////////
+// CHEESE DECORATOR
+///////////////////////////////////////////////////////////
+
+class Cheese : public PizzaDecorator
+{
+public:
+    Cheese(Pizza* p)
+        : PizzaDecorator(p)
+    {
+    }
+
+    string getDescription() override
+    {
+        return pizza->getDescription() + " + Cheese";
+    }
+
+    double getCost() override
+    {
+        return pizza->getCost() + 2.0;
+    }
+};
+
+///////////////////////////////////////////////////////////
+// OLIVES DECORATOR
+///////////////////////////////////////////////////////////
+
+class Olives : public PizzaDecorator
+{
+public:
+    Olives(Pizza* p)
+        : PizzaDecorator(p)
+    {
+    }
+
+    string getDescription() override
+    {
+        return pizza->getDescription() + " + Olives";
+    }
+
+    double getCost() override
+    {
+        return pizza->getCost() + 1.5;
+    }
+};
+
+///////////////////////////////////////////////////////////
+// CLIENT
+///////////////////////////////////////////////////////////
+
+int main()
+{
+    Pizza* pizza = new PlainPizza();
+
+    pizza = new Cheese(pizza);
+
+    pizza = new Olives(pizza);
+
+    cout << pizza->getDescription() << endl;
+    cout << pizza->getCost() << endl;
+
+    delete pizza;
+
+    return 0;
+}
+
+=========================================================
+OUTPUT
+=========================================================
+
+Plain Pizza + Cheese + Olives
+
+8.5
+
+=========================================================
+WHY DECORATOR IS BETTER
+=========================================================
+
+Without Decorator
+
+Pizza
+├── PizzaWithCheese
+├── PizzaWithOlives
+├── PizzaWithMushroom
+├── PizzaWithCheeseOlives
+├── PizzaWithCheeseMushroom
+├── PizzaWithOlivesMushroom
+└── PizzaWithCheeseOlivesMushroom
+
+❌ Too many subclasses
+❌ Compile-time combinations
+❌ Hard to maintain
+
+---------------------------------------------------------
+
+With Decorator
+
+PlainPizza
+      │
+      ▼
+Cheese
+      │
+      ▼
+Olives
+      │
+      ▼
+Mushroom
+
+✔ No subclass explosion
+✔ Runtime flexibility
+✔ Easy to add/remove features
+✔ Composition over Inheritance
+✔ Open/Closed Principle
+
+=========================================================
+INTERVIEW ONE-LINER
+=========================================================
+
+Inheritance creates a new class for every feature
+combination.
+
+Decorator creates a new object by wrapping the existing
+object, allowing behavior to be added dynamically at
+runtime without creating additional subclasses.
 
 
+without decorator:
+#include <iostream>
+using namespace std;
+
+///////////////////////////////////////////////////////////
+// COMPONENT
+///////////////////////////////////////////////////////////
+
+class Pizza
+{
+public:
+    virtual string getDescription() = 0;
+    virtual double getCost() = 0;
+
+    virtual ~Pizza() = default;
+};
+
+///////////////////////////////////////////////////////////
+// CONCRETE CLASSES
+///////////////////////////////////////////////////////////
+
+class PlainPizza : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza";
+    }
+
+    double getCost() override
+    {
+        return 5.0;
+    }
+};
+
+class CheesePizza : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza + Cheese";
+    }
+
+    double getCost() override
+    {
+        return 7.0;
+    }
+};
+
+class OlivesPizza : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza + Olives";
+    }
+
+    double getCost() override
+    {
+        return 6.5;
+    }
+};
+
+class CheeseOlivesPizza : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza + Cheese + Olives";
+    }
+
+    double getCost() override
+    {
+        return 8.5;
+    }
+};
+
+///////////////////////////////////////////////////////////
+// CLIENT
+///////////////////////////////////////////////////////////
+
+int main()
+{
+    Pizza* pizza = new CheeseOlivesPizza();
+
+    cout << pizza->getDescription() << endl;
+    cout << pizza->getCost() << endl;
+
+    delete pizza;
+
+    return 0;
+}
+
+Pizza
+├── PlainPizza
+├── CheesePizza
+├── OlivesPizza
+├── MushroomPizza
+├── CheeseOlivesPizza
+├── CheeseMushroomPizza
+├── OlivesMushroomPizza
+└── CheeseOlivesMushroomPizza
+
+❌ Too many subclasses
+
+❌ Every new combination requires a new class
+
+❌ Not flexible
+
+#include <iostream>
+using namespace std;
+
+///////////////////////////////////////////////////////////
+// COMPONENT
+///////////////////////////////////////////////////////////
+
+class Pizza
+{
+public:
+    virtual string getDescription() = 0;
+    virtual double getCost() = 0;
+
+    virtual ~Pizza() = default;
+};
+
+///////////////////////////////////////////////////////////
+// CONCRETE COMPONENT
+///////////////////////////////////////////////////////////
+
+class PlainPizza : public Pizza
+{
+public:
+    string getDescription() override
+    {
+        return "Plain Pizza";
+    }
+
+    double getCost() override
+    {
+        return 5.0;
+    }
+};
+
+///////////////////////////////////////////////////////////
+// ABSTRACT DECORATOR
+///////////////////////////////////////////////////////////
+
+class PizzaDecorator : public Pizza
+{
+protected:
+    Pizza* pizza;
+
+public:
+    PizzaDecorator(Pizza* p)
+        : pizza(p)
+    {
+    }
+
+    virtual ~PizzaDecorator()
+    {
+        delete pizza;
+    }
+
+    // Make decorator abstract
+    virtual string getDescription() = 0;
+    virtual double getCost() = 0;
+};
+
+///////////////////////////////////////////////////////////
+// CHEESE DECORATOR
+///////////////////////////////////////////////////////////
+
+class Cheese : public PizzaDecorator
+{
+public:
+    Cheese(Pizza* p)
+        : PizzaDecorator(p)
+    {
+    }
+
+    string getDescription() override
+    {
+        return pizza->getDescription() + " + Cheese";
+    }
+
+    double getCost() override
+    {
+        return pizza->getCost() + 2.0;
+    }
+};
+
+///////////////////////////////////////////////////////////
+// OLIVES DECORATOR
+///////////////////////////////////////////////////////////
+
+class Olives : public PizzaDecorator
+{
+public:
+    Olives(Pizza* p)
+        : PizzaDecorator(p)
+    {
+    }
+
+    string getDescription() override
+    {
+        return pizza->getDescription() + " + Olives";
+    }
+
+    double getCost() override
+    {
+        return pizza->getCost() + 1.5;
+    }
+};
+
+///////////////////////////////////////////////////////////
+// CLIENT
+///////////////////////////////////////////////////////////
+
+int main()
+{
+    Pizza* pizza = new PlainPizza();
+
+    pizza = new Cheese(pizza);  /////vvvvvvimp  return capture in pizza only not new ptr 
+
+    pizza = new Olives(pizza);
+
+    cout << pizza->getDescription() << endl;
+    cout << pizza->getCost() << endl;
+
+    delete pizza;
+
+    return 0;
+}
+
+how it resolves here also we are adding new classes?
+
+Excellent question. This is exactly what interviewers ask.
+
+At first glance, it looks like we're still creating new classes (Cheese, Olives, etc.). So what's the benefit?
+
+The answer is:
+
+Decorator creates one class per feature, not one class per feature combination.
+
+Without Decorator******************
+
+Suppose you have 5 toppings:
+
+Cheese
+Olives
+Mushroom
+Corn
+Paneer
+
+we need 
+PlainPizza
+CheesePizza
+OlivesPizza
+MushroomPizza
+CornPizza
+PaneerPizza
+
+CheeseOlivesPizza
+CheeseMushroomPizza
+CheeseCornPizza
+CheesePaneerPizza
+
+OlivesMushroomPizza
+OlivesCornPizza
+OlivesPaneerPizza
+
+CheeseOlivesMushroomPizza
+CheeseCornPaneerPizza
+...
+The number of classes grows rapidly.
+
+For N features, you may end up with 2ᴺ combinations.
+
+Example:
+
+5 toppings
+
+Possible combinations = 2^5 = 32 classes
+
+If tomorrow you add Extra Cheese, you need many more combination classes.
+
+Need Cheese + Mushroom + Corn?
+
+Pizza* pizza = new PlainPizza();
+
+pizza = new Cheese(pizza);
+
+pizza = new Mushroom(pizza);
+
+pizza = new Corn(pizza);
+
+
+"Decorator doesn't eliminate new classes completely. It eliminates the need for creating a new class for every combination of features. 
+We create one reusable decorator per feature, and combine decorators dynamically at runtime. 
+This prevents class explosion and makes the design much more flexible."
+
+Why have a base decorator at all?
+
+The purpose of PizzaDecorator is to factor out the common code that every decorator needs:
+
+Own the wrapped Pizza
+Initialize it
+Destroy it
+
+The concrete decorators (Cheese, Olives) should only focus on adding behavior.
+
+******VVVVVVVIMP****
+=========================================================
+IMPORTANT NOTE: HOW DECORATOR OBJECTS SHOULD BE CREATED
+=========================================================
+
+A Decorator should NEVER wrap the same base object
+multiple times independently.
+
+---------------------------------------------------------
+❌ WRONG APPROACH
+---------------------------------------------------------
+
+Pizza* p = new PlainPizza();
+
+Cheese* pc = new Cheese(p);
+Olives* po = new Olives(p);
+
+Object Structure:
+
+          PlainPizza
+          /        \
+         /          \
+    Cheese        Olives
+
+Problem:
+
+Both Cheese and Olives think they OWN PlainPizza.
+
+Both destructors execute:
+
+delete p;
+
+Scenario:
+
+delete pc;
+    ↓
+Deletes PlainPizza
+
+delete po;
+    ↓
+Attempts to delete PlainPizza again
+
+❌ Double Deletion
+❌ Undefined Behavior
+❌ Possible Crash
+
+---------------------------------------------------------
+✅ CORRECT APPROACH
+---------------------------------------------------------
+
+Pizza* p = new PlainPizza();
+
+p = new Cheese(p);
+
+p = new Olives(p);
+
+Object Structure:
+
+        Olives
+           │
+           ▼
+        Cheese
+           │
+           ▼
+       PlainPizza
+
+Here,
+
+Olives owns Cheese
+
+Cheese owns PlainPizza
+
+Only ONE outermost object exists.
+
+When we execute:
+
+delete p;
+
+Deletion happens recursively.
+
+delete Olives
+      │
+      ▼
+delete Cheese
+      │
+      ▼
+delete PlainPizza
+
+Every object is deleted exactly once.
+
+---------------------------------------------------------
+WHY DOES THIS WORK?
+---------------------------------------------------------
+
+Each decorator wraps the PREVIOUS object.
+
+Cheese wraps PlainPizza.
+
+Olives wraps Cheese.
+
+Every decorator owns only ONE object.
+
+This forms a CHAIN of ownership.
+
+---------------------------------------------------------
+RULE TO REMEMBER
+---------------------------------------------------------
+
+❌ Never decorate the same object separately.
+
+Wrong:
+
+Cheese(p);
+Olives(p);
+
+✔ Always decorate the previous decorator.
+
+Correct:
+
+p = new Cheese(p);
+
+p = new Olives(p);
+
+---------------------------------------------------------
+INTERVIEW ONE-LINER
+---------------------------------------------------------
+
+In the Decorator Pattern, every decorator wraps the
+previous object, forming a chain of responsibility and
+ownership. This ensures each object has exactly one owner,
+preventing double deletion and enabling dynamic behavior
+addition at runtime.
 

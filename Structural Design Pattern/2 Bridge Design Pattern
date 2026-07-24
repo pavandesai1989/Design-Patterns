@@ -8,6 +8,11 @@ BRIDGE DESIGN PATTERN
 Bridge Pattern separates abstraction from implementation
 so both can vary independently using composition instead of inheritance.
 
+Abstraction = What the user wants to do
+Implementation = How it is actually done
+
+Bridge separates these two so they can change independently.
+
 ==============================================
 
 2. INTUITION (MOST IMPORTANT)

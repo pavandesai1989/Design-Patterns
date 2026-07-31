@@ -1,4 +1,7 @@
 # STRUCTURAL DESIGN PATTERNS - QUICK REVISION
+Structural design patterns explain how classes and objects are combined to form 
+larger structures while keeping the design flexible, maintainable, and loosely coupled.
+
 
 | Pattern       | Purpose                                  | Your Example                 |
 | ------------- | ---------------------------------------- | ---------------------------- |

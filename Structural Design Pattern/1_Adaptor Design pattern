@@ -1,213 +1,197 @@
-We have XML data coming from a legacy system. Our analytics tool the data in json format. 
-Since XMLData does not implement that interface, we create XMLToJSONAdapter.
-The adapter implements datatool and internally uses XMLData to convert XML into JSON. 
-The client only knows the datatool abstraction and remains unchanged.
-/*
 =========================================================
 ADAPTER DESIGN PATTERN - XML DATA TO ANALYTICS TOOL
 =========================================================
 
+XMLToJSONAdapter IS-A DataTool
+XMLToJSONAdapter HAS-A XMLData
+
+"The client expects a DataTool interface, but the existing XMLData class doesn't implement it. 
+Instead of modifying the legacy XMLData class, I created an XMLToJSONAdapter that implements DataTool and internally uses XMLData. 
+The adapter converts XML to JSON, allowing the client to work without any changes."
+
 Problem:
 --------
-We have XML data coming from an existing legacy system.
-But our Data Analytics Tool accepts only JSON data.
+We have XML data coming from a legacy system.
+
+Our Data Analytics Tool accepts only JSON data.
 
 We cannot modify:
 1. Existing XMLData class (legacy/third-party code)
-2. Data Analytics Tool
+2. The client code that works with the DataAnalyticsTool interface
 
-So we need an Adapter.
-Adapter will:
-1. Take XML data
-2. Convert it into JSON format
-3. Pass JSON to Analytics Tool
+So we introduce an Adapter.
+
+The Adapter:
+1. Receives XML data from the legacy system.
+2. Converts the XML into JSON.
+3. Provides the interface expected by the client.
+
+The client continues to work with the DataAnalyticsTool abstraction without
+knowing anything about XMLData.
+
+---------------------------------------------------------
+
+Class Relationships
+-------------------
+
+XMLData
+(Legacy Class)
+       |
+       |  HAS-A
+       v
+XMLToJSONAdapter  -------- IS-A --------> DataAnalyticsTool
+       ^
+       |
+       |
+     Client
+
+---------------------------------------------------------
+
+Workflow
+--------
+
+Legacy XML Data
+        ↓
+XMLToJSONAdapter
+        ↓
+Converts XML → JSON
+        ↓
+Data Analytics Tool
+        ↓
+Client processes the data
+
+---------------------------------------------------------
+
+Key Point
+---------
+
+The Adapter acts as a bridge between two incompatible interfaces.
+
+It allows existing (legacy) code to work with new code without modifying either.
+
+=========================================================
+INTERVIEW EXPLANATION
+=========================================================
+
+We have XML data coming from a legacy system, but our Data Analytics Tool
+accepts only JSON data.
+
+Since XMLData does not implement the interface expected by the client,
+we create an XMLToJSONAdapter.
+
+The adapter implements the DataAnalyticsTool interface and internally
+uses XMLData to convert XML into JSON.
+
+The client depends only on the DataAnalyticsTool abstraction and remains
+completely unaware of XMLData.
+
+=========================================================
+ONE-LINE INTERVIEW ANSWER
+=========================================================
+
+The Adapter Pattern converts the interface of an existing class into another
+interface expected by the client, allowing otherwise incompatible classes to
+work together without modifying their existing code.
 
 
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <string>
 
 using namespace std;
 
-
 /*
 =========================================================
-ADAPTEE (Legacy Class)
+Legacy Class (Adaptee)
+Provides XML data
 =========================================================
-
-Existing system provides XML data.
-
-We cannot modify this class.
 */
-
 class XMLData
 {
 private:
-
-    string xmldata;
-
+    string xmlData;
 
 public:
+    XMLData(const string& data) : xmlData(data) {}
 
-    XMLData(string data)
-        : xmldata(data)
+    string getXMLData() const
     {
-    }
-
-
-    string getXMLData()
-    {
-        return xmldata;
+        return xmlData;
     }
 };
 
-
-
 /*
 =========================================================
-TARGET INTERFACE
+Target Interface
+Expected by the Client
 =========================================================
-
-Analytics tool expects JSON data.
-
-Client works with this interface.
 */
-
 class DataAnalyticsTool
 {
 public:
-
-    virtual void analyseData(string jsonData) = 0;
-
-
+    virtual void analyseData() = 0;
     virtual ~DataAnalyticsTool() = default;
 };
 
-
-
 /*
 =========================================================
-ADAPTER
-=========================================================
-
-Adapter converts:
-
-XMLData  --->  JSON
-
-It implements the interface expected by client.
-
-Relationship:
-
-Adapter IS-A DataAnalyticsTool
-
-Adapter HAS-A XMLData
-
+Adapter
+Converts XML -> JSON
 =========================================================
 */
-
 class XMLToJSONAdapter : public DataAnalyticsTool
 {
 private:
-
     XMLData* xmlData;
 
-
 public:
-
     XMLToJSONAdapter(XMLData* data)
         : xmlData(data)
     {
     }
 
-
-    void analyseData(string dummy) override
+    void analyseData() override
     {
-        /*
-        Step 1:
-        Get XML from legacy system
-        */
-
+        // Get XML from legacy system
         string xml = xmlData->getXMLData();
 
+        cout << "Received XML : " << xml << endl;
 
-        cout<<"Received XML: "
-            <<xml<<endl;
+        // Simulate XML -> JSON conversion
+        string json = "{ \"name\" : \"John\" }";
 
+        cout << "Converted XML to JSON." << endl;
 
-        /*
-        Step 2:
-        Convert XML to JSON
-
-        Real project:
-        Use XML parser/converter library.
-
-        Here we simulate conversion.
-        */
-
-        string json = "{name:John}";
-
-
-        /*
-        Step 3:
-        Send JSON to analytics logic
-        */
-
-        cout<<"Analysing JSON: "
-            <<json<<endl;
+        // Analytics Tool processes JSON
+        cout << "Analysing JSON : " << json << endl;
     }
 };
-
-
 
 /*
 =========================================================
-CLIENT
-=========================================================
-
-Client only knows DataAnalyticsTool.
-
-It does not know XMLData.
-
+Client
+Works only with DataAnalyticsTool
 =========================================================
 */
-
 class Client
 {
 public:
-
     void processData(DataAnalyticsTool* tool)
     {
-        tool->analyseData("");
+        tool->analyseData();
     }
 };
 
-
-
 int main()
 {
-
+    // Legacy XML object
     XMLData xml("<name>John</name>");
 
-
-    /*
-    Adapter wraps XMLData
-    */
-
+    // Adapter wraps the legacy object
     XMLToJSONAdapter adapter(&xml);
 
-
+    // Client uses only the target interface
     Client client;
-
-
-    /*
-    Client thinks it is calling
-    a normal Analytics Tool.
-
-    Internally Adapter converts XML -> JSON.
-    */
-
     client.processData(&adapter);
-
 
     return 0;
 }
-

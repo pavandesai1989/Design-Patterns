@@ -1,339 +1,395 @@
-# Strategy Design Pattern (Interview Notes)
+=========================================================
+STRATEGY DESIGN PATTERN
+INTERVIEW NOTES (CLEAN & FINAL)
+=========================================================
+Strategy is a behavioral design pattern that defines a family of algorithms, 
+encapsulates each algorithm into a separate class, and makes them interchangeable so that the algorithm can be selected at runtime.
 
-## Definition
+Start with the problem:
 
-The **Strategy Pattern** is a **behavioral design pattern** that defines a family of algorithms,
-encapsulates each algorithm in a separate class, and makes them interchangeable. 
-The Context can switch between algorithms **at runtime** without modifying its own code.
+"Suppose I'm implementing a payment system that supports Credit Card, UPI, and PayPal. 
+A straightforward implementation might use a large if-else or switch statement."
 
-**Key Idea:**
+"This has several problems:
 
-> **Encapsulate what varies and program to an interface, not an implementation.**
+Every time a new payment method is added, I must modify existing code.
+The class becomes large and hard to maintain.
+It violates the Open/Closed Principle.
+Testing each payment algorithm independently becomes difficult."
 
----
+Then explain the solution
 
-# Interview Scenario
+"The Strategy pattern solves this by moving each algorithm into its own class. 
+All payment methods implement a common interface, and the context holds a reference or pointer to that interface."
 
-### Payment Processing System
+Explain the runtime behavior
 
-An e-commerce application supports multiple payment methods such as:
+"The client creates the required strategy and passes it to the PaymentProcessor. 
+The processor doesn't know whether it's using Credit Card, UPI, or PayPal—it simply calls strategy->pay(). 
+Because it depends only on the interface, new payment methods can be added without modifying the processor."
 
-* Credit Card
-* PayPal
-* Bank Transfer
-* UPI
-* Apple Pay
 
-The payment algorithm depends on the payment method selected by the user.
 
----
 
-# Without Strategy Pattern
+1. What is Strategy Pattern?
+----------------------------
+Strategy is a Behavioral Design Pattern.
 
-All payment logic is placed inside a single class using multiple **if-else** statements.
+It defines a family of algorithms, encapsulates each algorithm into a separate
+class, and makes them interchangeable at runtime.
 
-```cpp
-class PaymentProcessor
+Definition:
+"Encapsulate interchangeable algorithms and choose the required one at runtime."
+
+---------------------------------------------------------
+
+2. Why do we need Strategy Pattern?
+-----------------------------------
+
+Problem without Strategy:
+
+Suppose we have a Payment class:
+
+class Payment
 {
 public:
-    void processPayment(string paymentMethod, int amount)
+    void pay(string type)
     {
-        if(paymentMethod == "CreditCard")
-        {
-            // Credit Card logic
-        }
-        else if(paymentMethod == "PayPal")
-        {
-            // PayPal logic
-        }
-        else if(paymentMethod == "BankTransfer")
-        {
-            // Bank Transfer logic
-        }
+        if(type == "CreditCard")
+            ...
+        else if(type == "UPI")
+            ...
+        else if(type == "PayPal")
+            ...
     }
 };
-```
 
----
+Problems:
 
-## Problems
+❌ Large if-else / switch statements
+❌ Adding a new algorithm requires modifying existing code
+❌ Violates Open/Closed Principle (OCP)
+❌ Difficult to test individual algorithms
+❌ Poor maintainability
+❌ Tight coupling between client and implementations
 
-### 1. Violates Open/Closed Principle (OCP)
+---------------------------------------------------------
 
-Whenever a new payment method is added (UPI, Apple Pay, Crypto, etc.), the existing `processPayment()` function must be modified.
+3. Solution
+-----------
 
-```cpp
-if(...)
-else if(...)
-else if(...)
-else if(...)
-...
-```
+Move each algorithm into its own class.
 
-The class keeps growing with every new payment option.
+Client chooses the required algorithm at runtime.
 
----
+                Strategy
+                   ▲
+                   │
+        ------------------------
+        │          │           │
+      UPI      CreditCard    PayPal
 
-### 2. Difficult to Maintain
+Context
+   |
+uses Strategy
 
-As the number of payment methods increases, the function becomes large and difficult to understand.
+---------------------------------------------------------
 
-```
-Credit Card
-PayPal
-UPI
-Bank Transfer
-Apple Pay
-Crypto
-Net Banking
-Wallet
-```
+4. Real-Life Examples
+---------------------
 
-Everything is handled inside one function.
+✔ Payment methods
+✔ Different sorting algorithms
+✔ Compression algorithms
+✔ Tax calculation
+✔ Route planning (Shortest / Fastest / Toll-free)
+✔ Logging strategy
+✔ Discount calculation
+✔ File export (PDF/CSV/Excel)
 
----
+---------------------------------------------------------
 
-### 3. Tightly Coupled Code
+5. Structure
+------------
 
-The `PaymentProcessor` knows the implementation details of every payment method.
+        Client
+           |
+           v
+        Context
+           |
+           v
+    Strategy Interface
+           ▲
+           |
+    --------------------
+    |        |         |
+Concrete Concrete Concrete
+Strategy Strategy Strategy
 
-Changing one payment algorithm may accidentally affect others.
+---------------------------------------------------------
 
----
+6. Components
+-------------
 
-### 4. Poor Extensibility
+1. Strategy
+- Common interface
 
-Adding a new payment method requires modifying already tested code, increasing the risk of introducing bugs.
+2. Concrete Strategy
+- Implements one algorithm
 
----
+3. Context
+- Holds a Strategy object
+- Delegates work to it
 
-### 5. Hard to Unit Test
+4. Client
+- Chooses which strategy to use
 
-Each payment algorithm cannot be tested independently because all logic resides in one function.
+---------------------------------------------------------
 
----
+7. Advantages
+-------------
 
-# Using Strategy Pattern
+✔ Removes if-else chains
+✔ Open for extension
+✔ Easy to add new algorithms
+✔ Runtime algorithm selection
+✔ Loose coupling
+✔ Easier unit testing
+✔ Better code reuse
+✔ Follows SOLID principles
 
-## Step 1: Strategy Interface
+---------------------------------------------------------
 
-```cpp
+8. Disadvantages
+----------------
+
+✘ More classes
+✘ Client must know which strategy to select
+✘ Slightly higher design complexity
+
+---------------------------------------------------------
+
+9. SOLID Principles Used
+------------------------
+
+✔ Open/Closed Principle (OCP)
+Add new strategies without modifying existing code.
+
+✔ Dependency Inversion Principle (DIP)
+Context depends on the Strategy abstraction, not concrete classes.
+
+---------------------------------------------------------
+
+10. Runtime Behavior
+--------------------
+
+Client
+
+    |
+
+Selects Strategy
+
+    |
+
+Context
+
+    |
+
+Calls Strategy::execute()
+
+    |
+
+Concrete Strategy performs work
+
+---------------------------------------------------------
+
+11. Interview Questions
+-----------------------
+
+Q. Why do we need Strategy Pattern?
+
+Answer:
+To eliminate large if-else or switch statements by encapsulating algorithms
+into separate classes and selecting the appropriate one at runtime.
+
+---------------------------------------------------------
+
+Q. When should you use Strategy Pattern?*********************************
+
+Answer:
+When multiple algorithms can perform the same task and the algorithm may
+change at runtime.
+
+---------------------------------------------------------
+
+Q. Which SOLID principles does Strategy follow?
+
+Answer:
+Open/Closed Principle and Dependency Inversion Principle.
+
+---------------------------------------------------------
+
+Q. What problem does Strategy solve?*************************
+
+Answer:
+It reduces tight coupling between the client and algorithm implementations,
+making the system easier to extend, test, and maintain.
+
+---------------------------------------------------------
+
+Q. Difference between Strategy and simple inheritance?
+
+Answer:
+Inheritance fixes behavior at compile time. Strategy uses composition, allowing
+the algorithm to be changed dynamically at runtime.
+
+---------------------------------------------------------
+
+12. Strategy vs Inheritance
+---------------------------
+
+Inheritance
+
+Vehicle
+   |
+----------------
+|              |
+Car          Bike
+
+Behavior is fixed after object creation.
+
+Strategy
+
+Context
+   |
+Strategy*
+   |
+------------------------
+|          |           |
+Algo A    Algo B    Algo C
+
+Behavior can be changed during runtime.
+
+---------------------------------------------------------
+
+13. One-line Interview Answer
+-----------------------------
+
+Strategy is a behavioral design pattern that encapsulates interchangeable
+algorithms into separate classes and allows selecting the required algorithm
+at runtime using composition instead of inheritance.
+
+---------------------------------------------------------
+
+14. QUICK REVISION
+------------------
+
+✔ Behavioral pattern
+✔ Encapsulates algorithms
+✔ Runtime algorithm selection
+✔ Uses composition
+✔ Eliminates if-else chains
+✔ Follows OCP
+✔ Follows DIP
+✔ Loose coupling
+✔ Easy to extend
+✔ Easy to unit test
+
+=========================================================
+END
+=========================================================
+
+C++ code
+#include <iostream>
+using namespace std;
+
+//==============================================
+// Strategy Interface
+//==============================================
 class PaymentStrategy
 {
 public:
-    virtual ~PaymentStrategy() = default;
     virtual void pay(int amount) = 0;
+    virtual ~PaymentStrategy() = default;
 };
-```
 
----
-
-## Step 2: Concrete Strategy Classes
-
-```cpp
+//==============================================
+// Concrete Strategies
+//==============================================
 class CreditCardPayment : public PaymentStrategy
 {
 public:
     void pay(int amount) override
     {
-        cout << "Processing payment using Credit Card\n";
+        cout << "Paid Rs." << amount << " using Credit Card\n";
     }
 };
 
-class PayPalPayment : public PaymentStrategy
-{
-public:
-    void pay(int amount) override
-    {
-        cout << "Processing payment using PayPal\n";
-    }
-};
-
-class BankTransferPayment : public PaymentStrategy
-{
-public:
-    void pay(int amount) override
-    {
-        cout << "Processing payment using Bank Transfer\n";
-    }
-};
-```
-
-Each class implements its own payment algorithm.
-
----
-
-## Step 3: Context Class
-
-The Context delegates payment processing to the selected strategy.
-
-```cpp
-class PaymentProcessor
-{
-private:
-    PaymentStrategy* paymentStrategy;
-
-public:
-    PaymentProcessor(PaymentStrategy* strategy)
-        : paymentStrategy(strategy)
-    {
-    }
-
-    ~PaymentProcessor()
-    {
-        delete paymentStrategy;
-    }
-
-    void setPaymentStrategy(PaymentStrategy* strategy)
-    {
-        delete paymentStrategy;
-        paymentStrategy = strategy;
-    }
-
-    void processPayment(int amount)
-    {
-        if(paymentStrategy)
-        {
-            paymentStrategy->pay(amount);
-        }
-    }
-};
-```
-
----
-
-## Client Code
-
-```cpp
-PaymentProcessor processor(new CreditCardPayment());
-
-processor.processPayment(100);
-
-processor.setPaymentStrategy(new PayPalPayment());
-
-processor.processPayment(200);
-
-processor.setPaymentStrategy(new BankTransferPayment());
-
-processor.processPayment(300);
-```
-
-The payment algorithm changes **at runtime** without modifying the `PaymentProcessor`.
-
----
-
-# Class Diagram
-
-```
-                 PaymentProcessor
-                        |
-                        | has-a
-                        |
-                        V
-                PaymentStrategy
-                      ^
-        -------------------------------
-        |             |              |
- CreditCard     PayPalPayment   BankTransfer
-```
-
----
-
-# Advantages
-
-### ✔ Follows Open/Closed Principle
-
-To add a new payment method, simply create a new strategy.
-
-```cpp
 class UpiPayment : public PaymentStrategy
 {
 public:
     void pay(int amount) override
     {
-        cout << "UPI Payment\n";
+        cout << "Paid Rs." << amount << " using UPI\n";
     }
 };
-```
 
-No existing code needs modification.
+class PaypalPayment : public PaymentStrategy
+{
+public:
+    void pay(int amount) override
+    {
+        cout << "Paid Rs." << amount << " using PayPal\n";
+    }
+};
 
----
+//==============================================
+// Context
+//==============================================
+class PaymentProcessor
+{
+private:
+    PaymentStrategy* strategy;
 
-### ✔ Runtime Flexibility
+public:
+    PaymentProcessor(PaymentStrategy* s = nullptr)
+        : strategy(s)
+    {
+    }
 
-The payment algorithm can be changed dynamically.
+    void setStrategy(PaymentStrategy* s)
+    {
+        strategy = s;
+    }
 
-```cpp
-processor.setPaymentStrategy(new PayPalPayment());
-```
+    void makePayment(int amount)
+    {
+        if (strategy)
+            strategy->pay(amount);
+        else
+            cout << "No payment strategy selected.\n";
+    }
+};
 
-No changes are required in the `PaymentProcessor`.
+//==============================================
+// Client
+//==============================================
+int main()
+{
+    CreditCardPayment creditCard;
+    UpiPayment upi;
+    PaypalPayment paypal;
 
----
+    PaymentProcessor processor;
 
-### ✔ Loose Coupling
+    processor.setStrategy(&creditCard);
+    processor.makePayment(5000);
 
-The `PaymentProcessor` depends only on the `PaymentStrategy` interface.
+    processor.setStrategy(&upi);
+    processor.makePayment(2500);
 
-It does not know the implementation details of individual payment methods.
+    processor.setStrategy(&paypal);
+    processor.makePayment(1000);
 
----
-
-### ✔ Easy to Extend
-
-Adding new payment methods does not affect existing strategy classes.
-
----
-
-### ✔ Easy to Test
-
-Each payment strategy can be unit tested independently.
-
-```
-CreditCardPayment
-
-PayPalPayment
-
-BankTransferPayment
-```
-
----
-
-### ✔ Better Maintainability
-
-Each class has a single responsibility, making the code cleaner and easier to maintain.
-
----
-
-# Interview Summary (30 Seconds)
-
-> The Strategy Pattern defines a family of algorithms, encapsulates each algorithm into a 
-separate class, and makes them interchangeable. Instead of writing long if-else chains, 
-the Context delegates the work to a Strategy object. This follows the Open/Closed Principle, 
-supports runtime behavior changes, reduces coupling, improves maintainability, and allows each algorithm to be tested independently.
-
----
-
-# Real-World Examples
-
-* Payment Gateway (Credit Card, PayPal, UPI, Apple Pay)
-* Compression Algorithms (ZIP, RAR, 7Z)
-* Route Planning (Car, Bike, Walking)
-* Sorting Algorithms (Quick Sort, Merge Sort, Heap Sort)
-* Discount Calculation (Festival, Student, Premium)
-* Tax Calculation (India, US, UK)
-* Authentication (OAuth, LDAP, JWT)
-* Image Compression (JPEG, PNG, WebP)
-
----
-
-# Key Interview Points
-
-* **Design Pattern:** Behavioral
-* **Purpose:** Encapsulate interchangeable algorithms.
-* **Relationship:** Context **has-a** Strategy.
-* **Polymorphism:** Runtime polymorphism.
-* **SOLID Principle:** Open/Closed Principle (OCP).
-* **Memory Management:** When using raw pointers, ensure proper ownership by deleting the previous 
-strategy before assigning a new one and declaring the base class destructor as `virtual`.
+    return 0;
+}

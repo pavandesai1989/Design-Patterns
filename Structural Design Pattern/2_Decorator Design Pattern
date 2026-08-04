@@ -1,4 +1,8 @@
-2. Why do we need Decorator?
+Decorator is a Structural Design Pattern that allows new responsibilities or features to be added 
+to an object dynamically at runtime by wrapping it with another object, without modifying its existing code.
+
+
+Why do we need Decorator?
 
 Answer
 

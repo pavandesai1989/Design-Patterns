@@ -1,0 +1,439 @@
+=========================================================
+TEMPLATE METHOD DESIGN PATTERN
+INTERVIEW NOTES (CLEAN & FINAL)
+=========================================================
+
+1. What is Template Method Pattern?
+----------------------------------
+Template Method is a Behavioral Design Pattern.
+
+It defines the skeleton (template) of a workflow in a base class,
+while allowing derived classes to implement or customize specific steps
+without changing the overall workflow.
+
+Definition:
+"Defines the skeleton of a workflow in a base class and lets subclasses
+override specific steps without changing the workflow."
+
+---------------------------------------------------------
+
+2. Why do we need Template Method?
+----------------------------------
+
+Problem:
+
+Suppose we have Tea and Coffee.
+
+Making Tea:
+Boil Water
+Add Tea Leaves
+Pour into Cup
+Add Sugar
+
+Making Coffee:
+Boil Water
+Add Coffee Powder
+Pour into Cup
+Add Sugar
+
+Notice:
+
+✔ Boil Water → Same
+✔ Pour into Cup → Same
+✔ Add Sugar → Same
+
+Only one step changes:
+Tea Leaves / Coffee Powder
+
+Without Template Method:
+
+Duplicate code in every class.
+
+Problems:
+
+❌ Code duplication
+❌ Difficult to maintain
+❌ Common workflow repeated
+❌ Violates DRY principle
+
+---------------------------------------------------------
+
+3. Solution
+-----------
+
+Move the common workflow into a base class.
+
+Allow subclasses to customize only the changing steps.
+
+                Beverage
+                    ▲
+          -------------------
+          |                 |
+         Tea            Coffee
+
+---------------------------------------------------------
+
+4. Real-Life Examples
+---------------------
+
+✔ Tea / Coffee preparation
+✔ Report Generation
+✔ Data Parsing
+✔ File Processing
+✔ Game Engine Loop
+✔ Build Pipelines
+✔ Document Export (PDF, Excel)
+✔ Payment Processing Workflow
+
+---------------------------------------------------------
+
+5. Components
+-------------
+
+1. Abstract Base Class
+- Defines the template method
+- Implements common steps
+- Declares abstract/customizable steps
+
+2. Concrete Class
+- Implements variable steps
+
+---------------------------------------------------------
+
+6. Structure
+------------
+
+          Base Class
+
+templateMethod()
+
+↓
+
+step1()        (implemented)
+
+↓
+
+step2()        (virtual / abstract)
+
+↓
+
+step3()        (implemented)
+
+↓
+
+step4()        (virtual / abstract)
+
+---------------------------------------------------------
+
+7. Workflow
+-----------
+
+Client
+
+↓
+
+Calls templateMethod()
+
+↓
+
+Base class executes the workflow
+
+↓
+
+Calls overridden methods when needed
+
+↓
+
+Workflow completes
+
+---------------------------------------------------------
+
+8. Advantages
+-------------
+
+✔ Eliminates duplicate code
+
+✔ Common workflow defined once
+
+✔ Easy to extend
+
+✔ Follows Open/Closed Principle
+
+✔ Enforces a fixed sequence of steps
+
+✔ Better code reuse
+
+---------------------------------------------------------
+
+9. Disadvantages
+----------------
+
+✘ Uses inheritance
+
+✘ Less flexible than composition
+
+✘ Deep inheritance can become difficult to maintain
+
+---------------------------------------------------------
+
+10. SOLID Principles Used
+-------------------------
+
+✔ Open/Closed Principle
+
+Add new subclasses without modifying the base class.
+
+✔ Single Responsibility Principle
+
+Base class controls the workflow.
+Derived classes implement specific behavior.
+
+---------------------------------------------------------
+
+11. Hook Methods
+----------------
+
+A Hook is an optional method that subclasses may override.
+
+Example:
+
+virtual bool addSugar()
+{
+    return true;
+}
+
+Tea may override:
+
+bool addSugar() override
+{
+    return false;
+}
+
+---------------------------------------------------------
+
+12. Common Interview Questions
+------------------------------
+
+Q. What problem does Template Method solve?
+
+Answer:
+It removes duplicate code by defining the common workflow once and
+allowing subclasses to customize only selected steps.
+
+---------------------------------------------------------
+
+Q. Where is the workflow defined?
+
+Answer:
+In the base class.
+
+---------------------------------------------------------
+
+Q. Which methods are overridden?
+
+Answer:
+Only the variable steps.
+
+---------------------------------------------------------
+
+Q. Why is it called Template Method?
+
+Answer:
+Because the base class provides a template (fixed sequence of steps)
+that every subclass follows.
+
+---------------------------------------------------------
+
+Q. Which design principle does it follow?
+
+Answer:
+
+Open/Closed Principle
+
+---------------------------------------------------------
+
+Q. What is a Hook Method?
+
+Answer:
+An optional method with a default implementation that subclasses
+may override if needed.
+
+---------------------------------------------------------
+
+13. Strategy vs Template Method
+-------------------------------
+
+Strategy
+--------
+Uses Composition
+
+Chooses one implementation at runtime.
+
+Behavior can change dynamically.
+
+Example:
+Payment Method
+
+Template Method
+---------------
+Uses Inheritance
+
+Workflow is fixed.
+
+Only certain steps are overridden.
+
+Example:
+Tea / Coffee preparation
+
+---------------------------------------------------------
+
+14. Factory Method vs Template Method
+-------------------------------------
+
+Factory Method
+--------------
+Creates objects.
+
+Template Method
+---------------
+Defines the workflow.
+
+---------------------------------------------------------
+
+15. One-line Interview Answer
+-----------------------------
+
+Template Method is a behavioral design pattern that defines the skeleton
+of a workflow in a base class while allowing subclasses to customize
+specific steps without changing the overall workflow.
+
+---------------------------------------------------------
+
+16. QUICK REVISION
+------------------
+
+✔ Behavioral Pattern
+
+✔ Uses Inheritance
+
+✔ Base class defines the workflow
+
+✔ Derived class overrides specific steps
+
+✔ Eliminates duplicate code
+
+✔ Fixed sequence of steps
+
+✔ Hook methods
+
+✔ OCP
+
+✔ SRP
+
+=========================================================
+INTERVIEW FLOW
+=========================================================
+
+Problem
+    ↓
+Multiple classes implement the same workflow
+    ↓
+Duplicate code
+    ↓
+Move common steps to base class
+    ↓
+Keep variable steps virtual
+    ↓
+Derived classes override only required steps
+    ↓
+Reuse + OCP + DRY
+
+=========================================================
+TOP 5 INTERVIEW TAKEAWAYS
+=========================================================
+
+1. Defines the skeleton of a workflow.
+
+2. Base class controls the execution order.
+
+3. Derived classes customize only specific steps.
+
+4. Uses inheritance, not composition.
+
+5. Best suited when the workflow is fixed but
+some steps vary.
+
+=========================================================
+END
+=========================================================
+
+#include <iostream>
+using namespace std;
+
+// Base Class
+class Beverage
+{
+public:
+    // Template Method (fixed workflow)
+    void prepareDrink()
+    {
+        boilWater();
+        addIngredients();   // Variable step
+        pourIntoCup();
+        addSugar();
+    }
+
+    virtual ~Beverage() = default;
+
+protected:
+    void boilWater()
+    {
+        cout << "Boiling Water\n";
+    }
+
+    virtual void addIngredients() = 0;
+
+    void pourIntoCup()
+    {
+        cout << "Pouring into Cup\n";
+    }
+
+    void addSugar()
+    {
+        cout << "Adding Sugar\n";
+    }
+};
+
+// Concrete Class
+class Tea : public Beverage
+{
+protected:
+    void addIngredients() override
+    {
+        cout << "Adding Tea Leaves\n";
+    }
+};
+
+// Concrete Class
+class Coffee : public Beverage
+{
+protected:
+    void addIngredients() override
+    {
+        cout << "Adding Coffee Powder\n";
+    }
+};
+
+int main()
+{
+    Tea tea;
+    Coffee coffee;
+
+    cout << "Preparing Tea\n";
+    tea.prepareDrink();
+
+    cout << "\nPreparing Coffee\n";
+    coffee.prepareDrink();
+
+    return 0;
+}

@@ -1,0 +1,20 @@
+Behavioral Design Patterns are one of the three GoF (Gang of Four) design pattern categories.
+
+They focus on how objects communicate, collaborate, and distribute responsibilities.
+
+Definition: Behavioral patterns define the interaction and communication between objects, making systems more flexible and loosely coupled.
+   -> Object communication and responsibilities
+
+| Pattern                 | Purpose                                      | Interview Importance |
+| ----------------------- | -------------------------------------------- | -------------------- |
+| Strategy                | Select algorithm at runtime                  | ⭐⭐⭐⭐⭐                |
+| Observer                | One-to-many notifications                    | ⭐⭐⭐⭐⭐                |
+| Command                 | Encapsulate requests as objects              | ⭐⭐⭐⭐                 |
+| State                   | Change behavior based on state               | ⭐⭐⭐⭐                 |
+| Template Method         | Define algorithm skeleton                    | ⭐⭐⭐⭐                 |
+| Chain of Responsibility | Pass request through handlers                | ⭐⭐⭐⭐                 |
+| Iterator                | Sequential access without exposing internals | ⭐⭐⭐⭐                 |
+| Mediator                | Centralize object communication              | ⭐⭐⭐                  |
+| Memento                 | Save and restore object state                | ⭐⭐⭐                  |
+| Visitor                 | Add operations without modifying classes     | ⭐⭐⭐                  |
+| Interpreter             | Interpret language/grammar                   | ⭐                    |

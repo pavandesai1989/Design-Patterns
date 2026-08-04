@@ -1,3 +1,15 @@
+
+Imagine you're building a house.
+
+Creational = How do you make bricks? 🧱
+Structural = How do you connect the bricks to build a house? 🏠
+Behavioral = How do the people inside the house interact? 👨‍👩‍👧
+
+Structural design patterns focus on how classes and objects are connected or 
+organized so they work together while remaining flexible and loosely coupled.
+
+
+
 # STRUCTURAL DESIGN PATTERNS - QUICK REVISION
 Structural design patterns explain how classes and objects are combined to form 
 larger structures while keeping the design flexible, maintainable, and loosely coupled.

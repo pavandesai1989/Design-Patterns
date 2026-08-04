@@ -2,6 +2,9 @@
 ADAPTER DESIGN PATTERN - XML DATA TO ANALYTICS TOOL
 =========================================================
 
+Adapter is a Structural Design Pattern that converts the interface of an existing class into another 
+interface expected by the client, allowing incompatible classes to work together without modifying their existing code.
+
 XMLToJSONAdapter IS-A DataTool
 XMLToJSONAdapter HAS-A XMLData
 
